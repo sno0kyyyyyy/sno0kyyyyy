@@ -1,0 +1,2595 @@
+--[[ KoRi4 scripts — CAMERAMAN TD — v43 (Real-fix + rebind + upgrade fix) ]]
+
+local K = {}
+K.Players=game:GetService("Players")
+K.RS=game:GetService("ReplicatedStorage")
+K.HttpService=game:GetService("HttpService")
+K.TweenService=game:GetService("TweenService")
+K.RunService=game:GetService("RunService")
+K.UIS=game:GetService("UserInputService")
+K.Lighting=game:GetService("Lighting")
+K.PathfindingService=game:GetService("PathfindingService")
+K.StarterGui=game:GetService("StarterGui")
+
+do local t0=os.clock() while not K.Players.LocalPlayer and os.clock()-t0<15 do task.wait(0.1) end end
+K.lp=K.Players.LocalPlayer
+if not K.lp then error("LocalPlayer nil") end
+K.MY_NICK=tostring(K.lp.Name)
+K.IS_MOBILE=K.UIS.TouchEnabled and not K.UIS.KeyboardEnabled
+
+K.INSTANCE=tostring(os.clock()).."_"..tostring(math.random(1e6))
+K.ENV=(getgenv and getgenv()) or nil
+K.MY_KEY="CTD_MACRO_"..tostring(K.lp.UserId)
+K.MY_KEY_UI="CTD_MACRO_UI_"..tostring(K.lp.UserId)
+if K.ENV then
+    pcall(function() K.ENV[K.MY_KEY_UI]:Destroy() end)
+    pcall(function() K.ENV.CTD_MACRO_UI:Destroy() end)
+    K.ENV[K.MY_KEY]=K.INSTANCE
+end
+function K.alive() return not K.ENV or K.ENV[K.MY_KEY]==K.INSTANCE end
+
+function K.setProp(obj,prop,value) if not obj then return false end return (pcall(function() obj[prop]=value end)) end
+function K.getProp(obj,prop,default) if not obj then return default end local ok,v=pcall(function() return obj[prop] end); if ok then return v end; return default end
+function K.safeDestroy(o) if not o then return end pcall(function() o:Destroy() end) end
+function K.setAttr(o,k,v) if not o then return end pcall(function() o:SetAttribute(k,v) end) end
+function K.getAttr(o,k) if not o then return nil end local ok,v=pcall(function() return o:GetAttribute(k) end); if ok then return v end; return nil end
+
+K.outlineStrokes={} K.widgets={} K.accordions={} K.sliders={} K._order=0
+function K.nextOrder() K._order=K._order+1; return K._order end
+
+function K.pruneDead()
+    for st in pairs(K.outlineStrokes) do if typeof(st)~="Instance" or not st.Parent then K.outlineStrokes[st]=nil end end
+    for w in pairs(K.widgets) do if type(w)~="table" or not w.obj or not w.obj.Parent then K.widgets[w]=nil end end
+    for a in pairs(K.accordions) do if type(a)~="table" or not a.wrap or not a.wrap.Parent then K.accordions[a]=nil end end
+    for s in pairs(K.sliders) do if type(s)~="table" or not s.holder or not s.holder.Parent then K.sliders[s]=nil end end
+end
+function K.track(conn,parent)
+    if not conn or not parent then return conn end
+    local dead=false; local c2
+    c2=parent.Destroying:Connect(function()
+        if dead then return end; dead=true
+        pcall(function() conn:Disconnect() end)
+        pcall(function() c2:Disconnect() end)
+    end)
+    return conn
+end
+
+pcall(function()
+    local cg=game:GetService("CoreGui")
+    for _,name in ipairs({"CTD_Macro"}) do local o=cg:FindFirstChild(name); if o then o:Destroy() end end
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    if pg then for _,name in ipairs({"CTD_Macro"}) do local o=pg:FindFirstChild(name); if o then o:Destroy() end end end
+end)
+
+K.DATA_DIR=""
+pcall(function()
+    if makefolder and isfolder then
+        if not isfolder("ctd_data") then makefolder("ctd_data") end
+        K.DATA_DIR="ctd_data/"
+    end
+end)
+
+K.RE=nil K.RF=nil
+do
+    local ml=K.RS:WaitForChild("ModuleLoader",20)
+    local sh=ml and ml:WaitForChild("Shared",20)
+    local nw=sh and sh:WaitForChild("Network",20)
+    K.RE=nw and nw:WaitForChild("RemoteEvent",20)
+    K.RF=nw and nw:FindFirstChild("RemoteFunction")
+end
+function K.remote(n) return K.RE and K.RE:FindFirstChild(n) end
+function K.rfunc(n) return K.RF and K.RF:FindFirstChild(n) end
+function K.gameFolder() return workspace:FindFirstChild("Game") end
+function K.inMatch()
+    if K.remote("TowerAdd")~=nil then return true end
+    if K.gameFolder()~=nil then return true end
+    if workspace:GetAttribute("IsVoting") then return true end
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    if pg and pg:FindFirstChild("GameUI") then return true end
+    return false
+end
+function K.inLobby() return not K.inMatch() and workspace:FindFirstChild("Elevators")~=nil end
+do local t0=os.clock() while not K.inMatch() and not K.inLobby() and os.clock()-t0<15 do task.wait(0.25) end end
+
+K.NICK_SAFE=K.MY_NICK:gsub("[^%w_%-%.]","_")
+K.FILE=K.DATA_DIR.."ctd_macro.json"
+K.FARM=K.DATA_DIR..("ctd_farm_%s.txt"):format(K.NICK_SAFE)
+K.SELECTED=K.DATA_DIR..("ctd_selected_%s.txt"):format(K.NICK_SAFE)
+K.AUTOPLAY=K.DATA_DIR..("ctd_autoplay_%s.txt"):format(K.NICK_SAFE)
+K.PLAYAGAIN=K.DATA_DIR..("ctd_playagain_%s.txt"):format(K.NICK_SAFE)
+K.SPEED_FILE=K.DATA_DIR..("ctd_speed_%s.txt"):format(K.NICK_SAFE)
+K.CFG_FILE=K.DATA_DIR..("ctd_cfg_%s.json"):format(K.NICK_SAFE)
+K.HUD_FILE=K.DATA_DIR..("ctd_hud_%s.json"):format(K.NICK_SAFE)
+K.VOTE_FILE=K.DATA_DIR..("ctd_vote_%s.json"):format(K.NICK_SAFE)
+
+function K.readName(f) local ok,v=pcall(readfile,f); if not ok or type(v)~="string" then return "" end; return (v:gsub("^%s+",""):gsub("%s+$","")) end
+function K.writeName(f,v) pcall(writefile,f,v or "") end
+function K.readSavedSpeed() local v=tonumber(K.readName(K.SPEED_FILE)); if v==1 or v==1.5 or v==2 then return v end; return 1 end
+function K.writeSavedSpeed(v) pcall(writefile,K.SPEED_FILE,tostring(tonumber(v) or 1)) end
+function K.readJSON(p)
+    local ok,raw=pcall(readfile,p); if not ok or type(raw)~="string" then return nil end
+    local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+    if g and type(d)=="table" then return d end
+    return nil
+end
+function K.writeJSON(p,t) pcall(writefile,p,K.HttpService:JSONEncode(t)) end
+
+local voteCfg=K.readJSON(K.VOTE_FILE) or {}
+K.S={recording=false,playing=false,launching=false,actions={},towerIds={},idIndex={},placed=0,levelById={},playMap={},lastId=nil,
+    wave=0,waveStart=os.clock(),status="готов",playAgain=K.readName(K.PLAYAGAIN)=="1",speed=K.readSavedSpeed(),
+    tab="autofarm",collapsed=false,summon1=false,summon10=false,summonDelay=60,
+    gameDelay=500,selected=K.readName(K.SELECTED),
+    voteMode=voteCfg.mode or "Insane",autoVote=(voteCfg.auto~=false)}
+if K.S.selected=="" then K.S.selected=nil end
+K.S.launchCooldown=0 K.S.pendingTowerAdd=nil K.S.votedTick=0 K.S.lastVotedMode=nil
+
+function K.resetRecordState()
+    K.S.placed=0 K.S.towerIds={} K.S.idIndex={} K.S.levelById={}
+    K.S.playMap={} K.S.lastId=nil K.S.pendingTowerAdd=nil
+end
+
+K.MAX_LOGS=80 K.logsBuf={} K.logsUpdated=false
+function K.pushLog(t,k)
+    k=k or "info"
+    table.insert(K.logsBuf,{t=os.date("%H:%M:%S"),m=tostring(t),k=k})
+    if #K.logsBuf>K.MAX_LOGS then table.remove(K.logsBuf,1) end
+    K.logsUpdated=true
+end
+function K.log(s,k) print("[KoRi4] "..s); K.S.status=s; K.pushLog(s,k or "info") end
+
+K.FONT=Enum.Font.RobotoMono
+K.BASE={bg=Color3.fromRGB(20,14,34),panel=Color3.fromRGB(30,20,50),line=Color3.fromRGB(58,42,88),
+    text=Color3.fromRGB(228,220,245),dim=Color3.fromRGB(140,120,175),sidebar=Color3.fromRGB(24,16,40),
+    topbar=Color3.fromRGB(26,18,44),accent=Color3.fromRGB(170,120,255),ok=Color3.fromRGB(120,230,160),
+    red=Color3.fromRGB(230,90,110),orange=Color3.fromRGB(255,180,90)}
+K.DISABLED={bg=Color3.fromRGB(22,16,36),text=Color3.fromRGB(72,60,95),stroke=Color3.fromRGB(40,30,60)}
+K.LOG_COLORS={info=Color3.fromRGB(180,170,200),ok=Color3.fromRGB(140,240,160),warn=Color3.fromRGB(255,200,100),
+    err=Color3.fromRGB(255,120,120),event=Color3.fromRGB(150,200,255)}
+
+K.THEMES={
+    {id="violet",ru="Фиолет",c1=Color3.fromRGB(150,120,255),c2=Color3.fromRGB(90,180,255)},
+    {id="combat",ru="Комбат",c1=Color3.fromRGB(90,100,255),c2=Color3.fromRGB(160,60,220)},
+    {id="siren",ru="Сирена",c1=Color3.fromRGB(255,90,160),c2=Color3.fromRGB(255,140,120)},
+    {id="mint",ru="Мятно-мал",c1=Color3.fromRGB(120,240,200),c2=Color3.fromRGB(255,90,140)},
+    {id="twilight",ru="Сумерки",c1=Color3.fromRGB(90,60,180),c2=Color3.fromRGB(50,30,90)},
+    {id="ruby",ru="Рубин",c1=Color3.fromRGB(200,30,60),c2=Color3.fromRGB(255,100,80)},
+    {id="space",ru="Космос",c1=Color3.fromRGB(60,30,120),c2=Color3.fromRGB(20,10,60)},
+    {id="amber",ru="Аметист",c1=Color3.fromRGB(160,90,220),c2=Color3.fromRGB(255,220,90)},
+    {id="peach",ru="Персик",c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,120,120)},
+    {id="lavender",ru="Лаванда",c1=Color3.fromRGB(180,160,240),c2=Color3.fromRGB(80,140,255)},
+    {id="wine",ru="Вино",c1=Color3.fromRGB(120,40,90),c2=Color3.fromRGB(40,90,160)},
+    {id="sunset",ru="Закат",c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,120)},
+    {id="orange",ru="Оранж",c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,150)},
+    {id="lime",ru="Лайм",c1=Color3.fromRGB(120,220,90),c2=Color3.fromRGB(255,120,200)},
+    {id="lime2",ru="Эвкалипт",c1=Color3.fromRGB(80,180,140),c2=Color3.fromRGB(40,120,90)},
+    {id="rasp",ru="Малина",c1=Color3.fromRGB(255,60,120),c2=Color3.fromRGB(255,140,60)},
+    {id="frost",ru="Мороз",c1=Color3.fromRGB(220,240,255),c2=Color3.fromRGB(160,180,220)},
+    {id="cold",ru="Холод",c1=Color3.fromRGB(90,180,220),c2=Color3.fromRGB(40,100,180)},
+    {id="storm",ru="Шторм",c1=Color3.fromRGB(60,90,180),c2=Color3.fromRGB(20,40,90)},
+    {id="dark",ru="Тёмный",c1=Color3.fromRGB(90,90,110),c2=Color3.fromRGB(30,30,40)},
+    {id="redgray",ru="Кр-сер",c1=Color3.fromRGB(220,70,70),c2=Color3.fromRGB(80,40,40)},
+    {id="bluegray",ru="Син-сер",c1=Color3.fromRGB(80,140,230),c2=Color3.fromRGB(40,60,90)},
+    {id="gold",ru="Золото",c1=Color3.fromRGB(230,190,70),c2=Color3.fromRGB(120,90,30)},
+    {id="ocean",ru="Океан",c1=Color3.fromRGB(80,150,238),c2=Color3.fromRGB(234,88,150)},
+    {id="neonpink",ru="Неон-розовый",c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(255,140,80)},
+    {id="cyberpurple",ru="Кибер-фиол",c1=Color3.fromRGB(120,60,220),c2=Color3.fromRGB(255,80,180)},
+    {id="candy",ru="Карамель",c1=Color3.fromRGB(255,120,180),c2=Color3.fromRGB(120,200,255)},
+    {id="aqua",ru="Аква",c1=Color3.fromRGB(80,220,220),c2=Color3.fromRGB(60,150,220)},
+    {id="forest",ru="Лес",c1=Color3.fromRGB(60,180,120),c2=Color3.fromRGB(20,80,60)},
+    {id="royal",ru="Роял",c1=Color3.fromRGB(80,60,200),c2=Color3.fromRGB(180,140,255)},
+    {id="crimson",ru="Багровый",c1=Color3.fromRGB(200,30,50),c2=Color3.fromRGB(120,20,40)},
+    {id="coral",ru="Коралл",c1=Color3.fromRGB(255,120,100),c2=Color3.fromRGB(255,180,140)},
+    {id="pistachio",ru="Фисташка",c1=Color3.fromRGB(180,220,140),c2=Color3.fromRGB(90,180,110)},
+    {id="autumn",ru="Осень",c1=Color3.fromRGB(255,150,40),c2=Color3.fromRGB(255,80,60)},
+    {id="deepblue",ru="Глубокий",c1=Color3.fromRGB(30,60,180),c2=Color3.fromRGB(120,180,255)},
+    {id="teal",ru="Бирюза",c1=Color3.fromRGB(20,180,180),c2=Color3.fromRGB(255,150,140)},
+    {id="mintgreen",ru="Мятный",c1=Color3.fromRGB(80,230,180),c2=Color3.fromRGB(120,200,240)},
+    {id="pinkpurple",ru="Розово-фиол",c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(140,60,200)},
+    {id="sunrise",ru="Рассвет",c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,80,120)},
+}
+K.OUTLINES={
+    {id="none",ru="Нет",none=true},{id="white",ru="Белая",c=Color3.fromRGB(230,230,240)},
+    {id="violet",ru="Фиолет",c=Color3.fromRGB(150,120,255)},{id="red",ru="Красная",c=Color3.fromRGB(230,80,80)},
+    {id="green",ru="Зелёная",c=Color3.fromRGB(90,230,140)},{id="blue",ru="Синяя",c=Color3.fromRGB(90,160,255)},
+    {id="gold",ru="Золото",c=Color3.fromRGB(240,200,90)},{id="pink",ru="Розовая",c=Color3.fromRGB(255,120,190)},
+    {id="rainbow",ru="Радуга",rainbow=true,anim=true},
+    {id="rainbow_slow",ru="Радуга-плав",rainbow=true,anim=true,animMul=0.35},
+}
+K.RAINBOW_SEQ=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,70,90)),
+    ColorSequenceKeypoint.new(0.16,Color3.fromRGB(255,150,60)),
+    ColorSequenceKeypoint.new(0.33,Color3.fromRGB(255,230,70)),
+    ColorSequenceKeypoint.new(0.5,Color3.fromRGB(90,230,150)),
+    ColorSequenceKeypoint.new(0.66,Color3.fromRGB(70,170,255)),
+    ColorSequenceKeypoint.new(0.83,Color3.fromRGB(160,90,255)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(255,70,90)),
+})
+
+K.HUD={themeId="violet",outlineId="none",outlineThickness=1,outlineTransparency=0,olAnimSpeed=1,
+    olSections=true,olButtons=true,olTabs=true,rainbowSpeed=1,hueSpeed=1,blur=0,glow=0,blurFx=nil,glowFx=nil}
+function K.currentTheme() for _,t in ipairs(K.THEMES) do if t.id==K.HUD.themeId then return t end end return K.THEMES[1] end
+function K.themeAccent() return K.currentTheme().c1 end
+function K.currentOutline() for _,o in ipairs(K.OUTLINES) do if o.id==K.HUD.outlineId then return o end end return K.OUTLINES[1] end
+
+K.VFX={
+    orbit={on=false,emitter=nil,attach=nil,settings={radius=6,count=20,color=Color3.fromRGB(120,200,255),bright=1,speed=1,size=1}},
+    lighting={on=false,bloom=nil,cc=nil,sunrays=nil,settings={bloomIntensity=1.2,bloomSize=24,bloomThreshold=0.9,contrast=0.1,saturation=0.15,tint=Color3.fromRGB(255,255,255)}},
+    distort={on=false,blur=nil,cc=nil,settings={blur=4,contrast=0.4,bright=0.05,tint=Color3.fromRGB(230,240,255)}},
+    hue={on=false,cc=nil,settings={speed=1,saturation=0.4,brightness=0}},
+    trail={on=false,trail=nil,a0=nil,a1=nil,settings={lifetime=0.8,width=0.6,color=Color3.fromRGB(120,200,255),bright=1}},
+    pulse={on=false,light=nil,settings={range=12,bright=2,speed=2,color=Color3.fromRGB(255,220,160)}},
+}
+K.VFX_DEFAULTS={}
+for kind,fx in pairs(K.VFX) do
+    K.VFX_DEFAULTS[kind]={}
+    for k,v in pairs(fx.settings) do
+        if typeof(v)=="Color3" then K.VFX_DEFAULTS[kind][k]={__color=true,r=v.R,g=v.G,b=v.B}
+        else K.VFX_DEFAULTS[kind][k]=v end
+    end
+end
+K.orbitAngle=0 K.hueT=0 K.pulseT=0
+
+function K.ensureOrbit()
+    local fx=K.VFX.orbit
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.emitter and fx.emitter.Parent and fx.attach and fx.attach.Parent==hrp then return fx end
+    K.safeDestroy(fx.emitter); K.safeDestroy(fx.attach)
+    local a=Instance.new("Attachment"); a.Name="CTD_Orbit"; a.Parent=hrp
+    local e=Instance.new("ParticleEmitter")
+    e.Name="CTD_OrbitParts"; e.Texture="rbxasset://textures/particles/sparkles_main.dds"
+    e.Lifetime=NumberRange.new(1,1.5); e.Rate=0; e.Speed=NumberRange.new(0,0); e.Drag=0
+    e.Rotation=NumberRange.new(0,360); e.RotSpeed=NumberRange.new(-180,180)
+    e.SpreadAngle=Vector2.new(0,0); e.LightInfluence=0; e.Size=NumberSequence.new(0.4)
+    e.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(1,1)})
+    e.Parent=a; fx.attach=a; fx.emitter=e; return fx
+end
+function K.applyOrbit()
+    local fx=K.VFX.orbit; local e=fx.emitter; if not e then return end
+    local st=fx.settings
+    K.setProp(e,"Color",ColorSequence.new(st.color))
+    K.setProp(e,"LightEmission",st.bright>1 and 1 or 0)
+    K.setProp(e,"Size",NumberSequence.new((tonumber(st.size) or 1)*0.4))
+    K.setProp(e,"Rate",fx.on and (math.clamp(tonumber(st.count) or 20,1,60)*2) or 0)
+    K.setProp(e,"Enabled",fx.on)
+end
+function K.applyLighting()
+    local fx=K.VFX.lighting
+    if fx.on then
+        if not fx.bloom or not fx.bloom.Parent then fx.bloom=Instance.new("BloomEffect"); fx.bloom.Name="CTD_Bloom"; fx.bloom.Parent=K.Lighting end
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_CC"; fx.cc.Parent=K.Lighting end
+        local st=fx.settings
+        K.setProp(fx.bloom,"Intensity",st.bloomIntensity)
+        K.setProp(fx.bloom,"Size",st.bloomSize)
+        K.setProp(fx.bloom,"Threshold",st.bloomThreshold)
+        K.setProp(fx.cc,"Contrast",st.contrast)
+        K.setProp(fx.cc,"Saturation",st.saturation)
+        K.setProp(fx.cc,"TintColor",st.tint)
+    else
+        K.safeDestroy(fx.bloom); fx.bloom=nil
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.applyDistort()
+    local fx=K.VFX.distort
+    if fx.on then
+        if not fx.blur or not fx.blur.Parent then fx.blur=Instance.new("BlurEffect"); fx.blur.Name="CTD_Distort_Blur"; fx.blur.Parent=K.Lighting end
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_Distort_CC"; fx.cc.Parent=K.Lighting end
+        K.setProp(fx.blur,"Size",tonumber(fx.settings.blur) or 4)
+        K.setProp(fx.cc,"Contrast",tonumber(fx.settings.contrast) or 0.4)
+        K.setProp(fx.cc,"Brightness",tonumber(fx.settings.bright) or 0.05)
+        K.setProp(fx.cc,"TintColor",fx.settings.tint or Color3.fromRGB(230,240,255))
+    else
+        K.safeDestroy(fx.blur); fx.blur=nil
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.applyHue()
+    local fx=K.VFX.hue
+    if fx.on then
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_Hue_CC"; fx.cc.Parent=K.Lighting end
+        K.setProp(fx.cc,"Saturation",fx.settings.saturation)
+        K.setProp(fx.cc,"Brightness",fx.settings.brightness)
+    else
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.ensureTrail()
+    local fx=K.VFX.trail
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.trail and fx.trail.Parent and fx.a0 and fx.a0.Parent==hrp then return fx end
+    K.safeDestroy(fx.trail); K.safeDestroy(fx.a0); K.safeDestroy(fx.a1)
+    local a0=Instance.new("Attachment"); a0.Name="CTD_TrailA0"
+    local a1=Instance.new("Attachment"); a1.Name="CTD_TrailA1"
+    a0.Position=Vector3.new(0,0.5,0); a1.Position=Vector3.new(0,-0.5,0)
+    a0.Parent=hrp; a1.Parent=hrp
+    local t=Instance.new("Trail"); t.Name="CTD_Trail"
+    t.Attachment0=a0; t.Attachment1=a1
+    t.Lifetime=0.8; t.MinLength=0; t.FaceCamera=true; t.LightEmission=1; t.LightInfluence=0
+    t.Parent=hrp
+    fx.a0,fx.a1,fx.trail=a0,a1,t
+    return fx
+end
+function K.applyTrail()
+    local fx=K.VFX.trail; local t=fx.trail; if not t then return end
+    K.setProp(t,"Lifetime",fx.settings.lifetime)
+    K.setProp(t,"WidthScale",NumberSequence.new(fx.settings.width))
+    K.setProp(t,"Color",ColorSequence.new(fx.settings.color))
+    K.setProp(t,"LightEmission",fx.settings.bright>1 and 1 or (fx.settings.bright or 0))
+    K.setProp(t,"Enabled",fx.on)
+    if fx.a0 then K.setProp(fx.a0,"Visible",fx.on) end
+    if fx.a1 then K.setProp(fx.a1,"Visible",fx.on) end
+end
+function K.ensurePulse()
+    local fx=K.VFX.pulse
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.light and fx.light.Parent==hrp then return fx end
+    K.safeDestroy(fx.light)
+    local l=Instance.new("PointLight"); l.Name="CTD_Pulse"; l.Shadows=false; l.Parent=hrp
+    fx.light=l; return fx
+end
+function K.applyPulse()
+    local fx=K.VFX.pulse; local l=fx.light; if not l then return end
+    K.setProp(l,"Color",fx.settings.color)
+    K.setProp(l,"Range",fx.settings.range)
+    K.setProp(l,"Brightness",fx.on and fx.settings.bright or 0)
+    K.setProp(l,"Enabled",fx.on)
+end
+function K.applyVFXSettings()
+    if K.VFX.orbit.on then K.ensureOrbit() end
+    if K.VFX.trail.on then K.ensureTrail() end
+    if K.VFX.pulse.on then K.ensurePulse() end
+    K.applyOrbit(); K.applyLighting(); K.applyDistort(); K.applyHue(); K.applyTrail(); K.applyPulse()
+end
+function K.applyClientFx()
+    if K.HUD.blur>0 then
+        if not K.HUD.blurFx or not K.HUD.blurFx.Parent then K.HUD.blurFx=Instance.new("BlurEffect"); K.HUD.blurFx.Name="KoRi4_Blur"; K.HUD.blurFx.Parent=K.Lighting end
+        K.setProp(K.HUD.blurFx,"Size",K.HUD.blur)
+    else K.safeDestroy(K.HUD.blurFx); K.HUD.blurFx=nil end
+    if K.HUD.glow>0 then
+        if not K.HUD.glowFx or not K.HUD.glowFx.Parent then K.HUD.glowFx=Instance.new("BloomEffect"); K.HUD.glowFx.Name="KoRi4_Glow"; K.HUD.glowFx.Parent=K.Lighting end
+        K.setProp(K.HUD.glowFx,"Intensity",K.HUD.glow)
+        K.setProp(K.HUD.glowFx,"Size",24)
+        K.setProp(K.HUD.glowFx,"Threshold",0.9)
+    else K.safeDestroy(K.HUD.glowFx); K.HUD.glowFx=nil end
+end
+
+K.autosaveReady=false K.autosavePending=false K.autosaveTimer=nil
+function K.colorToTable(c) return {__color=true,r=c.R,g=c.G,b=c.B} end
+function K.tableToColor(t) return Color3.new(t.r,t.g,t.b) end
+function K.snapshotVFX()
+    local out={}
+    for kind,fx in pairs(K.VFX) do
+        local s={}
+        for k,v in pairs(fx.settings) do if typeof(v)=="Color3" then s[k]=K.colorToTable(v) else s[k]=v end end
+        out[kind]={on=fx.on,settings=s}
+    end
+    return out
+end
+function K.snapshotHUD()
+    return {themeId=K.HUD.themeId,outlineId=K.HUD.outlineId,outlineThickness=K.HUD.outlineThickness,
+        outlineTransparency=K.HUD.outlineTransparency,olAnimSpeed=K.HUD.olAnimSpeed,
+        olSections=K.HUD.olSections,olButtons=K.HUD.olButtons,olTabs=K.HUD.olTabs,
+        rainbowSpeed=K.HUD.rainbowSpeed,hueSpeed=K.HUD.hueSpeed,blur=K.HUD.blur,glow=K.HUD.glow}
+end
+function K.doAutosave()
+    K.autosavePending=false
+    if not K.autosaveReady then return end
+    K.writeJSON(K.HUD_FILE,{owner=K.MY_NICK,saved=os.date("%d.%m.%Y %H:%M:%S"),vfx=K.snapshotVFX(),hud=K.snapshotHUD()})
+    K.writeJSON(K.VOTE_FILE,{mode=K.S.voteMode,auto=K.S.autoVote})
+end
+function K.scheduleAutosave()
+    if not K.autosaveReady or K.autosavePending then return end
+    K.autosavePending=true
+    if K.autosaveTimer then task.cancel(K.autosaveTimer) end
+    K.autosaveTimer=task.delay(1,function() K.autosaveTimer=nil; if K.alive() then K.doAutosave() end end)
+end
+function K.saveNow()
+    if K.autosaveTimer then task.cancel(K.autosaveTimer); K.autosaveTimer=nil end
+    K.autosavePending=false K.doAutosave()
+end
+
+function K.money() local ls=K.lp:FindFirstChild("leaderstats"); local m=ls and ls:FindFirstChild("Money"); return m and m.Value or 0 end
+function K.curWave() return tonumber(workspace:GetAttribute("Wave")) or 0 end
+function K.waveTime() return os.clock()-K.S.waveStart end
+
+function K.safeGet(obj,key) if not obj then return nil end local ok,v=pcall(function() return obj[key] end) if ok then return v end return nil end
+function K.tryFireConnections(obj)
+    if not obj or not getconnections then return false end
+    local fired=false
+    for _,evName in ipairs({"Activated","MouseButton1Click","MouseButton1Down","MouseButton1Up"}) do
+        local sig=K.safeGet(obj,evName)
+        if sig then
+            local ok,conns=pcall(getconnections,sig)
+            if ok and type(conns)=="table" then
+                for _,c in ipairs(conns) do pcall(function() if c.Fire then c:Fire() elseif c.Function then c.Function() end end); fired=true end
+            end
+        end
+    end
+    if firesignal then
+        for _,evName in ipairs({"Activated","MouseButton1Click","MouseButton1Down","MouseButton1Up"}) do
+            local sig=K.safeGet(obj,evName); if sig then pcall(firesignal,sig) end
+        end
+    end
+    return fired
+end
+function K.simulateClick(obj)
+    if not obj then return false end
+    local ok,ap=pcall(function() return obj.AbsolutePosition end); if not ok or not ap then return false end
+    local ok2,as=pcall(function() return obj.AbsoluteSize end); if not ok2 or not as then return false end
+    local x=ap.X+as.X/2; local y=ap.Y+as.Y/2
+    if mousemoveabs then pcall(mousemoveabs,x,y); task.wait(0.02) end
+    if mouse1press and mouse1release then pcall(mouse1press); task.wait(0.02); pcall(mouse1release); return true
+    elseif mouse1click then pcall(mouse1click); return true end
+    return false
+end
+function K.findLabelByText(text,exact)
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return nil end
+    local fallback
+    for _,d in ipairs(pg:GetDescendants()) do
+        local txt=nil; pcall(function() txt=d.Text end)
+        if txt and (d:IsA("TextLabel") or d:IsA("TextButton")) then
+            local match=exact and (txt==text) or (txt:find(text,1,true)~=nil)
+            if match then
+                local vis=true; local cur=d
+                for _=1,12 do if cur and cur.Visible==false then vis=false break end; cur=cur and cur.Parent; if not cur or cur:IsA("PlayerGui") then break end end
+                if vis then return d end
+                if not fallback then fallback=d end
+            end
+        end
+    end
+    return fallback
+end
+function K.getButtonFromLabel(lbl)
+    if not lbl then return nil end
+    local obj=lbl
+    for _=1,8 do if not obj then break end; if obj:IsA("GuiButton") then return obj end; obj=obj.Parent; if obj and obj:IsA("PlayerGui") then break end end
+    return lbl
+end
+
+function K.v3(v) return {x=v.X,y=v.Y,z=v.Z} end
+function K.unv3(t) return Vector3.new(t.x,t.y,t.z) end
+function K.cfs(c) return {c:GetComponents()} end
+function K.uncf(t) return CFrame.new(unpack(t)) end
+
+K.hookReady=false
+function K.startFireServerHook()
+    if K.hookReady then return end
+    local ta=K.remote("TowerAdd"); if not ta then return end
+    local old=ta.FireServer; if type(old)~="function" then return end
+    local function hooked(self, ...)
+        if self==ta then K.S.pendingTowerAdd={...} end
+        return old(self, ...)
+    end
+    local ok=false
+    if hookfunction then ok=pcall(function() hookfunction(old,newcclosure(hooked)) end) end
+    if not ok and getrawmetatable and setreadonly and newcclosure then
+        local mt=getrawmetatable(game)
+        if mt and mt.__namecall then
+            local oldN=mt.__namecall
+            local function hookedN(self, ...)
+                if (getnamecallmethod and getnamecallmethod())=="FireServer" and self==ta then K.S.pendingTowerAdd={...} end
+                return oldN(self, ...)
+            end
+            pcall(function() setreadonly(mt,false); mt.__namecall=newcclosure(hookedN); setreadonly(mt,true) end)
+            ok=true
+        end
+    end
+    K.hookReady=ok
+end
+K.startFireServerHook()
+
+function K.record(a)
+    if not K.S.recording or K.S.playing then return end
+    a.wave=K.S.wave; a.t=math.floor(K.waveTime()*10)/10
+    table.insert(K.S.actions,a)
+    K.log(("● %s — в%d, %.1fс"):format(a.type,a.wave,a.t))
+end
+function K.mine(d)
+    if type(d)~="table" then return false end
+    if d.OwnerUserId then return d.OwnerUserId==K.lp.UserId end
+    if d.OwnerName then return d.OwnerName==K.lp.Name end
+    return false
+end
+function K.allMacros()
+    local ok,raw=pcall(readfile,K.FILE)
+    if ok and type(raw)=="string" then
+        local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+        if g and type(d)=="table" then return d end
+    end
+    return {}
+end
+function K.saveMacro(name)
+    if #K.S.actions==0 then K.log("пусто"); return nil end
+    local real=0
+    for _,a in ipairs(K.S.actions) do if a.type=="place" or a.type=="upgrade" or a.type=="sell" then real+=1 end end
+    if real==0 then K.log("нет башен"); return nil end
+    local map=tostring(workspace:GetAttribute("Map") or "?")
+    if not name or name=="" then name=("%s %s"):format(map,os.date("%d.%m %H:%M")) end
+    local all=K.allMacros()
+    if all[name] then
+        local base,i=name,2
+        repeat name=("%s (%d)"):format(base,i); i+=1 until not all[name]
+    end
+    all[name]={map=map,mode=tostring(workspace:GetAttribute("Mode") or ""),
+        autoskip=K.autoSkipOn and K.autoSkipOn() or false,playAgain=K.S.playAgain,
+        actions=K.S.actions,saved=os.date("%d.%m.%Y %H:%M"),owner=K.MY_NICK}
+    local ok=pcall(writefile,K.FILE,K.HttpService:JSONEncode(all))
+    if not ok then K.log("fail"); return nil end
+    K.log(("сохр «%s»: %d"):format(name,#K.S.actions))
+    return name
+end
+function K.fire(name,payload)
+    local r=K.remote(name); if not r then return false end
+    if payload==nil then r:FireServer() else r:FireServer(payload) end
+    return true
+end
+function K.waitMoment(wave,t)
+    while K.alive() and K.S.playing do
+        if K.S.wave>wave then return true end
+        if K.S.wave==wave and K.waveTime()>=t then return true end
+        task.wait(0.1)
+    end
+    return false
+end
+function K.liveUnitId(name,recorded)
+    for i=1,5 do if K.lp:GetAttribute("Slot"..i.."Id")==recorded then return recorded end end
+    for i=1,5 do
+        if K.lp:GetAttribute("Slot"..i)==name then
+            local id=K.lp:GetAttribute("Slot"..i.."Id")
+            if id and id~="" then return id end
+        end
+    end
+    return recorded
+end
+function K.buildPlacePayload(a)
+    local p={Name=a.name,UnitId=K.liveUnitId(a.name,a.unitId)}
+    if a.pos then p.Pos=K.unv3(a.pos) end
+    if a.cf then p.CFrame=K.uncf(a.cf) end
+    return p
+end
+
+-- ✅ playAction: place с таймаутом 25с и без спама, upgrade с логом результата
+function K.playAction(a,ctx)
+    if a.type=="place" then
+        ctx.placeNo+=1; local myNo=ctx.placeNo
+        local before=K.S.placed
+        local t0=os.clock()
+        local lastFire=0
+        while K.alive() and K.S.playing and K.S.placed==before and os.clock()-t0<25 do
+            if not K.remote("TowerAdd") then
+                task.wait(0.5)
+            else
+                if a.price and K.money()<a.price then
+                    K.S.status=("жду %s"):format(tostring(a.name)); task.wait(0.5)
+                else
+                    if os.clock()-lastFire>2 then
+                        K.fire("TowerAdd",K.buildPlacePayload(a))
+                        lastFire=os.clock()
+                    end
+                    task.wait(0.3)
+                end
+            end
+        end
+        if K.S.placed>before and K.S.lastId then
+            K.S.playMap[myNo]=K.S.lastId
+            K.log(("▶ %s (#%d) id=%s"):format(tostring(a.name),myNo,tostring(K.S.lastId)))
+        else
+            K.log(("▶ fail %s (placed=%d, lastId=%s)"):format(
+                tostring(a.name),K.S.placed,tostring(K.S.lastId)))
+        end
+
+    elseif a.type=="upgrade" then
+        local id=K.S.playMap[a.tower]
+        if not id then
+            K.log(("⬆ #%d без id — пропуск"):format(a.tower),"warn")
+            return
+        end
+        local want = a.level or ((K.S.levelById[id] or 1) + 1)
+        local beforeLvl = K.S.levelById[id] or 1
+        local t0 = os.clock()
+        local lastFire = 0
+        while K.alive() and K.S.playing
+            and (K.S.levelById[id] or 1) < want
+            and os.clock()-t0 < 25 do
+            if not K.remote("TowerUpgrade") then
+                task.wait(0.5)
+            else
+                if a.price and K.money() < a.price then
+                    task.wait(0.5)
+                else
+                    if os.clock()-lastFire > 1.5 then
+                        K.fire("TowerUpgrade", {Id=id})
+                        lastFire = os.clock()
+                    end
+                    task.wait(0.3)
+                end
+            end
+        end
+        local nowLvl = K.S.levelById[id] or 1
+        if nowLvl > beforeLvl then
+            K.log(("⬆ #%d lvl %d→%d"):format(a.tower, beforeLvl, nowLvl))
+        else
+            K.log(("⬆ fail #%d (lvl=%d, want=%d)"):format(a.tower, nowLvl, want),"warn")
+        end
+
+    elseif a.type=="target" then
+        local id=K.S.playMap[a.tower]; if id then K.fire("TowerTarget",{Id=id}); task.wait(0.3) end
+    elseif a.type=="sell" then
+        local id=K.S.playMap[a.tower]; if id then K.fire("TowerSell",{Id=id}); task.wait(0.4) end
+    elseif a.type=="autoskip" then
+        if K.autoSkipOn()~=a.on then pcall(K.toggleAutoSkip) end
+    elseif a.type=="skip" then K.fire("WaveSkip"); task.wait(0.4)
+    end
+end
+
+function K.play(name)
+    local m=K.allMacros()[name]; if not m then K.log("нет: "..tostring(name)); return end
+    K.resetRecordState()
+    K.S.wave=K.curWave()
+    K.S.waveStart=os.clock()
+    K.S.playing=true; K.log(("▶ «%s»: %d"):format(name,#m.actions))
+    if m.autoskip and not K.autoSkipOn() then pcall(K.toggleAutoSkip) end
+    if m.playAgain~=nil then K.S.playAgain=m.playAgain; pcall(writefile,K.PLAYAGAIN,K.S.playAgain and "1" or "0") end
+    if K.S.autoVote and m.mode and m.mode~="" and m.mode~="nil" then
+        K.S.voteMode=m.mode
+        task.spawn(function()
+            local t0=os.clock()
+            while K.alive() and K.S.playing and os.clock()-t0<60 do
+                if workspace:GetAttribute("IsVoting") then pcall(K.fire,"ModeVote",m.mode)
+                elseif workspace:GetAttribute("Mode")==m.mode then break end
+                task.wait(1)
+            end
+        end)
+    end
+    K.S.playMap={}; local ctx={placeNo=0}
+    task.spawn(function()
+        for _,a in ipairs(m.actions) do
+            if not K.alive() or not K.S.playing then break end
+            if K.waitMoment(a.wave,a.t) then pcall(K.playAction,a,ctx) end
+        end
+        K.S.playing=false; K.log("▶ доиграно")
+    end)
+end
+
+-- ✅ startRecordHooks: единый bind() для ВСЕХ remote'ов через ChildAdded
+function K.startRecordHooks()
+    local function bind(name, handler)
+        if not K.RE then return end
+        local function attach(r)
+            if not r or r.Name ~= name then return end
+            local ok, done = pcall(function() return r:GetAttribute("CTD_hooked") end)
+            if ok and done then return end
+            pcall(function() r:SetAttribute("CTD_hooked", true) end)
+            r.OnClientEvent:Connect(function(...)
+                if not K.alive() then return end
+                pcall(handler, ...)
+            end)
+        end
+        attach(K.RE:FindFirstChild(name))
+        K.RE.ChildAdded:Connect(function(c)
+            if c.Name == name then
+                task.wait(0.1)
+                attach(c)
+            end
+        end)
+    end
+
+    bind("TowerAdd", function(d)
+        if not K.mine(d) or not d.Id then return end
+        local id = tostring(d.Id)
+        if K.S.idIndex[id] then
+            K.log("повторный TowerAdd id="..id.." — игнор","warn")
+            return
+        end
+        K.S.placed += 1
+        K.S.towerIds[K.S.placed] = id
+        K.S.idIndex[id] = K.S.placed
+        K.S.levelById[id] = d.Level or 1
+        K.S.lastId = id
+        local fired  = K.S.pendingTowerAdd
+        local name   = (fired and fired[1] and fired[1].Name) or d.Name
+        local unitId = (fired and fired[1] and fired[1].UnitId) or d.UnitId
+        local pos    = (fired and fired[1] and fired[1].Pos) or d.Pos
+        local cf     = (fired and fired[1] and fired[1].CFrame) or d.CFrame
+        K.S.pendingTowerAdd = nil
+        K.record({type="place", name=name, unitId=unitId,
+            pos=pos and K.v3(pos) or nil, cf=cf and K.cfs(cf) or nil,
+            price=d.Stats and d.Stats.Price})
+    end)
+
+    bind("TowerUpgrade", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then
+            K.log("upgrade для неизвестного id="..id,"warn")
+            return
+        end
+        K.S.levelById[id] = d.Level or ((K.S.levelById[id] or 1) + 1)
+        K.record({type="upgrade", tower=idx, level=d.Level, price=d.Stats and d.Stats.Price})
+    end)
+
+    bind("TowerTarget", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local idx = K.S.idIndex[tostring(d.Id)]
+        if not idx then return end
+        K.record({type="target", tower=idx, mode=d.TargetMode})
+    end)
+
+    bind("TowerRemove", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then return end
+        K.S.levelById[id] = nil
+        K.S.idIndex[id] = nil
+        K.record({type="sell", tower=idx})
+    end)
+    bind("TowerSell", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then return end
+        K.S.levelById[id] = nil
+        K.S.idIndex[id] = nil
+        K.record({type="sell", tower=idx})
+    end)
+
+    task.spawn(function()
+        local t0 = os.clock()
+        local g = K.gameFolder()
+        local folder = g and g:FindFirstChild("Towers")
+        while not folder and K.alive() and os.clock()-t0 < 60 do
+            g = K.gameFolder(); folder = g and g:FindFirstChild("Towers")
+            task.wait(0.5)
+        end
+        if not folder then return end
+        folder.ChildRemoved:Connect(function(c)
+            if not K.alive() then return end
+            local idx = K.S.idIndex[c.Name]
+            if idx then
+                K.S.idIndex[c.Name] = nil
+                K.S.levelById[c.Name] = nil
+                K.record({type="sell", tower=idx})
+            end
+        end)
+    end)
+
+    task.spawn(function()
+        local was = nil
+        while K.alive() do
+            local now = K.autoSkipOn and K.autoSkipOn() or false
+            if was ~= nil and now ~= was and K.S.recording and not K.S.playing then
+                K.record({type="autoskip", on=now})
+            end
+            was = now
+            task.wait(0.3)
+        end
+    end)
+
+    task.spawn(function()
+        local pg = K.lp:WaitForChild("PlayerGui", 30)
+        local gameUI = pg and pg:WaitForChild("GameUI", 30)
+        local stats = gameUI and gameUI:WaitForChild("Stats", 30)
+        local skip = stats and stats:WaitForChild("WaveSkipGui", 30)
+        if not skip then return end
+        local function hook(btn)
+            if btn:IsA("GuiButton") then
+                btn.Activated:Connect(function()
+                    if K.alive() and workspace:GetAttribute("CanSkip") then
+                        K.record({type="skip"})
+                    end
+                end)
+            end
+        end
+        hook(skip)
+        for _, d in ipairs(skip:GetDescendants()) do hook(d) end
+    end)
+end
+
+function K.tryVoteByMode(mode)
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return false end
+    local target=K.findLabelByText(mode,false)
+    if not target then
+        local ru={Insane="Безумн",Hard="Сложн",Normal="Обычн"}
+        if ru[mode] then target=K.findLabelByText(ru[mode],false) end
+    end
+    if target then
+        local root=target
+        for _=1,5 do
+            if not root then break end
+            root=root.Parent; if not root then break end
+            for _,c in ipairs(root:GetDescendants()) do
+                local t=nil; pcall(function() t=c.Text end)
+                if t and c:IsA("GuiButton") and (t:lower():find("vote",1,true) or t:lower():find("голос",1,true)) then
+                    if K.tryFireConnections(c) or K.simulateClick(c) then return true end
+                end
+            end
+        end
+    end
+    return false
+end
+function K.startVoteWatcher()
+    task.spawn(function()
+        local last=false
+        while K.alive() do
+            local cur=workspace:GetAttribute("IsVoting") and true or false
+            if cur and not last then K.S.votedTick=0 end
+            last=cur
+            if K.S.autoVote and cur then
+                local mode=K.S.voteMode or "Insane"
+                if os.clock()-K.S.votedTick > 5 then
+                    K.S.votedTick=os.clock()
+                    K.log("голосую за "..mode)
+                    pcall(K.tryVoteByMode,mode)
+                    pcall(K.fire,"ModeVote",mode)
+                end
+                task.wait(1)
+            else task.wait(0.8) end
+        end
+    end)
+end
+
+function K.autoSkipButton()
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    local gameUI=pg and pg:FindFirstChild("GameUI")
+    local stats=gameUI and gameUI:FindFirstChild("Stats")
+    local box=stats and stats:FindFirstChild("AutoSkip")
+    return box and box:FindFirstChild("Button")
+end
+function K.autoSkipOn()
+    if K.ownSkip then return true end
+    local b=K.autoSkipButton(); local ui2=b and b:FindFirstChild("UI2")
+    return (ui2 and ui2.Visible) or false
+end
+K.ownSkip=false
+function K.pressGameButton()
+    local b=K.autoSkipButton(); if not b or not getconnections then return false end
+    local ok,conns=pcall(getconnections,b.Activated); if not ok or type(conns)~="table" or #conns==0 then return false end
+    local function state() local ui2=b:FindFirstChild("UI2"); return (ui2 and ui2.Visible) or false end
+    local was=state()
+    for _,c in ipairs(conns) do
+        local okc=pcall(function() c:Fire() end)
+        if not okc then local okf,fn=pcall(function() return c.Function end); if okf and type(fn)=="function" then pcall(fn) end end
+        task.wait(0.15); if state()~=was then return true end
+    end
+    return false
+end
+function K.toggleAutoSkip()
+    local was=K.autoSkipOn()
+    if K.ownSkip then K.ownSkip=false; K.log("автоскип выкл"); return true end
+    if K.pressGameButton() then
+        local now=K.autoSkipOn()
+        K.log("автоскип "..(now and "вкл" or "выкл")); return true
+    end
+    if was then return false,"не нажать" end
+    K.ownSkip=true; K.log("автоскип вкл"); return true
+end
+
+K.SPEEDS={1,1.5,2}
+function K.currentSpeed() return tonumber(workspace:GetAttribute("GameSpeed")) or K.S.speed or 1 end
+function K.setGameSpeed(v)
+    v=tonumber(v) or 1; K.S.speed=v; K.writeSavedSpeed(v)
+    if not K.inMatch() then return true end
+    if math.abs(K.currentSpeed()-v)<0.01 then return true end
+    local f=K.rfunc("ChangeSpeed"); if f then pcall(function() f:InvokeServer(v) end) end
+    return true
+end
+
+K.MAPS={{id="Cameraman HQ",ru="Штаб"},{id="Toilet City",ru="Туалеты"},{id="Desert",ru="Пустыня"}}
+function K.mapRu(id) for _,m in ipairs(K.MAPS) do if m.id==id then return m.ru end end return tostring(id) end
+function K.elevators() local f=workspace:FindFirstChild("Elevators"); return f and f:GetChildren() or {} end
+function K.freeElevator(map)
+    local busy=nil
+    for _,m in ipairs(K.elevators()) do
+        if m:GetAttribute("Map")==map then
+            local n=tonumber(m:GetAttribute("Players")) or 0
+            if n==0 then return m end
+            busy=(busy or 0)+1
+        end
+    end
+    return nil,busy
+end
+function K.elevatorBase(m) return m:FindFirstChild("BasePart") or m:FindFirstChildWhichIsA("BasePart") end
+function K.charParts() local ch=K.lp.Character; return ch and ch:FindFirstChildOfClass("Humanoid"),ch and ch:FindFirstChild("HumanoidRootPart") end
+function K.stepTo(hum,hrp,point,limit)
+    local t0,last=os.clock(),hrp.Position
+    hum:MoveTo(point)
+    while K.alive() and os.clock()-t0<(limit or 6) do
+        if (hrp.Position-point).Magnitude<5 then return true end
+        if os.clock()-t0>1.5 and (hrp.Position-last).Magnitude<1 then hum.Jump=true; hum:MoveTo(point); last=hrp.Position end
+        task.wait(0.25)
+    end
+    return (hrp.Position-point).Magnitude<6
+end
+function K.walkTo(part)
+    local target=part.Position+Vector3.new(0,3,0)
+    for _=1,3 do
+        if not K.alive() then return false end
+        local hum,hrp=K.charParts()
+        if hum and hrp then
+            if (hrp.Position-target).Magnitude<10 then return true end
+            local path=K.PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true,AgentMaxSlope=45})
+            local built=pcall(function() path:ComputeAsync(hrp.Position,target) end)
+            if built and path.Status==Enum.PathStatus.Success then
+                for _,wp in ipairs(path:GetWaypoints()) do
+                    if not K.alive() then return false end
+                    hum,hrp=K.charParts(); if not (hum and hrp) then break end
+                    if wp.Action==Enum.PathWaypointAction.Jump then hum.Jump=true end
+                    if not K.stepTo(hum,hrp,wp.Position,6) then break end
+                end
+                local _,h2=K.charParts(); if h2 and (h2.Position-target).Magnitude<10 then return true end
+            end
+        end
+        task.wait(0.5)
+    end
+    return false
+end
+function K.enterElevator(el)
+    local enter=K.rfunc("ElevatorEnter")
+    if enter then pcall(function() enter:InvokeServer(el.Name) end) end
+    task.wait(1)
+    if (tonumber(el:GetAttribute("Players")) or 0)==0 then
+        local base=K.elevatorBase(el)
+        if base then K.walkTo(base); if enter then pcall(function() enter:InvokeServer(el.Name) end) end; task.wait(1) end
+    end
+    return (tonumber(el:GetAttribute("Players")) or 0)>=1
+end
+function K.launchMap(map,strategy,tries)
+    map=tostring(map)
+    local el,busy=K.freeElevator(map)
+    if not el then
+        K.log(("на «%s» занято"):format(K.mapRu(map)))
+        local t0=os.clock()
+        repeat task.wait(2); el=K.freeElevator(map) until el or not (K.S.playing or K.S.launching) or os.clock()-t0>120
+        if not el then K.log("нет лифта"); return end
+    end
+    if not K.enterElevator(el) then K.log("вход fail"); return end
+    local inside=tonumber(el:GetAttribute("Players")) or 0
+    if inside>1 then
+        local leave=K.rfunc("ElevatorLeave")
+        if leave then pcall(function() leave:InvokeServer(el.Name) end) end
+        tries=(tries or 0)+1; if tries>=5 then return end
+        return K.launchMap(map,strategy,tries)
+    end
+    pcall(writefile,K.AUTOPLAY,strategy or "")
+    K.log(("старт «%s»"):format(K.mapRu(map)))
+    local start=K.rfunc("ElevatorStart")
+    if start then pcall(function() start:InvokeServer(el.Name) end) end
+end
+
+function K.startEndMatchWatcher()
+    task.spawn(function()
+        local pg=K.lp:WaitForChild("PlayerGui",30)
+        local gameUI=pg and pg:WaitForChild("GameUI",30)
+        local final=gameUI and gameUI:WaitForChild("FinalUI",30)
+        if not final then return end
+        local function clickFinal(words)
+            if not getconnections then return false end
+            for _,d in ipairs(final:GetDescendants()) do
+                if d:IsA("GuiButton") then
+                    local t=(d.Text or ""):lower(); local hit=false
+                    for _,w in ipairs(words) do if t:find(w,1,true) then hit=true; break end end
+                    if hit then
+                        local ok,cs=pcall(getconnections,d.Activated)
+                        if ok and type(cs)=="table" and #cs>0 then
+                            for _,c in ipairs(cs) do
+                                local okc=pcall(function() c:Fire() end)
+                                if not okc then local okf,fn=pcall(function() return c.Function end); if okf and type(fn)=="function" then pcall(fn) end end
+                            end
+                            return true
+                        end
+                    end
+                end
+            end
+            return false
+        end
+        local function goLobby()
+            if clickFinal({"lobby","лобби","leave","exit","выход"}) then return true end
+            if K.fire("OnLeave") then return true end
+            if K.fire("Leave") then return true end
+            return false
+        end
+        local function goAgain()
+            if clickFinal({"again","снова","replay","retry","rematch"}) then return true end
+            if K.fire("PlayAgain") then return true end
+            return false
+        end
+        local function leave()
+            if not K.alive() then return end
+            K.S.playing=false
+            K.resetRecordState()
+            K.log("матч закончен — playMap очищен","event")
+            task.wait(4)
+            if K.S.playAgain and K.readName(K.FARM)=="" then
+                if goAgain() then return end
+            end
+            local tries=0
+            while K.alive() and tries<10 do if goLobby() then return end; tries+=1; task.wait(3) end
+        end
+        if final.Visible then task.spawn(leave) end
+        final:GetPropertyChangedSignal("Visible"):Connect(function() if final.Visible then task.spawn(leave) end end)
+    end)
+end
+
+function K.startMatchResetWatcher()
+    task.spawn(function()
+        local wasInMatch = K.inMatch()
+        while K.alive() do
+            local nowInMatch = K.inMatch()
+            if nowInMatch and not wasInMatch then
+                K.resetRecordState()
+                K.S.wave = K.curWave()
+                K.S.waveStart = os.clock()
+                K.log("новая игра — состояние сброшено","event")
+            end
+            wasInMatch = nowInMatch
+            task.wait(1)
+        end
+    end)
+end
+
+K.summonCache={["Summon 1"]=nil,["Summon 10"]=nil}
+function K.refreshSummonCache()
+    for _,text in ipairs({"Summon 1","Summon 10"}) do
+        local lbl=K.findLabelByText(text,true)
+        if lbl then K.summonCache[text]=K.getButtonFromLabel(lbl) end
+    end
+end
+function K.fireSummonCached(text)
+    local btn=K.summonCache[text]
+    if btn and btn.Parent then
+        if K.tryFireConnections(btn) then return true end
+        if K.simulateClick(btn) then return true end
+    end
+    K.refreshSummonCache(); btn=K.summonCache[text]
+    if btn and btn.Parent then
+        if K.tryFireConnections(btn) then return true end
+        if K.simulateClick(btn) then return true end
+    end
+    return false
+end
+function K.startSummonLoop()
+    task.spawn(function()
+        while K.alive() do
+            local on=K.S.summon1 or K.S.summon10
+            if on and K.inMatch() then
+                if K.S.summon1 then K.fireSummonCached("Summon 1") else K.fireSummonCached("Summon 10") end
+                local delay=math.max(5,tonumber(K.S.summonDelay) or 60); task.wait(delay)
+            else task.wait(1) end
+        end
+    end)
+end
+
+-- ═══ UI ═══
+K.gui=nil K.main=nil K.topbar=nil K.tabRow=nil K.kLogo=nil K.kLogoGrad=nil
+K.brandTitle=nil K.brandSub=nil K.statusBar=nil K.content=nil K.pageScroll=nil K.pageHolder=nil K.pageGroup=nil
+K.topLine=nil K.tabLine=nil K.statusLine=nil K.tabButtons={}
+K.recW=nil K.playW=nil K.delW=nil K.mapW=nil K.newW=nil K.farmW=nil
+K.speedW=nil K.skipW=nil K.againW=nil K.voteW=nil K.autoVoteW=nil
+K.nameBox=nil K.rows={} K.scroll=nil K.summon1Btn=nil K.summon10Btn=nil
+K.freePlacementBtn=nil K.optimizeBtns=nil K.mainScale=nil K.dot=nil K.closeBtn=nil
+K._populated=false
+K.freePlacement={active=false,saved={}}
+K.optimize={shadows=false,gray=false,fx=false,guiAnim=false,sShadows={},sGray={},sFx={}}
+
+K.BTN_H=32 K.TXT_SZ=13 K.SLIDER_H=42 K.TAB_H=32
+K.BTN_PAD=14 K.BTN_GAP=6 K.CORNER=10
+K.MAIN_W=K.IS_MOBILE and 400 or 470
+K.MAIN_H=K.IS_MOBILE and 480 or 560
+K.LOG_LINE_H=16 K.LOG_FONT=11
+
+function K.corner(p,r) local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,r or K.CORNER); c.Parent=p end
+
+function K.thin(p,col)
+    local s=Instance.new("UIStroke")
+    K.setProp(s,"Color",col or K.BASE.line)
+    K.setProp(s,"Thickness",1)
+    K.setProp(s,"ApplyStrokeMode",Enum.ApplyStrokeMode.Border)
+    s.Parent=p
+    K.outlineStrokes[s]=true
+    return s
+end
+
+function K.applyOutline()
+    local o=K.currentOutline()
+    for st in pairs(K.outlineStrokes) do
+        if typeof(st)=="Instance" and st.Parent then
+            local isCard=K.getAttr(st,"KoRi4Card")
+            if not isCard then
+                local p=st.Parent
+                local cat="panel"
+                if p:IsA("TextButton") or p:IsA("ImageButton") then
+                    cat="button"
+                    if K.getAttr(p,"KoRi4Tab") then cat="tab" end
+                end
+                local active=(cat=="panel" and K.HUD.olSections) or (cat=="button" and K.HUD.olButtons) or (cat=="tab" and K.HUD.olTabs)
+                K.setProp(st,"Enabled",active)
+                if not active then
+                    K.setProp(st,"Transparency",1)
+                else
+                    K.setProp(st,"Thickness",K.HUD.outlineThickness)
+                    if o.rainbow then
+                        K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                        K.setProp(st,"Color",Color3.new(1,1,1))
+                        local g=st:FindFirstChildOfClass("UIGradient")
+                        if not g then g=Instance.new("UIGradient"); g.Parent=st end
+                        K.setProp(g,"Color",K.RAINBOW_SEQ)
+                    elseif o.seq then
+                        K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                        K.setProp(st,"Color",Color3.new(1,1,1))
+                        local g=st:FindFirstChildOfClass("UIGradient")
+                        if not g then g=Instance.new("UIGradient"); g.Parent=st end
+                        K.setProp(g,"Color",o.seq)
+                    else
+                        local old=st:FindFirstChildOfClass("UIGradient"); if old then K.safeDestroy(old) end
+                        if o.none then
+                            K.setProp(st,"Transparency",0.22)
+                            K.setProp(st,"Color",K.BASE.line:Lerp(Color3.new(1,1,1),0.20))
+                        else
+                            K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                            K.setProp(st,"Color",o.c or K.BASE.line)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+function K.pressFx(button)
+    if K.optimize.guiAnim then return end
+    if not button or not button.Parent then return end
+    local ov=Instance.new("Frame")
+    ov.Size=UDim2.new(1,0,1,0); ov.BackgroundColor3=Color3.new(1,1,1)
+    ov.BackgroundTransparency=0.75; ov.BorderSizePixel=0; ov.ZIndex=10; ov.Parent=button
+    K.corner(ov,K.CORNER)
+    K.TweenService:Create(ov,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1}):Play()
+    local us=button:FindFirstChildOfClass("UIScale")
+    if not us then us=Instance.new("UIScale"); us.Parent=button end
+    K.TweenService:Create(us,TweenInfo.new(0.07,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=0.92}):Play()
+    task.delay(0.08,function()
+        if us and us.Parent then K.TweenService:Create(us,TweenInfo.new(0.32,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1}):Play() end
+    end)
+    task.delay(0.5,function() if ov then K.safeDestroy(ov) end end)
+end
+
+function K.makeButton(parent,text,color,fn,opts)
+    opts=opts or {}
+    local b=Instance.new("TextButton")
+    b.Size=opts.size or UDim2.new(1,0,0,K.BTN_H)
+    b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+    b.Font=K.FONT; b.Text=text
+    b.TextSize=K.TXT_SZ; b.TextColor3=color or K.BASE.text
+    b.TextXAlignment=opts.center and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left
+    b.AutoButtonColor=false
+    b.LayoutOrder=opts.order or K.nextOrder(); b.Parent=parent
+    K.corner(b,K.CORNER); K.thin(b)
+    if not opts.center then
+        local p=Instance.new("UIPadding",b); p.PaddingLeft=UDim.new(0,12); p.Parent=b
+    end
+    local w={obj=b,color=color or K.BASE.text,on=true,baseColor=color or K.BASE.text}
+    b.Activated:Connect(function() if not w.on then return end; K.pressFx(b); pcall(fn,b) end)
+    if opts.rmb then b.MouseButton2Click:Connect(function() if not w.on then return end; K.pressFx(b); pcall(fn,b) end) end
+    K.track(b.MouseEnter:Connect(function() if not w.on or K.optimize.guiAnim then return end
+        K.TweenService:Create(b,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.12)}):Play() end), b)
+    K.track(b.MouseLeave:Connect(function() if K.optimize.guiAnim then return end
+        if w.on then K.TweenService:Create(b,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel}):Play()
+        else K.TweenService:Create(b,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.DISABLED.bg}):Play() end end), b)
+    K.widgets[w]=true; return w
+end
+function K.setOn(w,on)
+    if not w or w.on==on then return end
+    w.on=on
+    local b=w.obj; b.Active=on; b.Selectable=on
+    if on then K.TweenService:Create(b,TweenInfo.new(0.15),{BackgroundColor3=K.BASE.panel,TextColor3=w.baseColor or w.color,TextTransparency=0}):Play()
+    else K.TweenService:Create(b,TweenInfo.new(0.15),{BackgroundColor3=K.DISABLED.bg,TextColor3=K.DISABLED.text,TextTransparency=0.15}):Play() end
+end
+
+function K.makeSlider(parent,label,minV,maxV,getFn,setFn,isInt,decimals)
+    local holder=Instance.new("Frame")
+    holder.Size=UDim2.new(1,0,0,K.SLIDER_H); holder.BackgroundColor3=K.BASE.panel
+    holder.BorderSizePixel=0; holder.Parent=parent
+    K.corner(holder,K.CORNER); K.thin(holder)
+    local pad=Instance.new("UIPadding",holder); pad.PaddingLeft=UDim.new(0,10); pad.PaddingRight=UDim.new(0,10); pad.PaddingTop=UDim.new(0,4); pad.PaddingBottom=UDim.new(0,4); pad.Parent=holder
+    local lbl=Instance.new("TextLabel")
+    lbl.Size=UDim2.new(0.6,0,0,14); lbl.Position=UDim2.fromOffset(0,0); lbl.BackgroundTransparency=1
+    lbl.Font=K.FONT; lbl.TextSize=K.TXT_SZ-1; lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Left
+    lbl.Text=label; lbl.Parent=holder
+    local valLbl=Instance.new("TextLabel")
+    valLbl.Size=UDim2.new(0.4,0,0,14); valLbl.Position=UDim2.new(0.6,0,0,0)
+    valLbl.BackgroundTransparency=1; valLbl.Font=K.FONT; valLbl.TextSize=K.TXT_SZ-1
+    valLbl.TextColor3=K.themeAccent(); valLbl.TextXAlignment=Enum.TextXAlignment.Right; valLbl.Parent=holder
+    local bar=Instance.new("Frame")
+    bar.Size=UDim2.new(1,0,0,6); bar.Position=UDim2.new(0,0,1,-8)
+    bar.BackgroundColor3=K.BASE.bg; bar.BorderSizePixel=0; bar.Parent=holder; K.corner(bar,3)
+    local fill=Instance.new("Frame")
+    fill.Size=UDim2.new(0,0,1,0); fill.BackgroundColor3=K.BASE.accent
+    fill.BorderSizePixel=0; fill.Parent=bar; K.corner(fill,3)
+    decimals=decimals or 1
+    local function refresh()
+        local v=getFn(); local t=(v-minV)/math.max(1e-6,(maxV-minV))
+        K.TweenService:Create(fill,TweenInfo.new(0.1),{Size=UDim2.new(t,0,1,0)}):Play()
+        if isInt then valLbl.Text=tostring(math.floor(v)) else valLbl.Text=string.format("%."..decimals.."f",v) end
+    end
+    refresh()
+    local dragging=false
+    local function setFromInput(ix)
+        local rel=math.clamp((ix-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1)
+        local v=minV+rel*(maxV-minV); if isInt then v=math.floor(v+0.5) end
+        setFn(v); refresh()
+    end
+    K.track(bar.InputBegan:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then dragging=true; setFromInput(input.Position.X) end end), holder)
+    K.track(K.UIS.InputChanged:Connect(function(input) if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then setFromInput(input.Position.X) end end), holder)
+    K.track(K.UIS.InputEnded:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then dragging=false; K.scheduleAutosave() end end), holder)
+    local ref={holder=holder,fill=fill,bar=bar,valLbl=valLbl,refresh=refresh}
+    K.sliders[ref]=true
+    return ref
+end
+
+function K.updateScale()
+    if not K.mainScale then return end
+    local cam=workspace.CurrentCamera; if not cam then return end
+    local vp=cam.ViewportSize
+    local fitScale=math.clamp(math.min(vp.X/(K.MAIN_W+10),vp.Y/(K.MAIN_H+10)),0.55,1.0)
+    K.TweenService:Create(K.mainScale,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=fitScale}):Play()
+end
+
+function K.clearPage()
+    if not K.pageHolder then return end
+    for _,ch in ipairs(K.pageHolder:GetChildren()) do
+        if not ch:IsA("UIListLayout") and not ch:IsA("UIPadding") then K.safeDestroy(ch) end
+    end
+    K.pruneDead()
+end
+
+function K.fillAutoFarm(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="СТРАТЕГИИ"; t.Parent=parent
+
+    local scroll=Instance.new("Frame")
+    scroll.Size=UDim2.new(1,0,0,110); scroll.BackgroundColor3=K.BASE.panel
+    scroll.BorderSizePixel=0; scroll.AutomaticSize=Enum.AutomaticSize.Y; scroll.LayoutOrder=2; scroll.Parent=parent
+    K.corner(scroll,K.CORNER); K.thin(scroll); K.scroll=scroll
+    local sl=Instance.new("UIListLayout"); sl.Padding=UDim.new(0,3); sl.SortOrder=Enum.SortOrder.LayoutOrder; sl.Parent=scroll
+    local sp=Instance.new("UIPadding"); sp.PaddingTop=UDim.new(0,6); sp.PaddingBottom=UDim.new(0,6); sp.PaddingLeft=UDim.new(0,6); sp.PaddingRight=UDim.new(0,6); sp.Parent=scroll
+
+    K.nameBox=Instance.new("TextBox")
+    K.nameBox.Size=UDim2.new(1,0,0,K.BTN_H); K.nameBox.BackgroundColor3=K.BASE.panel; K.nameBox.BorderSizePixel=0
+    K.nameBox.Font=K.FONT; K.nameBox.TextSize=K.TXT_SZ
+    K.nameBox.TextColor3=K.BASE.text; K.nameBox.PlaceholderText="имя для записи"
+    K.nameBox.PlaceholderColor3=K.BASE.dim; K.nameBox.Text=""
+    K.nameBox.TextXAlignment=Enum.TextXAlignment.Left; K.nameBox.ClearTextOnFocus=false
+    K.nameBox.LayoutOrder=3; K.nameBox.Parent=parent
+    K.corner(K.nameBox,K.CORNER); K.thin(K.nameBox)
+    local npad=Instance.new("UIPadding",K.nameBox); npad.PaddingLeft=UDim.new(0,12); npad.Parent=K.nameBox
+
+    K.recW=K.makeButton(parent,"🔴   Запись",Color3.fromRGB(255,120,140),function()
+        if not K.inMatch() then K.pushLog("только в матче","warn"); return end
+        if K.S.recording then
+            K.S.recording=false
+            local saved=K.saveMacro(K.nameBox.Text)
+            if saved then K.S.selected=saved; K.writeName(K.SELECTED,saved); K.nameBox.Text="" end
+            K.populate("autofarm")
+        else
+            if K.S.playing then K.S.playing=false end
+            K.resetRecordState()
+            K.S.actions={}; K.S.recording=true; K.S.waveStart=os.clock()
+            K.pushLog("🔴 пишу","ok")
+        end
+        K.refreshButtons()
+    end,{order=10})
+
+    K.playW=K.makeButton(parent,"▶   Играть",Color3.fromRGB(120,230,160),function()
+        if K.S.playing then K.S.playing=false; pcall(writefile,K.AUTOPLAY,""); K.pushLog("стоп","warn")
+        elseif K.inLobby() then
+            if not K.S.selected then K.pushLog("нет выбора","warn"); return end
+            K.S.launching=true
+            task.spawn(function()
+                local m=K.allMacros()[K.S.selected]
+                local ok,err=pcall(K.launchMap,m and m.map,K.S.selected)
+                if not ok then K.log("запуск: "..tostring(err)) end
+                K.S.launching=false; K.refreshButtons()
+            end)
+        else
+            if K.S.recording then K.S.recording=false end
+            if not K.S.selected then K.pushLog("нет выбора","warn"); return end
+            K.play(K.S.selected)
+        end
+        K.refreshButtons()
+    end,{order=11})
+
+    K.delW=K.makeButton(parent,"🗑   Удалить",Color3.fromRGB(220,130,130),function()
+        local all=K.allMacros()
+        if not K.S.selected or not all[K.S.selected] then return end
+        all[K.S.selected]=nil; pcall(writefile,K.FILE,K.HttpService:JSONEncode(all))
+        K.pushLog("удалена «"..K.S.selected.."»","warn")
+        K.S.selected=nil; K.writeName(K.SELECTED,"")
+        K.populate("autofarm")
+    end,{order=12})
+
+    K.voteW=K.makeButton(parent,"🗳   Голос: "..tostring(K.S.voteMode),K.themeAccent(),function()
+        local order={"Normal","Hard","Insane"}
+        local cur=K.S.voteMode or "Insane"; local idx=1
+        for i,v in ipairs(order) do if v==cur then idx=i; break end end
+        K.S.voteMode=order[(idx % #order)+1]
+        K.voteW.obj.Text="🗳   Голос: "..K.S.voteMode
+        K.pushLog("голос → "..K.S.voteMode,"event")
+        K.scheduleAutosave()
+    end,{order=13})
+
+    K.autoVoteW=K.makeButton(parent,"🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл"),K.BASE.ok,function()
+        K.S.autoVote=not K.S.autoVote
+        K.autoVoteW.obj.Text="🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл")
+        K.autoVoteW.color=K.S.autoVote and K.BASE.ok or K.BASE.dim
+        if K.autoVoteW.on then K.autoVoteW.obj.TextColor3=K.autoVoteW.color end
+        K.pushLog("авто-голос "..(K.S.autoVote and "вкл" or "выкл"),"info")
+        K.scheduleAutosave()
+    end,{order=14})
+
+    K.speedW=K.makeButton(parent,"⚡   Скорость: x1",K.BASE.orange,function()
+        local cur=K.currentSpeed(); local idx=1
+        for i,v in ipairs(K.SPEEDS) do if math.abs(v-cur)<0.01 then idx=i; break end end
+        local nextV=K.SPEEDS[(idx % #K.SPEEDS)+1]
+        K.setGameSpeed(nextV); K.pushLog("x"..tostring(nextV),"event"); K.refreshButtons()
+    end,{order=30})
+
+    K.skipW=K.makeButton(parent,"⏭   Автоскип",K.BASE.dim,function()
+        if K.toggleAutoSkip() then K.pushLog("автоскип ок","ok") else K.pushLog("не нажать","err") end
+        K.refreshButtons()
+    end,{order=32})
+
+    K.farmW=K.makeButton(parent,"♻   Бесконечный фарм",Color3.fromRGB(130,220,170),function()
+        if K.readName(K.FARM)~="" then K.writeName(K.FARM,""); K.pushLog("фарм выкл","warn")
+        else
+            if not K.S.selected or not K.allMacros()[K.S.selected] then K.pushLog("выбери","warn"); return end
+            K.writeName(K.FARM,K.S.selected); K.pushLog("фарм: "..K.S.selected,"ok")
+            if K.inLobby() and not K.S.playing and not K.S.launching then
+                local m=K.allMacros()[K.S.selected]; K.S.launching=true
+                task.spawn(function() pcall(K.launchMap,m and m.map,K.S.selected); K.S.launching=false; K.refreshButtons() end)
+            end
+        end
+        K.refreshButtons()
+    end,{order=33})
+
+    K.againW=K.makeButton(parent,"🔁   После матча: в лобби",K.BASE.dim,function()
+        K.S.playAgain=not K.S.playAgain
+        K.writeName(K.PLAYAGAIN,K.S.playAgain and "1" or "0")
+        K.pushLog(K.S.playAgain and "снова" or "в лобби","info"); K.refreshButtons()
+    end,{order=34})
+
+    K.mapW=K.makeButton(parent,"🗺   Карта: Штаб",K.themeAccent(),function()
+        local cur=K.mapW.obj.Text:match("Карта:%s*(.+)$") or K.MAPS[1].ru
+        local idx=1
+        for i,m in ipairs(K.MAPS) do if m.ru==cur then idx=i; break end end
+        idx=idx % #K.MAPS+1
+        K.mapW.obj.Text="🗺   Карта: "..K.MAPS[idx].ru
+    end,{order=35})
+
+    K.newW=K.makeButton(parent,"🚀   Новый матч один",Color3.fromRGB(140,180,255),function()
+        if K.S.playing or K.S.launching then return end
+        local cur=K.mapW.obj.Text:match("Карта:%s*(.+)$") or K.MAPS[1].ru
+        local mapId=K.MAPS[1].id
+        for _,m in ipairs(K.MAPS) do if m.ru==cur then mapId=m.id break end end
+        K.S.launching=true; K.refreshButtons()
+        task.spawn(function()
+            local ok,err=pcall(K.launchMap,mapId,nil)
+            if not ok then K.log("запуск: "..tostring(err)) end
+            K.S.launching=false; K.refreshButtons()
+        end)
+    end,{order=36})
+
+    for _,r in pairs(K.rows) do K.safeDestroy(r) end
+    K.rows={}
+    local all=K.allMacros(); local names={}
+    for k in pairs(all) do table.insert(names,k) end
+    table.sort(names)
+    for i,name in ipairs(names) do
+        local row=Instance.new("TextButton")
+        row.Size=UDim2.new(1,0,0,26); row.BackgroundColor3=K.BASE.panel; row.BorderSizePixel=0
+        row.Font=K.FONT; row.TextSize=11
+        row.TextColor3=K.BASE.dim; row.TextXAlignment=Enum.TextXAlignment.Left
+        row.Text="  · "..name; row.AutoButtonColor=false
+        row.LayoutOrder=i; row.Parent=scroll
+        K.corner(row,K.CORNER-2); K.thin(row)
+        row.Activated:Connect(function()
+            K.pressFx(row)
+            K.pushLog("выбрана: "..name,"event")
+            K.selectRow(name)
+        end)
+        if K.S.selected==name then row.BackgroundColor3=K.BASE.accent:Lerp(K.BASE.panel,0.5); row.TextColor3=K.BASE.text end
+        K.rows[name]=row
+    end
+    pcall(K.applyOutline)
+end
+
+function K.populate(tabId)
+    if not K.pageGroup then return end
+    local function fill()
+        K.clearPage()
+        if tabId=="autofarm" then K.fillAutoFarm(K.pageHolder)
+        elseif tabId=="helper" then K.fillHelper(K.pageHolder)
+        elseif tabId=="check" then K.fillCheck(K.pageHolder)
+        elseif tabId=="visuals" then K.fillVisuals(K.pageHolder)
+        elseif tabId=="config" then K.fillConfig(K.pageHolder)
+        elseif tabId=="hotkeys" then K.fillHotkeys(K.pageHolder)
+        elseif tabId=="themes" then K.fillThemes(K.pageHolder) end
+    end
+    if not K._populated then
+        K._populated=true; fill(); K.pageGroup.GroupTransparency=0; return
+    end
+    K.TweenService:Create(K.pageGroup,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()
+    task.delay(0.13,function()
+        if not K.alive() or not K.pageGroup then return end
+        fill()
+        K.pageGroup.GroupTransparency=1
+        K.TweenService:Create(K.pageGroup,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
+    end)
+end
+
+function K.selectRow(name)
+    K.S.selected=name
+    K.writeName(K.SELECTED,name)
+    for n,r in pairs(K.rows) do
+        if r and r.Parent and r:IsA("TextButton") then
+            local on=(n==name)
+            K.TweenService:Create(r,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=on and K.BASE.accent:Lerp(K.BASE.panel,0.5) or K.BASE.panel,
+                TextColor3=on and K.BASE.text or K.BASE.dim,
+            }):Play()
+        end
+    end
+end
+
+function K.buildUI()
+    local gui=Instance.new("ScreenGui")
+    gui.Name="KoRi4_UI_"..tostring(K.lp.UserId); gui.ResetOnSpawn=false
+    gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; gui.IgnoreGuiInset=true
+    pcall(function() gui.Parent=game:GetService("CoreGui") end)
+    if not gui.Parent then gui.Parent=K.lp:WaitForChild("PlayerGui") end
+    if K.ENV then K.ENV[K.MY_KEY_UI]=gui end
+    K.gui=gui
+
+    local main=Instance.new("Frame")
+    main.Size=UDim2.fromOffset(K.MAIN_W,K.MAIN_H)
+    main.AnchorPoint=Vector2.new(0.5,0.5); main.Position=UDim2.new(0.5,0,0.5,0)
+    main.BackgroundColor3=K.BASE.bg; main.BorderSizePixel=0
+    main.Active=true; main.ClipsDescendants=true; main.Parent=gui
+    K.corner(main,K.CORNER+6); K.thin(main); K.main=main
+    local mainScale=Instance.new("UIScale"); mainScale.Scale=0.5; mainScale.Parent=main; K.mainScale=mainScale
+    task.defer(function()
+        K.updateScale()
+        local cam=workspace.CurrentCamera
+        if cam then cam:GetPropertyChangedSignal("ViewportSize"):Connect(K.updateScale) end
+    end)
+
+    local topbar=Instance.new("Frame")
+    topbar.Size=UDim2.new(1,0,0,42); topbar.BackgroundColor3=K.BASE.topbar
+    topbar.BorderSizePixel=0; topbar.Parent=main; K.topbar=topbar
+    K.corner(topbar,K.CORNER+6)
+    local topLine=Instance.new("Frame")
+    topLine.Size=UDim2.new(1,0,0,1); topLine.Position=UDim2.new(0,0,1,-1)
+    topLine.BackgroundColor3=K.BASE.line; topLine.BorderSizePixel=0; topLine.Parent=topbar
+    K.topLine=topLine
+
+    local kLogo=Instance.new("TextButton")
+    kLogo.Size=UDim2.fromOffset(26,26); kLogo.Position=UDim2.fromOffset(14,8)
+    kLogo.BackgroundColor3=Color3.new(1,1,1); kLogo.BorderSizePixel=0
+    kLogo.Font=K.FONT; kLogo.TextSize=15
+    kLogo.TextColor3=Color3.new(1,1,1); kLogo.Text="K"
+    kLogo.AutoButtonColor=false; kLogo.ZIndex=100
+    kLogo.Parent=main; K.kLogo=kLogo
+    K.corner(kLogo,K.CORNER-2)
+    local kGrad=Instance.new("UIGradient")
+    kGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,K.currentTheme().c1),ColorSequenceKeypoint.new(1,K.currentTheme().c2)})
+    kGrad.Rotation=45; kGrad.Parent=kLogo; K.kLogoGrad=kGrad
+    local kTextStroke=Instance.new("UIStroke")
+    K.setProp(kTextStroke,"Thickness",1)
+    K.setProp(kTextStroke,"Color",Color3.fromRGB(0,0,0))
+    K.setProp(kTextStroke,"Transparency",0.55)
+    K.setProp(kTextStroke,"ApplyStrokeMode",Enum.ApplyStrokeMode.Contextual)
+    kTextStroke.Parent=kLogo
+
+    local brandTitle=Instance.new("TextLabel")
+    brandTitle.Size=UDim2.new(1,-120,0,16); brandTitle.Position=UDim2.fromOffset(48,6)
+    brandTitle.BackgroundTransparency=1; brandTitle.Font=K.FONT; brandTitle.TextSize=12
+    brandTitle.TextColor3=K.BASE.text; brandTitle.TextXAlignment=Enum.TextXAlignment.Left
+    brandTitle.Text="KoRi4 scripts"; brandTitle.Parent=topbar; K.brandTitle=brandTitle
+    local brandSub=Instance.new("TextLabel")
+    brandSub.Size=UDim2.new(1,-120,0,12); brandSub.Position=UDim2.fromOffset(48,22)
+    brandSub.BackgroundTransparency=1; brandSub.Font=K.FONT; brandSub.TextSize=10
+    brandSub.TextColor3=K.BASE.dim; brandSub.TextXAlignment=Enum.TextXAlignment.Left
+    brandSub.Text="Cameraman TD"; brandSub.Parent=topbar; K.brandSub=brandSub
+
+    local dot=Instance.new("Frame")
+    dot.Size=UDim2.fromOffset(8,8); dot.Position=UDim2.new(1,-52,0,17)
+    dot.BackgroundColor3=K.BASE.dim; dot.BorderSizePixel=0; dot.Parent=topbar; K.corner(dot,4)
+    K.dot=dot
+
+    local closeBtn=Instance.new("TextButton")
+    closeBtn.Size=UDim2.fromOffset(22,22); closeBtn.Position=UDim2.new(1,-32,0,10)
+    closeBtn.BackgroundColor3=K.BASE.panel; closeBtn.BorderSizePixel=0
+    closeBtn.Font=K.FONT; closeBtn.TextSize=14; closeBtn.TextColor3=Color3.fromRGB(230,120,140)
+    closeBtn.Text="×"; closeBtn.AutoButtonColor=false; closeBtn.Parent=topbar
+    K.corner(closeBtn,11); K.thin(closeBtn)
+    K.closeBtn=closeBtn
+    closeBtn.Activated:Connect(function()
+        K.pressFx(closeBtn)
+        pcall(function() K.saveNow() end)
+        task.delay(0.15,function() if gui then K.safeDestroy(gui) end end)
+    end)
+
+    local tabRow=Instance.new("Frame")
+    tabRow.Size=UDim2.new(1,0,0,42); tabRow.Position=UDim2.fromOffset(0,42)
+    tabRow.BackgroundTransparency=1; tabRow.Parent=main; K.tabRow=tabRow
+    local tabLine=Instance.new("Frame")
+    tabLine.Size=UDim2.new(1,0,0,1); tabLine.Position=UDim2.new(0,0,1,-1)
+    tabLine.BackgroundColor3=K.BASE.line; tabLine.BorderSizePixel=0; tabLine.Parent=tabRow
+    K.tabLine=tabLine
+
+    local tabScroll=Instance.new("ScrollingFrame")
+    tabScroll.Size=UDim2.new(1,0,1,0); tabScroll.Position=UDim2.fromOffset(0,0)
+    tabScroll.BackgroundTransparency=1; tabScroll.BorderSizePixel=0
+    tabScroll.ScrollBarThickness=0
+    tabScroll.CanvasSize=UDim2.new(0,0,0,0)
+    tabScroll.AutomaticCanvasSize=Enum.AutomaticSize.X
+    tabScroll.ScrollingDirection=Enum.ScrollingDirection.X
+    tabScroll.ScrollBarImageTransparency=1
+    tabScroll.Parent=tabRow
+    local tLay=Instance.new("UIListLayout",tabScroll)
+    tLay.FillDirection=Enum.FillDirection.Horizontal
+    tLay.SortOrder=Enum.SortOrder.LayoutOrder
+    tLay.Padding=UDim.new(0,4); tLay.VerticalAlignment=Enum.VerticalAlignment.Center
+    local tPad=Instance.new("UIPadding",tabScroll)
+    tPad.PaddingLeft=UDim.new(0,12); tPad.PaddingRight=UDim.new(0,12); tPad.Parent=tabScroll
+
+    local TABS={
+        {id="autofarm",label="AutoFarm",icon="⚔"},
+        {id="helper",label="Helper",icon="🛠"},
+        {id="check",label="Check",icon="🔎"},
+        {id="visuals",label="Visuals",icon="👁"},
+        {id="config",label="Config",icon="⚙"},
+        {id="hotkeys",label="Binds",icon="⌨"},
+        {id="themes",label="Themes",icon="🎨"},
+    }
+    for i,t in ipairs(TABS) do
+        local b=Instance.new("TextButton")
+        b.Size=UDim2.fromOffset(0,26); b.AutomaticSize=Enum.AutomaticSize.X
+        b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+        b.Font=K.FONT; b.TextSize=11
+        b.TextColor3=K.BASE.dim; b.TextXAlignment=Enum.TextXAlignment.Center
+        b.Text="  "..t.icon.."  "..t.label.."  "; b.AutoButtonColor=false
+        b.LayoutOrder=i; b.Parent=tabScroll; K.corner(b,13)
+        pcall(function() b:SetAttribute("KoRi4Tab",true) end)
+        K.thin(b)
+        b.MouseEnter:Connect(function()
+            if K.S.tab==t.id then return end
+            K.TweenService:Create(b,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.35),TextColor3=K.BASE.text}):Play()
+        end)
+        b.MouseLeave:Connect(function()
+            if K.S.tab==t.id then return end
+            K.TweenService:Create(b,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=K.BASE.panel,TextColor3=K.BASE.dim}):Play()
+        end)
+        b.Activated:Connect(function()
+            K.pressFx(b); K.S.tab=t.id
+            local us=b:FindFirstChildOfClass("UIScale")
+            if not us then us=Instance.new("UIScale"); us.Parent=b end
+            K.TweenService:Create(us,TweenInfo.new(0.1,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.15}):Play()
+            task.delay(0.12,function()
+                if us and us.Parent then
+                    K.TweenService:Create(us,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=1}):Play()
+                end
+            end)
+            for tid,tb in pairs(K.tabButtons) do
+                local on=(tid==t.id)
+                K.TweenService:Create(tb.obj,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                    BackgroundColor3=on and K.BASE.accent or K.BASE.panel,
+                    TextColor3=on and Color3.new(1,1,1) or K.BASE.dim}):Play()
+            end
+            K.populate(t.id)
+        end)
+        K.tabButtons[t.id]={obj=b,label=t.label,icon=t.icon}
+    end
+
+    local statusH=26
+    local content=Instance.new("Frame")
+    content.Size=UDim2.new(1,0,1,-42-42-statusH); content.Position=UDim2.fromOffset(0,84)
+    content.BackgroundTransparency=1; content.ClipsDescendants=true; content.Parent=main
+    K.content=content
+
+    local pageGroup=Instance.new("CanvasGroup")
+    pageGroup.Size=UDim2.new(1,0,1,0); pageGroup.BackgroundTransparency=1; pageGroup.Parent=content; K.pageGroup=pageGroup
+    local pageScroll=Instance.new("ScrollingFrame")
+    pageScroll.Size=UDim2.new(1,0,1,0); pageScroll.BackgroundTransparency=1; pageScroll.BorderSizePixel=0
+    pageScroll.ScrollBarThickness=4; pageScroll.ScrollBarImageColor3=K.BASE.line
+    pageScroll.CanvasSize=UDim2.new(0,0,0,0); pageScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    pageScroll.ScrollingDirection=Enum.ScrollingDirection.Y; pageScroll.Parent=pageGroup; K.pageScroll=pageScroll
+    local pageHolder=Instance.new("Frame")
+    pageHolder.Size=UDim2.new(1,0,0,0); pageHolder.AutomaticSize=Enum.AutomaticSize.Y
+    pageHolder.BackgroundTransparency=1; pageHolder.Parent=pageScroll; K.pageHolder=pageHolder
+    local pl=Instance.new("UIListLayout",pageHolder); pl.Padding=UDim.new(0,K.BTN_GAP); pl.SortOrder=Enum.SortOrder.LayoutOrder
+    local pp=Instance.new("UIPadding",pageHolder)
+    pp.PaddingLeft=UDim.new(0,K.BTN_PAD); pp.PaddingRight=UDim.new(0,K.BTN_PAD)
+    pp.PaddingTop=UDim.new(0,K.BTN_PAD); pp.PaddingBottom=UDim.new(0,K.BTN_PAD)
+
+    local statusBar=Instance.new("Frame")
+    statusBar.Size=UDim2.new(1,0,0,statusH); statusBar.Position=UDim2.new(0,0,1,-statusH)
+    statusBar.BackgroundColor3=K.BASE.topbar; statusBar.BorderSizePixel=0; statusBar.Parent=main; K.statusBar=statusBar
+    K.corner(statusBar,K.CORNER+6)
+    local statusLine=Instance.new("Frame")
+    statusLine.Size=UDim2.new(1,0,0,1); statusLine.BackgroundColor3=K.BASE.line
+    statusLine.BorderSizePixel=0; statusLine.Parent=statusBar; K.statusLine=statusLine
+    local statusLbl=Instance.new("TextLabel")
+    statusLbl.Size=UDim2.new(1,-20,1,0); statusLbl.Position=UDim2.fromOffset(12,0)
+    statusLbl.BackgroundTransparency=1; statusLbl.Font=K.FONT; statusLbl.TextSize=10
+    statusLbl.TextColor3=K.BASE.dim; statusLbl.TextXAlignment=Enum.TextXAlignment.Left
+    statusLbl.Text="готов"; statusLbl.Parent=statusBar; K.statusLabel=statusLbl
+
+    local function attachDrag(handle)
+        local dragging=false; local dragStart,startPos,moved
+        handle.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=true; moved=false; dragStart=input.Position; startPos=main.Position
+            end
+        end)
+        K.UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+                local d=input.Position-dragStart
+                if math.abs(d.X)>4 or math.abs(d.Y)>4 then moved=true end
+                if moved then main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y) end
+            end
+        end)
+        K.UIS.InputEnded:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=false
+            end
+        end)
+    end
+    attachDrag(topbar)
+    attachDrag(statusBar)
+
+    do
+        local dragging=false; local dragStart,startPos,moved
+        kLogo.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=true; moved=false; dragStart=input.Position; startPos=main.Position
+            end
+        end)
+        K.UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+                local d=input.Position-dragStart
+                if math.abs(d.X)>4 or math.abs(d.Y)>4 then moved=true end
+                if moved then main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y) end
+            end
+        end)
+        K.UIS.InputEnded:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                if dragging and not moved then if K.toggleCollapse then K.toggleCollapse() end end
+                dragging=false
+            end
+        end)
+    end
+
+    task.spawn(function()
+        while K.alive() and statusLbl.Parent do
+            local reason
+            if K.S.recording then reason=("REC · %d act"):format(#K.S.actions)
+            elseif K.S.playing then reason="PLAY"
+            elseif K.S.launching then reason="LAUNCH"
+            elseif K.inLobby() then reason="lobby · "..K.MY_NICK
+            elseif K.inMatch() then reason="match"
+            else reason=K.MY_NICK end
+            local c = K.S.recording and K.BASE.red or K.S.playing and K.BASE.ok or K.S.launching and K.BASE.orange or K.BASE.dim
+            dot.BackgroundColor3=c
+            statusLbl.Text=("● %s   ·   волна %d   ·   $%d   ·   %s"):format(reason,K.S.wave,K.money(),K.S.status or "")
+            task.wait(0.3)
+        end
+    end)
+end
+
+function K.toggleCollapse()
+    if not K.main or not K.kLogo then return end
+    local th=K.currentTheme()
+    if not K.S.collapsed then
+        K.S.collapsed=true
+        for a in pairs(K.accordions) do if type(a)=="table" and a.closeInstantly then pcall(a.closeInstantly) end end
+        if K.pageGroup then
+            K.TweenService:Create(K.pageGroup,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()
+        end
+        task.delay(0.15,function()
+            for _,o in ipairs({K.tabRow,K.content,K.statusBar,K.brandTitle,K.brandSub,K.dot,K.closeBtn,K.topLine,K.tabLine,K.statusLine}) do
+                if o then o.Visible=false end
+            end
+        end)
+        K.TweenService:Create(K.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(62,54),BackgroundColor3=th.c1}):Play()
+        if K.topbar then K.TweenService:Create(K.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=th.c1}):Play() end
+        K.TweenService:Create(K.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(6,7),Size=UDim2.fromOffset(50,40),TextSize=24}):Play()
+        if K.kLogoGrad then K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,th.c1),ColorSequenceKeypoint.new(1,th.c2)}) end
+    else
+        K.S.collapsed=false
+        K.TweenService:Create(K.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(K.MAIN_W,K.MAIN_H),BackgroundColor3=K.BASE.bg}):Play()
+        if K.topbar then K.TweenService:Create(K.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=K.BASE.topbar}):Play() end
+        K.TweenService:Create(K.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(14,8),Size=UDim2.fromOffset(26,26),TextSize=15}):Play()
+        if K.kLogoGrad then K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,th.c1),ColorSequenceKeypoint.new(1,th.c2)}) end
+        task.delay(0.12,function()
+            for _,o in ipairs({K.tabRow,K.content,K.statusBar,K.brandTitle,K.brandSub,K.dot,K.closeBtn,K.topLine,K.tabLine,K.statusLine}) do
+                if o then o.Visible=true end
+            end
+            if K.pageGroup then
+                K.pageGroup.GroupTransparency=1
+                K.TweenService:Create(K.pageGroup,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
+            end
+        end)
+    end
+end
+
+function K.toggleFreePlacement()
+    if K.freePlacement.active then
+        for part,s in pairs(K.freePlacement.saved) do
+            if part and not part.Parent then
+                pcall(function() part.Parent=s.parent; part.CFrame=s.cf; part.CanQuery=s.cq; part.CanCollide=s.cc; part.CanTouch=s.ct end)
+            end
+        end
+        K.freePlacement.saved={}; K.freePlacement.active=false
+        K.pushLog("🚧 размещение ВЫКЛ","info"); return false
+    end
+    local g=K.gameFolder(); if not g then K.pushLog("Game нет","err"); return false end
+    local paths=g:FindFirstChild("Paths"); if not paths then K.pushLog("Paths нет","err"); return false end
+    local saved,n={},0
+    for _,part in ipairs(paths:GetDescendants()) do
+        if part:IsA("BasePart") then
+            saved[part]={parent=part.Parent,cf=part.CFrame,cq=part.CanQuery,cc=part.CanCollide,ct=part.CanTouch}
+            pcall(function() part.CanQuery=false; part.CanCollide=false; part.CanTouch=false; part.Parent=nil end)
+            n=n+1
+        end
+    end
+    K.freePlacement.saved=saved; K.freePlacement.active=true
+    K.pushLog(("🚧 удалено путей: %d"):format(n),"ok"); return true
+end
+function K.optSetShadows(on)
+    if on==K.optimize.shadows then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then K.optimize.sShadows[obj]={CastShadow=obj.CastShadow}; pcall(function() obj.CastShadow=false end)
+            elseif obj:IsA("PointLight") or obj:IsA("SpotLight") or obj:IsA("SurfaceLight") then K.optimize.sShadows[obj]={Shadows=obj.Shadows}; pcall(function() obj.Shadows=false end) end
+        end
+        K.optimize.sShadows[K.Lighting]={GlobalShadows=K.Lighting.GlobalShadows}
+        pcall(function() K.Lighting.GlobalShadows=false end); K.optimize.shadows=true
+    else
+        for obj,s in pairs(K.optimize.sShadows) do if obj and (obj.Parent or obj==K.Lighting) then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sShadows={}; K.optimize.shadows=false
+    end
+    return K.optimize.shadows
+end
+function K.optSetGray(on)
+    if on==K.optimize.gray then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                K.optimize.sGray[obj]={Material=obj.Material,Color=obj.Color,Reflectance=obj.Reflectance}
+                pcall(function() obj.Material=Enum.Material.SmoothPlastic; obj.Color=Color3.fromRGB(120,120,120); obj.Reflectance=0 end)
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then K.optimize.sGray[obj]={Transparency=obj.Transparency}; pcall(function() obj.Transparency=1 end) end
+        end
+        K.optimize.gray=true
+    else
+        for obj,s in pairs(K.optimize.sGray) do if obj and obj.Parent then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sGray={}; K.optimize.gray=false
+    end
+    return K.optimize.gray
+end
+function K.optSetFx(on)
+    if on==K.optimize.fx then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Sparkles") or obj:IsA("Smoke") or obj:IsA("Beam") or obj:IsA("Trail") then
+                K.optimize.sFx[obj]={Enabled=obj.Enabled}; pcall(function() obj.Enabled=false end)
+            elseif obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") then
+                K.optimize.sFx[obj]={Enabled=obj.Enabled}; pcall(function() obj.Enabled=false end)
+            end
+        end
+        for _,eff in ipairs(K.Lighting:GetChildren()) do
+            if eff:IsA("PostEffect") then K.optimize.sFx[eff]={Enabled=eff.Enabled}; pcall(function() eff.Enabled=false end)
+            elseif eff:IsA("Atmosphere") then K.optimize.sFx[eff]={Density=eff.Density,Haze=eff.Haze}; pcall(function() eff.Density=0; eff.Haze=0 end) end
+        end
+        K.optimize.fx=true
+    else
+        for obj,s in pairs(K.optimize.sFx) do if obj and (obj.Parent or obj==K.Lighting) then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sFx={}; K.optimize.fx=false
+    end
+    return K.optimize.fx
+end
+function K.optSetGuiAnim(on)
+    K.optimize.guiAnim=on and true or false
+    pcall(function()
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat,not on)
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList,not on)
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack,not on)
+    end)
+    return K.optimize.guiAnim
+end
+
+function K.makeCheckRow(parent,label,getFn,setFn,order)
+    local b=Instance.new("TextButton")
+    b.Size=UDim2.new(1,0,0,28); b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+    b.Font=K.FONT; b.TextSize=11; b.TextColor3=K.BASE.text
+    b.TextXAlignment=Enum.TextXAlignment.Left; b.Text=""
+    b.AutoButtonColor=false; b.LayoutOrder=order or 1; b.Parent=parent
+    K.corner(b,K.CORNER); K.thin(b)
+    local chk=Instance.new("Frame")
+    chk.Size=UDim2.fromOffset(14,14); chk.Position=UDim2.fromOffset(10,7)
+    chk.BackgroundColor3=K.BASE.bg; chk.BorderSizePixel=0; chk.Parent=b
+    K.corner(chk,3); K.thin(chk)
+    local mark=Instance.new("Frame")
+    mark.Size=UDim2.new(1,-6,1,-6); mark.Position=UDim2.fromOffset(3,3)
+    mark.BackgroundColor3=K.BASE.accent; mark.BorderSizePixel=0; mark.Parent=chk
+    K.corner(mark,2)
+    mark.Visible=getFn() and true or false
+    local lbl=Instance.new("TextLabel")
+    lbl.Size=UDim2.new(1,-40,1,0); lbl.Position=UDim2.fromOffset(32,0)
+    lbl.BackgroundTransparency=1; lbl.Font=K.FONT; lbl.TextSize=11
+    lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Left; lbl.Parent=b
+    lbl.Text=label
+    b.Activated:Connect(function()
+        K.pressFx(b)
+        local v=not getFn(); setFn(v)
+        mark.Visible=v
+        K.applyOutline(); K.scheduleAutosave()
+    end)
+    return b
+end
+
+function K.fillHelper(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ХЕЛПЕР"; t.Parent=parent
+
+    local sec1=Instance.new("TextLabel")
+    sec1.Size=UDim2.new(1,0,0,16); sec1.BackgroundTransparency=1; sec1.LayoutOrder=2
+    sec1.Font=K.FONT; sec1.TextSize=10; sec1.TextColor3=K.BASE.dim; sec1.TextXAlignment=Enum.TextXAlignment.Left
+    sec1.Text="РАЗМЕЩЕНИЕ"; sec1.Parent=parent
+
+    K.freePlacementBtn=K.makeButton(parent,"🚧   Удалить пути",K.BASE.orange,function()
+        local on=K.toggleFreePlacement()
+        if on then K.freePlacementBtn.obj.Text="↩   Вернуть пути"; K.freePlacementBtn.color=Color3.fromRGB(130,220,160)
+        else K.freePlacementBtn.obj.Text="🚧   Удалить пути"; K.freePlacementBtn.color=K.BASE.orange end
+        if K.freePlacementBtn.on then K.freePlacementBtn.obj.TextColor3=K.freePlacementBtn.color end
+    end,{order=3})
+
+    local sec2=Instance.new("TextLabel")
+    sec2.Size=UDim2.new(1,0,0,16); sec2.BackgroundTransparency=1; sec2.LayoutOrder=4
+    sec2.Font=K.FONT; sec2.TextSize=10; sec2.TextColor3=K.BASE.dim; sec2.TextXAlignment=Enum.TextXAlignment.Left
+    sec2.Text="ОПТИМИЗАЦИЯ"; sec2.Parent=parent
+
+    local optBox=Instance.new("Frame")
+    optBox.Size=UDim2.new(1,0,0,28*4+K.BTN_GAP*3+12); optBox.BackgroundColor3=K.BASE.bg
+    optBox.BorderSizePixel=0; optBox.LayoutOrder=5; optBox.Parent=parent
+    K.corner(optBox,K.CORNER); K.thin(optBox)
+    local obLay=Instance.new("UIListLayout",optBox); obLay.Padding=UDim.new(0,K.BTN_GAP); obLay.SortOrder=Enum.SortOrder.LayoutOrder
+    local obPad=Instance.new("UIPadding",optBox); obPad.PaddingTop=UDim.new(0,6); obPad.PaddingBottom=UDim.new(0,6)
+    obPad.PaddingLeft=UDim.new(0,6); obPad.PaddingRight=UDim.new(0,6); obPad.Parent=optBox
+
+    K.optimizeBtns={}
+    K.optimizeBtns.shadows=K.makeCheckRow(optBox,"тени",function() return K.optimize.shadows end,function(v) return K.optSetShadows(v) end,1)
+    K.optimizeBtns.gray   =K.makeCheckRow(optBox,"серые материалы",function() return K.optimize.gray end,function(v) return K.optSetGray(v) end,2)
+    K.optimizeBtns.fx     =K.makeCheckRow(optBox,"эффекты (партиклы, глоу)",function() return K.optimize.fx end,function(v) return K.optSetFx(v) end,3)
+    K.optimizeBtns.guiAnim=K.makeCheckRow(optBox,"анимации интерфейса",function() return K.optimize.guiAnim end,function(v) return K.optSetGuiAnim(v) end,4)
+
+    local sec3=Instance.new("TextLabel")
+    sec3.Size=UDim2.new(1,0,0,16); sec3.BackgroundTransparency=1; sec3.LayoutOrder=10
+    sec3.Font=K.FONT; sec3.TextSize=10; sec3.TextColor3=K.BASE.dim; sec3.TextXAlignment=Enum.TextXAlignment.Left
+    sec3.Text="SUMMON"; sec3.Parent=parent
+
+    K.summon1Btn=K.makeButton(parent,"🎰   Summon ×1",Color3.fromRGB(120,200,255),function()
+        K.S.summon1=not K.S.summon1; if K.S.summon1 then K.S.summon10=false end
+        K.refreshSummonCache(); K.refreshSummonUI()
+    end,{order=11})
+    K.summon10Btn=K.makeButton(parent,"🎰   Summon ×10",Color3.fromRGB(255,180,120),function()
+        K.S.summon10=not K.S.summon10; if K.S.summon10 then K.S.summon1=false end
+        K.refreshSummonCache(); K.refreshSummonUI()
+    end,{order=12})
+    local sl=K.makeSlider(parent,"задержка, сек",5,600,function() return K.S.summonDelay end,function(v) K.S.summonDelay=v end,true)
+    sl.holder.LayoutOrder=13
+end
+
+K.refreshSummonUI=function()
+    if K.summon1Btn and K.summon1Btn.obj.Parent then
+        K.summon1Btn.obj.Text=(K.S.summon1 and "●   " or "○   ").."Summon ×1"
+        K.summon1Btn.color=K.S.summon1 and Color3.fromRGB(130,230,160) or Color3.fromRGB(120,200,255)
+        if K.summon1Btn.on then K.summon1Btn.obj.TextColor3=K.summon1Btn.color end
+    end
+    if K.summon10Btn and K.summon10Btn.obj.Parent then
+        K.summon10Btn.obj.Text=(K.S.summon10 and "●   " or "○   ").."Summon ×10"
+        K.summon10Btn.color=K.S.summon10 and Color3.fromRGB(130,230,160) or Color3.fromRGB(255,180,120)
+        if K.summon10Btn.on then K.summon10Btn.obj.TextColor3=K.summon10Btn.color end
+    end
+end
+
+function K.scanScreen()
+    K.pushLog("📺 скан экрана...","event")
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return end
+    local n=0
+    local function vis(o)
+        local c=o
+        for _=1,15 do if not c then return false end; if c:IsA("PlayerGui") then return true end
+            local ok,v=pcall(function() return c.Visible end); if ok and v==false then return false end; c=c.Parent end
+        return true
+    end
+    local function walk(o)
+        if not vis(o) then return end
+        local isT=false
+        pcall(function() if (o:IsA("TextButton") or o:IsA("TextLabel") or o:IsA("TextBox")) and o.Text~="" then isT=true end end)
+        if isT then n=n+1; print(("[%03d] %s \"%s\""):format(n,o.ClassName,tostring(o.Text))) end
+        for _,c in ipairs(o:GetChildren()) do walk(c) end
+    end
+    walk(pg); K.pushLog(("✅ экран: %d"):format(n),"ok")
+end
+function K.scanGame()
+    K.pushLog("🗂 скан игры...","event")
+    local function L(p,lim,tag)
+        if not p then return end
+        local n=0
+        for _,c in ipairs(p:GetChildren()) do n=n+1; if n>lim then break end; print(("[%s] %s (%s)"):format(tag,c.ClassName,c.Name)) end
+    end
+    L(workspace,80,"ws"); L(K.RS,80,"RS")
+    local ml=K.RS:FindFirstChild("ModuleLoader")
+    if ml then
+        local sh=ml:FindFirstChild("Shared"); local nw=sh and sh:FindFirstChild("Network")
+        if nw then
+            local re=nw:FindFirstChild("RemoteEvent"); local rf=nw:FindFirstChild("RemoteFunction")
+            if re then print(("RE %d"):format(#re:GetChildren())); L(re,300,"RE") end
+            if rf then print(("RF %d"):format(#rf:GetChildren())); L(rf,300,"RF") end
+        end
+    end
+    K.pushLog("✅ игра готов","ok")
+end
+function K.scanCursor()
+    K.pushLog("🖱 3 сек","event")
+    task.spawn(function()
+        local cam=workspace.CurrentCamera; local t0=os.clock(); local last=nil
+        while K.alive() and os.clock()-t0<3 do
+            local mp=K.UIS:GetMouseLocation()
+            local params=RaycastParams.new(); params.FilterType=Enum.RaycastFilterType.Exclude
+            local ex={}; if K.lp.Character then table.insert(ex,K.lp.Character) end; if K.gui then table.insert(ex,K.gui) end
+            params.FilterDescendantsInstances=ex
+            local ray=cam:ViewportPointToRay(mp.X,mp.Y,0)
+            local res=workspace:Raycast(ray.Origin,ray.Direction*500,params)
+            if res and res.Instance and res.Instance~=last then last=res.Instance; print(("🎯 %s | %s"):format(res.Instance.Name,res.Instance:GetFullName())) end
+            task.wait(0.15)
+        end
+        K.pushLog("✅ курсор готов","ok")
+    end)
+end
+
+function K.fillCheck(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ДИАГНОСТИКА"; t.Parent=parent
+    K.makeButton(parent,"📺   Скан экрана",Color3.fromRGB(120,200,255),function() K.scanScreen() end,{order=9})
+    K.makeButton(parent,"🗂   Скан игры",Color3.fromRGB(160,180,255),function() K.scanGame() end,{order=10})
+    K.makeButton(parent,"🖱   Под курсором (3 сек)",Color3.fromRGB(120,230,160),function() K.scanCursor() end,{order=11})
+    K.makeButton(parent,"ℹ   Инфо о матче",Color3.fromRGB(180,180,220),function()
+        K.pushLog(("матч=%s волна=%d"):format(tostring(K.inMatch()),K.curWave()),"event")
+    end,{order=12})
+
+    local t2=Instance.new("TextLabel")
+    t2.Size=UDim2.new(1,0,0,16); t2.BackgroundTransparency=1; t2.LayoutOrder=20
+    t2.Font=K.FONT; t2.TextSize=10; t2.TextColor3=K.BASE.dim; t2.TextXAlignment=Enum.TextXAlignment.Left
+    t2.Text="ЛОГИ"; t2.Parent=parent
+
+    local logsBox=Instance.new("Frame")
+    logsBox.Size=UDim2.new(1,0,0,160); logsBox.BackgroundColor3=K.BASE.bg
+    logsBox.BorderSizePixel=0; logsBox.LayoutOrder=21; logsBox.Parent=parent
+    K.corner(logsBox,K.CORNER); K.thin(logsBox)
+    local logsScroll=Instance.new("ScrollingFrame")
+    logsScroll.Size=UDim2.new(1,-8,1,-8); logsScroll.Position=UDim2.fromOffset(4,4)
+    logsScroll.BackgroundTransparency=1; logsScroll.BorderSizePixel=0
+    logsScroll.ScrollBarThickness=3; logsScroll.ScrollBarImageColor3=K.BASE.line
+    logsScroll.CanvasSize=UDim2.new(); logsScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    logsScroll.ScrollingDirection=Enum.ScrollingDirection.Y; logsScroll.Parent=logsBox
+    local logsInner=Instance.new("Frame")
+    logsInner.Size=UDim2.new(1,0,0,0); logsInner.AutomaticSize=Enum.AutomaticSize.Y
+    logsInner.BackgroundTransparency=1; logsInner.Parent=logsScroll; K.logsInner=logsInner; K.logsScroll=logsScroll
+    local ll=Instance.new("UIListLayout",logsInner); ll.Padding=UDim.new(0,1); ll.SortOrder=Enum.SortOrder.LayoutOrder
+end
+
+K.fxButtons={}
+function K.fillVisuals(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ЭФФЕКТЫ   ·   ЛКМ — вкл/выкл, ПКМ — раскрыть"; t.Parent=parent
+    K.fxButtons={}
+    local fields={
+        orbit={{k="radius",label="радиус",min=1,max=20,int=true},{k="count",label="кол-во",min=1,max=60,int=true},{k="speed",label="скорость",min=0,max=5},{k="size",label="размер",min=0.2,max=2}},
+        lighting={{k="bloomIntensity",label="bloom сила",min=0,max=3},{k="bloomSize",label="bloom размер",min=0,max=56,int=true},{k="bloomThreshold",label="bloom порог",min=0,max=2},{k="contrast",label="контраст",min=-1,max=1},{k="saturation",label="насыщенность",min=-1,max=1}},
+        distort={{k="blur",label="размытие",min=0,max=24,int=true},{k="contrast",label="контраст",min=-1,max=1},{k="bright",label="яркость",min=-0.5,max=0.5}},
+        hue={{k="speed",label="скорость",min=0,max=5},{k="saturation",label="насыщ.",min=0,max=1},{k="brightness",label="яркость",min=-0.5,max=0.5}},
+        trail={{k="lifetime",label="длина",min=0.2,max=3},{k="width",label="ширина",min=0,max=3},{k="bright",label="свечение",min=0,max=2}},
+        pulse={{k="range",label="радиус",min=1,max=40,int=true},{k="bright",label="яркость",min=0,max=10},{k="speed",label="скорость",min=0,max=6}},
+    }
+    local LBL={orbit="Орбита",lighting="Пост-эффекты",distort="Искажение",hue="Перелив",trail="Трейл",pulse="Пульсация"}
+    local function refresh(kind)
+        local w=K.fxButtons[kind]; if not w then return end
+        local on=K.VFX[kind].on
+        w.obj.Text=(on and "●   " or "○   ")..(w.label or kind)
+        w.color=on and Color3.fromRGB(140,240,160) or K.BASE.text
+        w.obj.TextColor3=w.color
+    end
+    local idx=0
+    for _,kind in ipairs({"orbit","lighting","distort","hue","trail","pulse"}) do
+        idx=idx+1
+        local btnH=K.BTN_H
+        local fullH=#fields[kind]*(K.SLIDER_H+K.BTN_GAP) + 4
+        local wrap=Instance.new("Frame")
+        wrap.Size=UDim2.new(1,0,0,btnH+2); wrap.BackgroundTransparency=1
+        wrap.LayoutOrder=10+idx; wrap.ClipsDescendants=true; wrap.Parent=parent
+        local container=Instance.new("Frame")
+        container.Size=UDim2.new(1,0,0,0); container.Position=UDim2.new(0,0,0,btnH+2)
+        container.BackgroundColor3=K.BASE.bg; container.BorderSizePixel=0; container.ClipsDescendants=true
+        container.Visible=false; container.Parent=wrap
+        K.corner(container,K.CORNER); K.thin(container)
+        local inner=Instance.new("Frame")
+        inner.Size=UDim2.new(1,-K.BTN_PAD,0,0); inner.Position=UDim2.fromOffset(K.BTN_PAD/2,K.BTN_PAD/2)
+        inner.AutomaticSize=Enum.AutomaticSize.Y; inner.BackgroundTransparency=1; inner.Parent=container
+        local il=Instance.new("UIListLayout",inner); il.Padding=UDim.new(0,K.BTN_GAP); il.SortOrder=Enum.SortOrder.LayoutOrder
+        local header=Instance.new("TextButton")
+        header.Size=UDim2.new(1,0,0,btnH); header.BackgroundColor3=K.BASE.panel
+        header.BorderSizePixel=0; header.Font=K.FONT
+        header.TextSize=K.TXT_SZ; header.TextColor3=K.BASE.text
+        header.Text="○   "..LBL[kind]; header.TextXAlignment=Enum.TextXAlignment.Left
+        header.AutoButtonColor=false; header.Parent=wrap
+        K.corner(header,K.CORNER); K.thin(header)
+        local pad=Instance.new("UIPadding",header); pad.PaddingLeft=UDim.new(0,12); pad.PaddingRight=UDim.new(0,24); pad.Parent=header
+        local arrow=Instance.new("TextLabel")
+        arrow.Size=UDim2.fromOffset(20,btnH); arrow.Position=UDim2.new(1,-24,0,0)
+        arrow.BackgroundTransparency=1; arrow.Text="▼"; arrow.Font=K.FONT
+        arrow.TextSize=K.TXT_SZ-2; arrow.TextColor3=K.BASE.dim; arrow.Parent=wrap
+        local acc={wrap=wrap,header=header,arrow=arrow,container=container,inner=inner,fullH=fullH,open=false}
+        K.accordions[acc]=true
+        local function toggleOpen()
+            acc.open=not acc.open; if acc.open then container.Visible=true end
+            local targetH=acc.open and fullH or 0; local wrapH=acc.open and (btnH+2+fullH) or (btnH+2)
+            K.TweenService:Create(container,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,targetH)}):Play()
+            K.TweenService:Create(wrap,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,wrapH)}):Play()
+            arrow.Text=acc.open and "▲" or "▼"
+            arrow.TextColor3=acc.open and K.themeAccent() or K.BASE.dim
+            task.delay(0.4,function() if not acc.open then container.Visible=false end end)
+        end
+        acc.toggle=toggleOpen
+        function acc.closeInstantly()
+            acc.open=false; container.Visible=false; container.Size=UDim2.new(1,0,0,0); wrap.Size=UDim2.new(1,0,0,btnH+2)
+            arrow.Text="▼"; arrow.TextColor3=K.BASE.dim
+        end
+        local function toggleFx()
+            local fx=K.VFX[kind]; fx.on=not fx.on
+            if kind=="orbit" then K.ensureOrbit(); K.applyOrbit() end
+            if kind=="lighting" then K.applyLighting() end
+            if kind=="distort" then K.applyDistort() end
+            if kind=="hue" then K.applyHue() end
+            if kind=="trail" then K.ensureTrail(); K.applyTrail() end
+            if kind=="pulse" then K.ensurePulse(); K.applyPulse() end
+            refresh(kind); K.scheduleAutosave()
+        end
+        header.Activated:Connect(function() K.pressFx(header); toggleFx() end)
+        header.MouseButton2Click:Connect(function() toggleOpen() end)
+        K.track(header.MouseEnter:Connect(function()
+            K.TweenService:Create(header,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.12)}):Play() end), header)
+        K.track(header.MouseLeave:Connect(function()
+            K.TweenService:Create(header,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel}):Play() end), header)
+        K.fxButtons[kind]={obj=header,color=K.BASE.text,on=true,label=LBL[kind],acc=acc}
+        for i,f in ipairs(fields[kind]) do
+            local sl=K.makeSlider(inner,f.label,f.min,f.max,
+                function() return tonumber(K.VFX[kind].settings[f.k]) or f.min end,
+                function(v)
+                    K.VFX[kind].settings[f.k]=v
+                    if kind=="orbit" then K.applyOrbit() end
+                    if kind=="lighting" then K.applyLighting() end
+                    if kind=="distort" then K.applyDistort() end
+                    if kind=="hue" then K.applyHue() end
+                    if kind=="trail" then K.applyTrail() end
+                    if kind=="pulse" then K.applyPulse() end
+                    K.scheduleAutosave()
+                end,f.int)
+            sl.holder.LayoutOrder=i
+        end
+    end
+    for kind in pairs(K.fxButtons) do refresh(kind) end
+end
+
+function K.applyLoadedHUD(d)
+    if type(d)~="table" then return end
+    if d.themeId~=nil then K.HUD.themeId=d.themeId end
+    if d.outlineId~=nil then K.HUD.outlineId=d.outlineId end
+    if d.outlineThickness~=nil then K.HUD.outlineThickness=d.outlineThickness end
+    if d.outlineTransparency~=nil then K.HUD.outlineTransparency=d.outlineTransparency end
+    if d.olAnimSpeed~=nil then K.HUD.olAnimSpeed=d.olAnimSpeed end
+    if d.olSections~=nil then K.HUD.olSections=d.olSections end
+    if d.olButtons~=nil then K.HUD.olButtons=d.olButtons end
+    if d.olTabs~=nil then K.HUD.olTabs=d.olTabs end
+    if d.rainbowSpeed~=nil then K.HUD.rainbowSpeed=d.rainbowSpeed end
+    if d.hueSpeed~=nil then K.HUD.hueSpeed=d.hueSpeed end
+    if d.blur~=nil then K.HUD.blur=d.blur end
+    if d.glow~=nil then K.HUD.glow=d.glow end
+end
+
+function K.fillConfig(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="КОНФИГИ · "..K.DATA_DIR; t.Parent=parent
+    local cfgNameBox=Instance.new("TextBox")
+    cfgNameBox.Size=UDim2.new(1,0,0,K.BTN_H); cfgNameBox.BackgroundColor3=K.BASE.panel
+    cfgNameBox.BorderSizePixel=0; cfgNameBox.Font=K.FONT; cfgNameBox.TextSize=K.TXT_SZ
+    cfgNameBox.TextColor3=K.BASE.text; cfgNameBox.PlaceholderText="имя конфига"
+    cfgNameBox.PlaceholderColor3=K.BASE.dim; cfgNameBox.Text=""
+    cfgNameBox.TextXAlignment=Enum.TextXAlignment.Left; cfgNameBox.ClearTextOnFocus=false
+    cfgNameBox.LayoutOrder=2; cfgNameBox.Parent=parent; K.corner(cfgNameBox,K.CORNER); K.thin(cfgNameBox)
+    local npad=Instance.new("UIPadding",cfgNameBox); npad.PaddingLeft=UDim.new(0,12); npad.Parent=cfgNameBox
+    local function cfgAll()
+        local ok,raw=pcall(readfile,K.CFG_FILE)
+        if not ok or type(raw)~="string" then return {} end
+        local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+        if g and type(d)=="table" then return d end
+        return {}
+    end
+    K.makeButton(parent,"💾   Сохранить",Color3.fromRGB(130,230,160),function()
+        if cfgNameBox.Text=="" then K.pushLog("впишите имя","warn"); return end
+        local all=cfgAll()
+        all[cfgNameBox.Text]={owner=K.MY_NICK,saved=os.date("%d.%m.%Y %H:%M"),data={vfx=K.snapshotVFX(),hud=K.snapshotHUD()}}
+        K.writeJSON(K.CFG_FILE,all); K.pushLog(("«%s» сохр"):format(cfgNameBox.Text),"ok")
+    end,{order=10})
+    K.makeButton(parent,"📂   Загрузить",K.themeAccent(),function()
+        local all=cfgAll(); local cfg=all[cfgNameBox.Text]
+        if not cfg then K.pushLog("не найден","warn"); return end
+        local d=cfg.data or {}
+        if type(d.vfx)=="table" then
+            for kind,snap in pairs(d.vfx) do
+                local fx=K.VFX[kind]
+                if fx then fx.on=snap.on==true
+                    for k,v in pairs(snap.settings or {}) do
+                        if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+                    end
+                end
+            end
+            K.applyVFXSettings()
+        end
+        if type(d.hud)=="table" then
+            K.applyLoadedHUD(d.hud)
+            K.applyClientFx(); K.applyHud(); K.applyOutline()
+        end
+        K.scheduleAutosave(); K.pushLog(("«%s» загр"):format(cfgNameBox.Text),"ok")
+    end,{order=11})
+    K.makeButton(parent,"🗑   Удалить",Color3.fromRGB(220,130,130),function()
+        local all=cfgAll()
+        if not all[cfgNameBox.Text] then return end
+        all[cfgNameBox.Text]=nil; K.writeJSON(K.CFG_FILE,all)
+        K.pushLog(("«%s» уд"):format(cfgNameBox.Text),"warn")
+    end,{order=12})
+    K.makeButton(parent,"↺   Сброс",K.BASE.orange,function()
+        for kind,fx in pairs(K.VFX) do
+            fx.on=false
+            for k,v in pairs(K.VFX_DEFAULTS[kind]) do
+                if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+            end
+        end
+        K.HUD.themeId="violet"; K.HUD.outlineId="none"
+        K.applyVFXSettings(); K.applyClientFx(); K.applyHud(); K.applyOutline()
+        K.scheduleAutosave(); K.pushLog("сброс","warn")
+    end,{order=13})
+end
+
+function K.fillHotkeys(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="BINDS"; t.Parent=parent
+    local info=Instance.new("TextLabel")
+    info.Size=UDim2.new(1,0,0,120); info.BackgroundTransparency=1; info.LayoutOrder=2
+    info.Font=K.FONT; info.TextSize=11; info.TextColor3=K.BASE.dim
+    info.TextXAlignment=Enum.TextXAlignment.Left; info.TextYAlignment=Enum.TextYAlignment.Top
+    info.TextWrapped=true
+    info.Text="Хоткеи пока не реализованы.\n\nФункции — через вкладки AutoFarm / Helper / Themes."
+    info.Parent=parent
+end
+
+K.themeCards={}
+K.outlineCards={}
+function K.fillThemes(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ЦВЕТ"; t.Parent=parent
+
+    local availW=K.MAIN_W-K.BTN_PAD*2-8
+    local gap=6
+    local minW=100
+    local cols=math.max(2,math.floor((availW+gap)/(minW+gap)))
+    local cellW=math.floor((availW-(cols-1)*gap)/cols)
+    local cellH=34
+    local rows=math.max(1,math.ceil(#K.THEMES/cols))
+    local totalH=rows*(cellH+gap)
+
+    local gridHolder=Instance.new("Frame")
+    gridHolder.Size=UDim2.new(1,0,0,totalH); gridHolder.BackgroundTransparency=1
+    gridHolder.LayoutOrder=2; gridHolder.Parent=parent
+    local grid=Instance.new("UIGridLayout")
+    grid.CellSize=UDim2.fromOffset(cellW,cellH); grid.CellPadding=UDim2.fromOffset(gap,gap)
+    grid.FillDirection=Enum.FillDirection.Horizontal; grid.FillDirectionMaxCells=cols
+    grid.SortOrder=Enum.SortOrder.LayoutOrder; grid.Parent=gridHolder
+    K.themeCards={}
+    for i,t2 in ipairs(K.THEMES) do
+        local card=Instance.new("TextButton")
+        card.Size=UDim2.fromOffset(cellW,cellH); card.BackgroundColor3=Color3.new(1,1,1)
+        card.BorderSizePixel=0; card.Text=""; card.AutoButtonColor=false
+        card.LayoutOrder=i; card.Parent=gridHolder; K.corner(card,K.CORNER)
+        local st=K.thin(card)
+        K.setProp(st,"Color",K.BASE.line)
+        K.setProp(st,"Transparency",0.3)
+        pcall(function() st:SetAttribute("KoRi4Card", true) end)
+        local grad=Instance.new("UIGradient")
+        grad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,t2.c1),ColorSequenceKeypoint.new(1,t2.c2)})
+        grad.Rotation=30; grad.Parent=card
+        local nameL=Instance.new("TextLabel")
+        nameL.Size=UDim2.new(1,-8,1,0); nameL.Position=UDim2.fromOffset(6,0)
+        nameL.BackgroundTransparency=1; nameL.Font=K.FONT; nameL.TextSize=11
+        nameL.TextColor3=Color3.new(1,1,1); nameL.TextXAlignment=Enum.TextXAlignment.Left
+        nameL.TextYAlignment=Enum.TextYAlignment.Center; nameL.Text=t2.ru; nameL.Parent=card
+        local sh=Instance.new("UIStroke")
+        K.setProp(sh,"Color",Color3.fromRGB(0,0,0))
+        K.setProp(sh,"Thickness",1)
+        K.setProp(sh,"Transparency",0.4)
+        K.setProp(sh,"ApplyStrokeMode",Enum.ApplyStrokeMode.Contextual)
+        sh.Parent=nameL
+        card.Activated:Connect(function()
+            K.pressFx(card); K.HUD.themeId=t2.id; K.applyHud()
+            for id,ref in pairs(K.themeCards) do
+                K.setProp(ref.stroke,"Color",(id==t2.id) and Color3.new(1,1,1) or K.BASE.line)
+                K.setProp(ref.stroke,"Transparency",(id==t2.id) and 0 or 0.3)
+            end
+            K.scheduleAutosave()
+        end)
+        K.themeCards[t2.id]={obj=card,stroke=st}
+    end
+    for id,ref in pairs(K.themeCards) do
+        local on=(id==K.HUD.themeId)
+        K.setProp(ref.stroke,"Color",on and Color3.new(1,1,1) or K.BASE.line)
+        K.setProp(ref.stroke,"Transparency",on and 0 or 0.3)
+    end
+
+    local t2=Instance.new("TextLabel")
+    t2.Size=UDim2.new(1,0,0,16); t2.BackgroundTransparency=1; t2.LayoutOrder=3
+    t2.Font=K.FONT; t2.TextSize=10; t2.TextColor3=K.BASE.dim; t2.TextXAlignment=Enum.TextXAlignment.Left
+    t2.Text="ОБВОДКА"; t2.Parent=parent
+
+    local oCols=cols; local oCellW=cellW; local oCellH=34
+    local oRows=math.max(1,math.ceil(#K.OUTLINES/oCols)); local oTotalH=oRows*(oCellH+gap)
+    local oGridHolder=Instance.new("Frame")
+    oGridHolder.Size=UDim2.new(1,0,0,oTotalH); oGridHolder.BackgroundTransparency=1
+    oGridHolder.LayoutOrder=4; oGridHolder.Parent=parent
+    local oGrid=Instance.new("UIGridLayout")
+    oGrid.CellSize=UDim2.fromOffset(oCellW,oCellH); oGrid.CellPadding=UDim2.fromOffset(gap,gap)
+    oGrid.FillDirection=Enum.FillDirection.Horizontal; oGrid.FillDirectionMaxCells=oCols
+    oGrid.SortOrder=Enum.SortOrder.LayoutOrder; oGrid.Parent=oGridHolder
+    K.outlineCards={}
+    for _,o in ipairs(K.OUTLINES) do
+        local card=Instance.new("TextButton")
+        card.Size=UDim2.fromOffset(oCellW,oCellH); card.BackgroundColor3=K.BASE.panel
+        card.BorderSizePixel=0; card.Text=""; card.AutoButtonColor=false
+        card.Parent=oGridHolder; K.corner(card,K.CORNER)
+        local st=K.thin(card)
+        K.setProp(st,"Thickness",2)
+        K.setProp(st,"Transparency",0.1)
+        pcall(function() st:SetAttribute("KoRi4Card", true) end)
+        if o.none then K.setProp(st,"Color",K.DISABLED.stroke); K.setProp(st,"Transparency",0.5)
+        elseif o.rainbow then K.setProp(st,"Color",Color3.new(1,1,1)); local g=Instance.new("UIGradient"); g.Color=K.RAINBOW_SEQ; g.Parent=st
+        elseif o.seq then K.setProp(st,"Color",Color3.new(1,1,1)); local g=Instance.new("UIGradient"); g.Color=o.seq; g.Parent=st
+        else K.setProp(st,"Color",o.c) end
+        local lbl=Instance.new("TextLabel")
+        lbl.Size=UDim2.new(1,-8,1,0); lbl.Position=UDim2.fromOffset(4,0)
+        lbl.BackgroundTransparency=1; lbl.Font=K.FONT; lbl.TextSize=10
+        lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Center
+        lbl.Text=o.ru; lbl.Parent=card
+        card.Activated:Connect(function()
+            K.pressFx(card); K.HUD.outlineId=o.id; K.applyOutline()
+            for id,ref in pairs(K.outlineCards) do ref.obj.BackgroundColor3=(id==o.id) and K.BASE.accent:Lerp(K.BASE.panel,0.6) or K.BASE.panel end
+            K.scheduleAutosave()
+        end)
+        K.outlineCards[o.id]={obj=card,stroke=st}
+    end
+    for id,ref in pairs(K.outlineCards) do ref.obj.BackgroundColor3=(id==K.HUD.outlineId) and K.BASE.accent:Lerp(K.BASE.panel,0.6) or K.BASE.panel end
+
+    local t3=Instance.new("TextLabel")
+    t3.Size=UDim2.new(1,0,0,16); t3.BackgroundTransparency=1; t3.LayoutOrder=5
+    t3.Font=K.FONT; t3.TextSize=10; t3.TextColor3=K.BASE.dim; t3.TextXAlignment=Enum.TextXAlignment.Left
+    t3.Text="НАСТРОЙКА"; t3.Parent=parent
+
+    local sl1=K.makeSlider(parent,"толщина",1,5,function() return K.HUD.outlineThickness end,
+        function(v) K.HUD.outlineThickness=math.floor(v+0.5); K.applyOutline() end,true)
+    sl1.holder.LayoutOrder=6
+    local sl2=K.makeSlider(parent,"прозрачность",0,1,function() return K.HUD.outlineTransparency end,
+        function(v) K.HUD.outlineTransparency=v; K.applyOutline() end,false,2)
+    sl2.holder.LayoutOrder=7
+    local sl3=K.makeSlider(parent,"скорость анимации",0,4,function() return K.HUD.olAnimSpeed end,
+        function(v) K.HUD.olAnimSpeed=v; K.scheduleAutosave() end,false,1)
+    sl3.holder.LayoutOrder=8
+
+    local box=Instance.new("Frame")
+    box.Size=UDim2.new(1,0,0,28*3+K.BTN_GAP*2+12); box.BackgroundColor3=K.BASE.bg
+    box.BorderSizePixel=0; box.LayoutOrder=9; box.Parent=parent
+    K.corner(box,K.CORNER); K.thin(box)
+    local bl=Instance.new("UIListLayout",box); bl.Padding=UDim.new(0,K.BTN_GAP); bl.SortOrder=Enum.SortOrder.LayoutOrder
+    local bp=Instance.new("UIPadding",box); bp.PaddingTop=UDim.new(0,6); bp.PaddingBottom=UDim.new(0,6)
+    bp.PaddingLeft=UDim.new(0,6); bp.PaddingRight=UDim.new(0,6); bp.Parent=box
+    K.makeCheckRow(box,"на разделы",function() return K.HUD.olSections end,function(v) K.HUD.olSections=v end,1)
+    K.makeCheckRow(box,"на кнопки",function() return K.HUD.olButtons end,function(v) K.HUD.olButtons=v end,2)
+    K.makeCheckRow(box,"на табы",function() return K.HUD.olTabs end,function(v) K.HUD.olTabs=v end,3)
+end
+
+function K.applyHud()
+    local t=K.currentTheme()
+    K.BASE.bg=t.c2:Lerp(Color3.fromRGB(20,14,34),0.72)
+    K.BASE.sidebar=t.c1:Lerp(Color3.fromRGB(20,14,34),0.78)
+    K.BASE.panel=t.c1:Lerp(Color3.fromRGB(20,14,34),0.66)
+    K.BASE.line=t.c1:Lerp(Color3.fromRGB(20,14,34),0.42)
+    K.BASE.topbar=t.c1:Lerp(Color3.fromRGB(20,14,34),0.74)
+    K.BASE.accent=t.c1
+    if K.S.collapsed then
+        if K.main then K.main.BackgroundColor3=t.c1 end
+        if K.topbar then K.topbar.BackgroundColor3=t.c1 end
+    else
+        if K.main then K.main.BackgroundColor3=K.BASE.bg end
+        if K.topbar then K.topbar.BackgroundColor3=K.BASE.topbar end
+    end
+    if K.kLogo then K.kLogo.BackgroundColor3=Color3.new(1,1,1) end
+    if K.kLogoGrad then
+        K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,t.c1),ColorSequenceKeypoint.new(1,t.c2)})
+    end
+    if K.statusBar and not K.S.collapsed then K.statusBar.BackgroundColor3=K.BASE.topbar end
+    for w in pairs(K.widgets) do
+        if type(w)=="table" and w.obj and w.obj.Parent then
+            w.obj.BackgroundColor3 = w.on and K.BASE.panel or K.DISABLED.bg
+        end
+    end
+    for s in pairs(K.sliders) do
+        if type(s)=="table" and s.holder and s.holder.Parent then
+            if s.fill then s.fill.BackgroundColor3=K.BASE.accent end
+            if s.valLbl then s.valLbl.TextColor3=K.BASE.accent end
+        end
+    end
+    for tid,tb in pairs(K.tabButtons) do
+        local on=(K.S.tab==tid)
+        tb.obj.BackgroundColor3=on and K.BASE.accent or K.BASE.panel
+        tb.obj.TextColor3=on and Color3.new(1,1,1) or K.BASE.dim
+    end
+    K.applyOutline()
+end
+
+function K.refreshButtons()
+    K.refreshSummonUI()
+    if K.recW and K.recW.obj.Parent then
+        local idle=not K.S.recording and not K.S.playing and not K.S.launching
+        local hasPick=K.S.selected~=nil and K.allMacros()[K.S.selected]~=nil
+        K.recW.obj.Text=K.S.recording and ("⏹   Стоп ("..#K.S.actions..")") or "🔴   Запись"
+        K.playW.obj.Text=(K.S.playing or K.S.launching) and "⏹   Стоп" or (K.inLobby() and "▶   Запустить матч" or "▶   Играть")
+        K.setOn(K.recW,(idle or K.S.recording) and K.inMatch())
+        K.setOn(K.playW,(idle and hasPick) or K.S.playing or K.S.launching)
+        K.setOn(K.delW,idle and hasPick)
+    end
+    if K.skipW and K.skipW.obj.Parent then
+        K.setOn(K.skipW,(not K.S.recording) and K.inMatch())
+        local on=K.autoSkipOn()
+        K.skipW.obj.Text=(on and "●   " or "○   ").."Автоскип"
+        K.skipW.color=on and Color3.fromRGB(130,230,160) or K.BASE.dim
+        if K.skipW.on then K.skipW.obj.TextColor3=K.skipW.color end
+    end
+    if K.voteW and K.voteW.obj.Parent then
+        K.voteW.obj.Text="🗳   Голос: "..tostring(K.S.voteMode or "Insane")
+    end
+    if K.autoVoteW and K.autoVoteW.obj.Parent then
+        K.autoVoteW.obj.Text="🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл")
+        K.autoVoteW.color=K.S.autoVote and K.BASE.ok or K.BASE.dim
+        if K.autoVoteW.on then K.autoVoteW.obj.TextColor3=K.autoVoteW.color end
+    end
+    if K.speedW and K.speedW.obj.Parent then K.speedW.obj.Text="⚡   Скорость: x"..tostring(K.currentSpeed()) end
+    if K.farmW and K.farmW.obj.Parent then
+        local farming=K.readName(K.FARM)~=""
+        K.farmW.obj.Text=farming and "⏹   Остановить фарм" or "♻   Бесконечный фарм"
+    end
+    if K.againW and K.againW.obj.Parent then
+        K.againW.obj.Text="🔁   После матча: "..(K.S.playAgain and "снова" or "лобби")
+        K.againW.color=K.S.playAgain and Color3.fromRGB(130,220,170) or K.BASE.dim
+        if K.againW.on then K.againW.obj.TextColor3=K.againW.color end
+    end
+end
+
+function K.startWaveWatcher()
+    task.spawn(function()
+        K.S.wave=K.curWave()
+        while K.alive() do
+            local w=K.curWave()
+            if w~=K.S.wave then K.S.wave,K.S.waveStart=w,os.clock(); K.pushLog(("волна %d"):format(w),"event") end
+            task.wait(0.1)
+        end
+    end)
+end
+function K.startAutoSkipOwn()
+    task.spawn(function()
+        while K.alive() do if K.ownSkip and workspace:GetAttribute("CanSkip") then pcall(K.fire,"WaveSkip") end; task.wait(1) end
+    end)
+end
+function K.startAutoFarmLoop()
+    task.spawn(function()
+        task.wait(3)
+        while K.alive() do
+            local farm=K.readName(K.FARM)
+            local macro=(farm~="" and K.allMacros()[farm]) or nil
+            if farm~="" and macro then
+                if K.inMatch() then
+                    if not K.S.playing and not K.S.recording and not K.S.launching then
+                        task.wait(2)
+                        if K.alive() and K.inMatch() and not K.S.playing then
+                            K.log("автофарм: играю «"..farm.."»")
+                            K.S.selected=farm
+                            pcall(K.play, farm)
+                            K.refreshButtons()
+                        end
+                    end
+                elseif K.inLobby() and not K.S.playing and not K.S.launching then
+                    if os.clock()-(K.S.launchCooldown or 0) > 5 then
+                        K.log("автофарм: еду на «"..K.mapRu(macro.map).."»")
+                        K.S.launching=true; K.refreshButtons()
+                        pcall(K.launchMap, macro.map, farm)
+                        K.S.launching=false; K.S.launchCooldown=os.clock(); K.refreshButtons()
+                    end
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+function K.startSpeedApplier()
+    task.spawn(function()
+        while K.alive() do
+            if K.inMatch() and K.S.speed then
+                local cur=K.currentSpeed()
+                local want=tonumber(K.S.speed) or 1
+                if math.abs(cur-want)>0.01 then K.setGameSpeed(want) end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+function K.startVFXLoops()
+    task.spawn(function()
+        while K.alive() do
+            local dt=K.RunService.RenderStepped:Wait()
+            if K.VFX.orbit.on then
+                local fx=K.ensureOrbit()
+                if fx and fx.attach then
+                    K.orbitAngle=K.orbitAngle+dt*(tonumber(fx.settings.speed) or 1)*2
+                    local r=math.clamp(tonumber(fx.settings.radius) or 6,1,30)
+                    fx.attach.Position=Vector3.new(math.cos(K.orbitAngle)*r,math.sin(K.orbitAngle*2)*0.6,math.sin(K.orbitAngle)*r)
+                    K.applyOrbit()
+                end
+            end
+            if K.VFX.hue.on and K.VFX.hue.cc then
+                K.hueT=(K.hueT+dt*(tonumber(K.VFX.hue.settings.speed) or 1)*(tonumber(K.HUD.hueSpeed) or 1)*0.25)%1
+                K.setProp(K.VFX.hue.cc,"TintColor",Color3.fromHSV(K.hueT,0.8,1))
+            end
+            if K.VFX.pulse.on and K.VFX.pulse.light then
+                K.pulseT=K.pulseT+dt*(tonumber(K.VFX.pulse.settings.speed) or 2)
+                K.setProp(K.VFX.pulse.light,"Brightness",(math.sin(K.pulseT)*0.5+0.5)*(tonumber(K.VFX.pulse.settings.bright) or 2))
+            end
+        end
+    end)
+    K.lp.CharacterAdded:Connect(function()
+        task.wait(1); if not K.alive() then return end
+        if K.VFX.orbit.on then K.ensureOrbit(); K.applyOrbit() end
+        if K.VFX.trail.on then K.ensureTrail(); K.applyTrail() end
+        if K.VFX.pulse.on then K.ensurePulse(); K.applyPulse() end
+    end)
+end
+function K.startOutlineAnim()
+    task.spawn(function()
+        local off=0
+        while K.alive() do
+            local dt=K.RunService.RenderStepped:Wait()
+            local o=K.currentOutline()
+            if (o.rainbow or (o.seq and o.anim)) and not K.optimize.guiAnim then
+                local mul=(tonumber(o.animMul) or 1)*(tonumber(K.HUD.olAnimSpeed) or 1)*(tonumber(K.HUD.rainbowSpeed) or 1)
+                off=(off-dt*0.5*mul)%1
+                for st in pairs(K.outlineStrokes) do
+                    if typeof(st)=="Instance" and st.Parent then
+                        local enabled=K.getProp(st,"Enabled",false)
+                        if enabled then
+                            local g=st:FindFirstChildOfClass("UIGradient")
+                            if g then K.setProp(g,"Offset",Vector2.new(off,0)) end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+function K.startLogsLoop()
+    task.spawn(function()
+        local lastCount=0
+        while K.alive() do
+            if K.logsInner and K.logsInner.Parent and (K.logsUpdated or #K.logsBuf~=lastCount) then
+                K.logsUpdated=false; lastCount=#K.logsBuf
+                for _,ch in ipairs(K.logsInner:GetChildren()) do if ch:IsA("TextLabel") then ch:Destroy() end end
+                for i,entry in ipairs(K.logsBuf) do
+                    local line=Instance.new("TextLabel")
+                    line.Size=UDim2.new(1,-4,0,K.LOG_LINE_H); line.BackgroundTransparency=1
+                    line.Font=Enum.Font.Code; line.TextSize=K.LOG_FONT
+                    line.TextColor3=K.LOG_COLORS[entry.k] or K.LOG_COLORS.info
+                    line.TextXAlignment=Enum.TextXAlignment.Left
+                    line.LayoutOrder=i; line.Text="["..entry.t.."] "..entry.m; line.Parent=K.logsInner
+                end
+                task.defer(function() if K.logsScroll and K.logsScroll.Parent then K.logsScroll.CanvasPosition=Vector2.new(0,K.logsScroll.AbsoluteCanvasSize.Y) end end)
+            end
+            task.wait(0.2)
+        end
+    end)
+end
+
+function K.loadHud()
+    local data=K.readJSON(K.HUD_FILE); if not data then return end
+    if type(data.vfx)=="table" then
+        for kind,snap in pairs(data.vfx) do
+            local fx=K.VFX[kind]
+            if fx then
+                fx.on=snap.on==true
+                for k,v in pairs(snap.settings or {}) do
+                    if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+                end
+            end
+        end
+    end
+    if type(data.hud)=="table" then
+        K.applyLoadedHUD(data.hud)
+    end
+end
+
+K.safeRun=function(name,fn) local ok,err=pcall(fn); if not ok then warn("[KoRi4] "..name..": "..tostring(err)); K.pushLog(name.." err","err") end end
+
+K.safeRun("buildUI",K.buildUI)
+K.safeRun("populate",function() K.populate(K.S.tab or "autofarm") end)
+K.loadHud()
+K.safeRun("applyVFXSettings",K.applyVFXSettings)
+K.safeRun("applyClientFx",K.applyClientFx)
+K.safeRun("applyHud",K.applyHud)
+K.safeRun("applyOutline",K.applyOutline)
+K.safeRun("refreshButtons",K.refreshButtons)
+K.startWaveWatcher()
+K.startAutoSkipOwn()
+K.startVFXLoops()
+K.startOutlineAnim()
+K.startSummonLoop()
+K.startLogsLoop()
+K.startRecordHooks()
+K.startEndMatchWatcher()
+K.startMatchResetWatcher()
+K.startAutoFarmLoop()
+K.startSpeedApplier()
+K.startVoteWatcher()
+
+task.spawn(function() while K.alive() do task.wait(0.5); pcall(K.refreshButtons) end end)
+
+K.autosaveReady=true
+K.pushLog("готов: "..(K.IS_MOBILE and "MOBILE" or "PC"),"ok")
+
+if K.ENV then
+    K.ENV.CTD_MACRO_API={launchMap=K.launchMap,play=K.play,allMacros=K.allMacros,
+        toggleAutoSkip=K.toggleAutoSkip,autoSkipOn=K.autoSkipOn,state=K.S,K=K}
+end
