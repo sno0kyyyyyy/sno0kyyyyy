@@ -1,1 +1,2595 @@
-local _a={}_a.Players=game:GetService(string.char(80,108,97,121,101,114,115))_a.RS=game:GetService(string.char(82,101,112,108,105,99,97,116,101,100,83,116,111,114,97,103,101))_a.HttpService=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))_a.TweenService=game:GetService(string.char(84,119,101,101,110,83,101,114,118,105,99,101))_a.RunService=game:GetService(string.char(82,117,110,83,101,114,118,105,99,101))_a.UIS=game:GetService(string.char(85,115,101,114,73,110,112,117,116,83,101,114,118,105,99,101))_a.Lighting=game:GetService(string.char(76,105,103,104,116,105,110,103))_a.PathfindingService=game:GetService(string.char(80,97,116,104,102,105,110,100,105,110,103,83,101,114,118,105,99,101))_a.StarterGui=game:GetService(string.char(83,116,97,114,116,101,114,71,117,105))do local _b=os.clock()while not _a.Players.LocalPlayer and os.clock()-_b<15 do task.wait(0.1)end end _a.lp=_a.Players.LocalPlayer if not _a.lp then error(string.char(76,111,99,97,108,80,108,97,121,101,114,32,110,105,108))end _a.MY_NICK=tostring(_a.lp.Name)_a.IS_MOBILE=_a.UIS.TouchEnabled and not _a.UIS.KeyboardEnabled _a.INSTANCE=tostring(os.clock())..string.char(95)..tostring(math.random(1e6))_a.ENV=(getgenv and getgenv())or nil _a.MY_KEY=string.char(67,84,68,95,77,65,67,82,79,95)..tostring(_a.lp.UserId)_a.MY_KEY_UI=string.char(67,84,68,95,77,65,67,82,79,95,85,73,95)..tostring(_a.lp.UserId)if _a.ENV then pcall(function()_a.ENV[_a.MY_KEY_UI]:Destroy()end)pcall(function()_a.ENV.CTD_MACRO_UI:Destroy()end)_a.ENV[_a.MY_KEY]=_a.INSTANCE end function _a.alive()return not _a.ENV or _a.ENV[_a.MY_KEY]==_a.INSTANCE end function _a.setProp(_c,_d,_e)if not _c then return false end return(pcall(function()_c[_d]=_e end))end function _a.getProp(_f,_g,_h)if not _f then return _h end local _i,_j=pcall(function()return _f[_g]end);if _i then return _j end;return _h end function _a.safeDestroy(_k)if not _k then return end pcall(function()_k:Destroy()end)end function _a.setAttr(_l,_m,_n)if not _l then return end pcall(function()_l:SetAttribute(_m,_n)end)end function _a.getAttr(_o,_p)if not _o then return nil end local _q,_r=pcall(function()return _o:GetAttribute(_p)end);if _q then return _r end;return nil end _a.outlineStrokes={}_a.widgets={}_a.accordions={}_a.sliders={}_a._order=0 function _a.nextOrder()_a._order=_a._order+1;return _a._order end function _a.pruneDead()for _s in pairs(_a.outlineStrokes)do if typeof(_s)~=string.char(73,110,115,116,97,110,99,101)or not _s.Parent then _a.outlineStrokes[_s]=nil end end for _t in pairs(_a.widgets)do if type(_t)~=string.char(116,97,98,108,101)or not _t.obj or not _t.obj.Parent then _a.widgets[_t]=nil end end for _u in pairs(_a.accordions)do if type(_u)~=string.char(116,97,98,108,101)or not _u.wrap or not _u.wrap.Parent then _a.accordions[_u]=nil end end for _v in pairs(_a.sliders)do if type(_v)~=string.char(116,97,98,108,101)or not _v.holder or not _v.holder.Parent then _a.sliders[_v]=nil end end end function _a.track(_w,_x)if not _w or not _x then return _w end local _y=false;local _z _z=_x.Destroying:Connect(function()if _y then return end;_y=true pcall(function()_w:Disconnect()end)pcall(function()_z:Disconnect()end)end)return _w end pcall(function()local _A=game:GetService(string.char(67,111,114,101,71,117,105))for _B,_C in ipairs({string.char(67,84,68,95,77,97,99,114,111)})do local _D=_A:FindFirstChild(_C);if _D then _D:Destroy()end end local _E=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105))if _E then for _F,_G in ipairs({string.char(67,84,68,95,77,97,99,114,111)})do local _H=_E:FindFirstChild(_G);if _H then _H:Destroy()end end end end)_a.DATA_DIR=""pcall(function()if makefolder and isfolder then if not isfolder(string.char(99,116,100,95,100,97,116,97))then makefolder(string.char(99,116,100,95,100,97,116,97))end _a.DATA_DIR=string.char(99,116,100,95,100,97,116,97,47)end end)_a.RE=nil _a.RF=nil do local _I=_a.RS:WaitForChild(string.char(77,111,100,117,108,101,76,111,97,100,101,114),20)local _J=_I and _I:WaitForChild(string.char(83,104,97,114,101,100),20)local _K=_J and _J:WaitForChild(string.char(78,101,116,119,111,114,107),20)_a.RE=_K and _K:WaitForChild(string.char(82,101,109,111,116,101,69,118,101,110,116),20)_a.RF=_K and _K:FindFirstChild(string.char(82,101,109,111,116,101,70,117,110,99,116,105,111,110))end function _a.remote(_L)return _a.RE and _a.RE:FindFirstChild(_L)end function _a.rfunc(_M)return _a.RF and _a.RF:FindFirstChild(_M)end function _a.gameFolder()return workspace:FindFirstChild(string.char(71,97,109,101))end function _a.inMatch()if _a.remote(string.char(84,111,119,101,114,65,100,100))~=nil then return true end if _a.gameFolder()~=nil then return true end if workspace:GetAttribute(string.char(73,115,86,111,116,105,110,103))then return true end local _N=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105))if _N and _N:FindFirstChild(string.char(71,97,109,101,85,73))then return true end return false end function _a.inLobby()return not _a.inMatch()and workspace:FindFirstChild(string.char(69,108,101,118,97,116,111,114,115))~=nil end do local _O=os.clock()while not _a.inMatch()and not _a.inLobby()and os.clock()-_O<15 do task.wait(0.25)end end _a.NICK_SAFE=_a.MY_NICK:gsub(string.char(91,94,37,119,95,37,45,37,46,93),string.char(95))_a.FILE=_a.DATA_DIR..string.char(99,116,100,95,109,97,99,114,111,46,106,115,111,110)_a.FARM=_a.DATA_DIR..(string.char(99,116,100,95,102,97,114,109,95,37,115,46,116,120,116)):format(_a.NICK_SAFE)_a.SELECTED=_a.DATA_DIR..(string.char(99,116,100,95,115,101,108,101,99,116,101,100,95,37,115,46,116,120,116)):format(_a.NICK_SAFE)_a.AUTOPLAY=_a.DATA_DIR..(string.char(99,116,100,95,97,117,116,111,112,108,97,121,95,37,115,46,116,120,116)):format(_a.NICK_SAFE)_a.PLAYAGAIN=_a.DATA_DIR..(string.char(99,116,100,95,112,108,97,121,97,103,97,105,110,95,37,115,46,116,120,116)):format(_a.NICK_SAFE)_a.SPEED_FILE=_a.DATA_DIR..(string.char(99,116,100,95,115,112,101,101,100,95,37,115,46,116,120,116)):format(_a.NICK_SAFE)_a.CFG_FILE=_a.DATA_DIR..(string.char(99,116,100,95,99,102,103,95,37,115,46,106,115,111,110)):format(_a.NICK_SAFE)_a.HUD_FILE=_a.DATA_DIR..(string.char(99,116,100,95,104,117,100,95,37,115,46,106,115,111,110)):format(_a.NICK_SAFE)_a.VOTE_FILE=_a.DATA_DIR..(string.char(99,116,100,95,118,111,116,101,95,37,115,46,106,115,111,110)):format(_a.NICK_SAFE)function _a.readName(_P)local _Q,_R=pcall(readfile,_P);if not _Q or type(_R)~=string.char(115,116,114,105,110,103)then return""end;return(_R:gsub(string.char(94,37,115,43),""):gsub(string.char(37,115,43,36),""))end function _a.writeName(_S,_T)pcall(writefile,_S,_T or"")end function _a.readSavedSpeed()local _U=tonumber(_a.readName(_a.SPEED_FILE));if _U==1 or _U==1.5 or _U==2 then return _U end;return 1 end function _a.writeSavedSpeed(_V)pcall(writefile,_a.SPEED_FILE,tostring(tonumber(_V)or 1))end function _a.readJSON(_W)local _X,_Y=pcall(readfile,_W);if not _X or type(_Y)~=string.char(115,116,114,105,110,103)then return nil end local _Z,_ba=pcall(function()return _a.HttpService:JSONDecode(_Y)end)if _Z and type(_ba)==string.char(116,97,98,108,101)then return _ba end return nil end function _a.writeJSON(_bb,_bc)pcall(writefile,_bb,_a.HttpService:JSONEncode(_bc))end local _bd=_a.readJSON(_a.VOTE_FILE)or{}_a.S={recording=false,playing=false,launching=false,actions={},towerIds={},idIndex={},placed=0,levelById={},playMap={},lastId=nil,wave=0,waveStart=os.clock(),status=string.char(208,179,208,190,209,130,208,190,208,178),playAgain=_a.readName(_a.PLAYAGAIN)==string.char(49),speed=_a.readSavedSpeed(),tab=string.char(97,117,116,111,102,97,114,109),collapsed=false,summon1=false,summon10=false,summonDelay=60,gameDelay=500,selected=_a.readName(_a.SELECTED),voteMode=_bd.mode or string.char(73,110,115,97,110,101),autoVote=(_bd.auto~=false)}if _a.S.selected==""then _a.S.selected=nil end _a.S.launchCooldown=0 _a.S.pendingTowerAdd=nil _a.S.votedTick=0 _a.S.lastVotedMode=nil function _a.resetRecordState()_a.S.placed=0 _a.S.towerIds={}_a.S.idIndex={}_a.S.levelById={}_a.S.playMap={}_a.S.lastId=nil _a.S.pendingTowerAdd=nil end _a.MAX_LOGS=80 _a.logsBuf={}_a.logsUpdated=false function _a.pushLog(_be,_bf)_bf=_bf or string.char(105,110,102,111)table.insert(_a.logsBuf,{t=os.date(string.char(37,72,58,37,77,58,37,83)),m=tostring(_be),k=_bf})if#_a.logsBuf>_a.MAX_LOGS then table.remove(_a.logsBuf,1)end _a.logsUpdated=true end function _a.log(_bg,_bh)print(string.char(91,75,111,82,105,52,93,32).._bg);_a.S.status=_bg;_a.pushLog(_bg,_bh or string.char(105,110,102,111))end _a.FONT=Enum.Font.RobotoMono _a.BASE={bg=Color3.fromRGB(20,14,34),panel=Color3.fromRGB(30,20,50),line=Color3.fromRGB(58,42,88),text=Color3.fromRGB(228,220,245),dim=Color3.fromRGB(140,120,175),sidebar=Color3.fromRGB(24,16,40),topbar=Color3.fromRGB(26,18,44),accent=Color3.fromRGB(170,120,255),ok=Color3.fromRGB(120,230,160),red=Color3.fromRGB(230,90,110),orange=Color3.fromRGB(255,180,90)}_a.DISABLED={bg=Color3.fromRGB(22,16,36),text=Color3.fromRGB(72,60,95),stroke=Color3.fromRGB(40,30,60)}_a.LOG_COLORS={info=Color3.fromRGB(180,170,200),ok=Color3.fromRGB(140,240,160),warn=Color3.fromRGB(255,200,100),err=Color3.fromRGB(255,120,120),event=Color3.fromRGB(150,200,255)}_a.THEMES={{id=string.char(118,105,111,108,101,116),ru=string.char(208,164,208,184,208,190,208,187,208,181,209,130),c1=Color3.fromRGB(150,120,255),c2=Color3.fromRGB(90,180,255)},{id=string.char(99,111,109,98,97,116),ru=string.char(208,154,208,190,208,188,208,177,208,176,209,130),c1=Color3.fromRGB(90,100,255),c2=Color3.fromRGB(160,60,220)},{id=string.char(115,105,114,101,110),ru=string.char(208,161,208,184,209,128,208,181,208,189,208,176),c1=Color3.fromRGB(255,90,160),c2=Color3.fromRGB(255,140,120)},{id=string.char(109,105,110,116),ru=string.char(208,156,209,143,209,130,208,189,208,190,45,208,188,208,176,208,187),c1=Color3.fromRGB(120,240,200),c2=Color3.fromRGB(255,90,140)},{id=string.char(116,119,105,108,105,103,104,116),ru=string.char(208,161,209,131,208,188,208,181,209,128,208,186,208,184),c1=Color3.fromRGB(90,60,180),c2=Color3.fromRGB(50,30,90)},{id=string.char(114,117,98,121),ru=string.char(208,160,209,131,208,177,208,184,208,189),c1=Color3.fromRGB(200,30,60),c2=Color3.fromRGB(255,100,80)},{id=string.char(115,112,97,99,101),ru=string.char(208,154,208,190,209,129,208,188,208,190,209,129),c1=Color3.fromRGB(60,30,120),c2=Color3.fromRGB(20,10,60)},{id=string.char(97,109,98,101,114),ru=string.char(208,144,208,188,208,181,209,130,208,184,209,129,209,130),c1=Color3.fromRGB(160,90,220),c2=Color3.fromRGB(255,220,90)},{id=string.char(112,101,97,99,104),ru=string.char(208,159,208,181,209,128,209,129,208,184,208,186),c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,120,120)},{id=string.char(108,97,118,101,110,100,101,114),ru=string.char(208,155,208,176,208,178,208,176,208,189,208,180,208,176),c1=Color3.fromRGB(180,160,240),c2=Color3.fromRGB(80,140,255)},{id=string.char(119,105,110,101),ru=string.char(208,146,208,184,208,189,208,190),c1=Color3.fromRGB(120,40,90),c2=Color3.fromRGB(40,90,160)},{id=string.char(115,117,110,115,101,116),ru=string.char(208,151,208,176,208,186,208,176,209,130),c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,120)},{id=string.char(111,114,97,110,103,101),ru=string.char(208,158,209,128,208,176,208,189,208,182),c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,150)},{id=string.char(108,105,109,101),ru=string.char(208,155,208,176,208,185,208,188),c1=Color3.fromRGB(120,220,90),c2=Color3.fromRGB(255,120,200)},{id=string.char(108,105,109,101,50),ru=string.char(208,173,208,178,208,186,208,176,208,187,208,184,208,191,209,130),c1=Color3.fromRGB(80,180,140),c2=Color3.fromRGB(40,120,90)},{id=string.char(114,97,115,112),ru=string.char(208,156,208,176,208,187,208,184,208,189,208,176),c1=Color3.fromRGB(255,60,120),c2=Color3.fromRGB(255,140,60)},{id=string.char(102,114,111,115,116),ru=string.char(208,156,208,190,209,128,208,190,208,183),c1=Color3.fromRGB(220,240,255),c2=Color3.fromRGB(160,180,220)},{id=string.char(99,111,108,100),ru=string.char(208,165,208,190,208,187,208,190,208,180),c1=Color3.fromRGB(90,180,220),c2=Color3.fromRGB(40,100,180)},{id=string.char(115,116,111,114,109),ru=string.char(208,168,209,130,208,190,209,128,208,188),c1=Color3.fromRGB(60,90,180),c2=Color3.fromRGB(20,40,90)},{id=string.char(100,97,114,107),ru=string.char(208,162,209,145,208,188,208,189,209,139,208,185),c1=Color3.fromRGB(90,90,110),c2=Color3.fromRGB(30,30,40)},{id=string.char(114,101,100,103,114,97,121),ru=string.char(208,154,209,128,45,209,129,208,181,209,128),c1=Color3.fromRGB(220,70,70),c2=Color3.fromRGB(80,40,40)},{id=string.char(98,108,117,101,103,114,97,121),ru=string.char(208,161,208,184,208,189,45,209,129,208,181,209,128),c1=Color3.fromRGB(80,140,230),c2=Color3.fromRGB(40,60,90)},{id=string.char(103,111,108,100),ru=string.char(208,151,208,190,208,187,208,190,209,130,208,190),c1=Color3.fromRGB(230,190,70),c2=Color3.fromRGB(120,90,30)},{id=string.char(111,99,101,97,110),ru=string.char(208,158,208,186,208,181,208,176,208,189),c1=Color3.fromRGB(80,150,238),c2=Color3.fromRGB(234,88,150)},{id=string.char(110,101,111,110,112,105,110,107),ru=string.char(208,157,208,181,208,190,208,189,45,209,128,208,190,208,183,208,190,208,178,209,139,208,185),c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(255,140,80)},{id=string.char(99,121,98,101,114,112,117,114,112,108,101),ru=string.char(208,154,208,184,208,177,208,181,209,128,45,209,132,208,184,208,190,208,187),c1=Color3.fromRGB(120,60,220),c2=Color3.fromRGB(255,80,180)},{id=string.char(99,97,110,100,121),ru=string.char(208,154,208,176,209,128,208,176,208,188,208,181,208,187,209,140),c1=Color3.fromRGB(255,120,180),c2=Color3.fromRGB(120,200,255)},{id=string.char(97,113,117,97),ru=string.char(208,144,208,186,208,178,208,176),c1=Color3.fromRGB(80,220,220),c2=Color3.fromRGB(60,150,220)},{id=string.char(102,111,114,101,115,116),ru=string.char(208,155,208,181,209,129),c1=Color3.fromRGB(60,180,120),c2=Color3.fromRGB(20,80,60)},{id=string.char(114,111,121,97,108),ru=string.char(208,160,208,190,209,143,208,187),c1=Color3.fromRGB(80,60,200),c2=Color3.fromRGB(180,140,255)},{id=string.char(99,114,105,109,115,111,110),ru=string.char(208,145,208,176,208,179,209,128,208,190,208,178,209,139,208,185),c1=Color3.fromRGB(200,30,50),c2=Color3.fromRGB(120,20,40)},{id=string.char(99,111,114,97,108),ru=string.char(208,154,208,190,209,128,208,176,208,187,208,187),c1=Color3.fromRGB(255,120,100),c2=Color3.fromRGB(255,180,140)},{id=string.char(112,105,115,116,97,99,104,105,111),ru=string.char(208,164,208,184,209,129,209,130,208,176,209,136,208,186,208,176),c1=Color3.fromRGB(180,220,140),c2=Color3.fromRGB(90,180,110)},{id=string.char(97,117,116,117,109,110),ru=string.char(208,158,209,129,208,181,208,189,209,140),c1=Color3.fromRGB(255,150,40),c2=Color3.fromRGB(255,80,60)},{id=string.char(100,101,101,112,98,108,117,101),ru=string.char(208,147,208,187,209,131,208,177,208,190,208,186,208,184,208,185),c1=Color3.fromRGB(30,60,180),c2=Color3.fromRGB(120,180,255)},{id=string.char(116,101,97,108),ru=string.char(208,145,208,184,209,128,209,142,208,183,208,176),c1=Color3.fromRGB(20,180,180),c2=Color3.fromRGB(255,150,140)},{id=string.char(109,105,110,116,103,114,101,101,110),ru=string.char(208,156,209,143,209,130,208,189,209,139,208,185),c1=Color3.fromRGB(80,230,180),c2=Color3.fromRGB(120,200,240)},{id=string.char(112,105,110,107,112,117,114,112,108,101),ru=string.char(208,160,208,190,208,183,208,190,208,178,208,190,45,209,132,208,184,208,190,208,187),c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(140,60,200)},{id=string.char(115,117,110,114,105,115,101),ru=string.char(208,160,208,176,209,129,209,129,208,178,208,181,209,130),c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,80,120)},}_a.OUTLINES={{id=string.char(110,111,110,101),ru=string.char(208,157,208,181,209,130),none=true},{id=string.char(119,104,105,116,101),ru=string.char(208,145,208,181,208,187,208,176,209,143),c=Color3.fromRGB(230,230,240)},{id=string.char(118,105,111,108,101,116),ru=string.char(208,164,208,184,208,190,208,187,208,181,209,130),c=Color3.fromRGB(150,120,255)},{id=string.char(114,101,100),ru=string.char(208,154,209,128,208,176,209,129,208,189,208,176,209,143),c=Color3.fromRGB(230,80,80)},{id=string.char(103,114,101,101,110),ru=string.char(208,151,208,181,208,187,209,145,208,189,208,176,209,143),c=Color3.fromRGB(90,230,140)},{id=string.char(98,108,117,101),ru=string.char(208,161,208,184,208,189,209,143,209,143),c=Color3.fromRGB(90,160,255)},{id=string.char(103,111,108,100),ru=string.char(208,151,208,190,208,187,208,190,209,130,208,190),c=Color3.fromRGB(240,200,90)},{id=string.char(112,105,110,107),ru=string.char(208,160,208,190,208,183,208,190,208,178,208,176,209,143),c=Color3.fromRGB(255,120,190)},{id=string.char(114,97,105,110,98,111,119),ru=string.char(208,160,208,176,208,180,209,131,208,179,208,176),rainbow=true,anim=true},{id=string.char(114,97,105,110,98,111,119,95,115,108,111,119),ru=string.char(208,160,208,176,208,180,209,131,208,179,208,176,45,208,191,208,187,208,176,208,178),rainbow=true,anim=true,animMul=0.35},}_a.RAINBOW_SEQ=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,70,90)),ColorSequenceKeypoint.new(0.16,Color3.fromRGB(255,150,60)),ColorSequenceKeypoint.new(0.33,Color3.fromRGB(255,230,70)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(90,230,150)),ColorSequenceKeypoint.new(0.66,Color3.fromRGB(70,170,255)),ColorSequenceKeypoint.new(0.83,Color3.fromRGB(160,90,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,70,90)),})_a.HUD={themeId=string.char(118,105,111,108,101,116),outlineId=string.char(110,111,110,101),outlineThickness=1,outlineTransparency=0,olAnimSpeed=1,olSections=true,olButtons=true,olTabs=true,rainbowSpeed=1,hueSpeed=1,blur=0,glow=0,blurFx=nil,glowFx=nil}function _a.currentTheme()for _bi,_bj in ipairs(_a.THEMES)do if _bj.id==_a.HUD.themeId then return _bj end end return _a.THEMES[1]end function _a.themeAccent()return _a.currentTheme().c1 end function _a.currentOutline()for _bk,_bl in ipairs(_a.OUTLINES)do if _bl.id==_a.HUD.outlineId then return _bl end end return _a.OUTLINES[1]end _a.VFX={orbit={on=false,emitter=nil,attach=nil,settings={radius=6,count=20,color=Color3.fromRGB(120,200,255),bright=1,speed=1,size=1}},lighting={on=false,bloom=nil,cc=nil,sunrays=nil,settings={bloomIntensity=1.2,bloomSize=24,bloomThreshold=0.9,contrast=0.1,saturation=0.15,tint=Color3.fromRGB(255,255,255)}},distort={on=false,blur=nil,cc=nil,settings={blur=4,contrast=0.4,bright=0.05,tint=Color3.fromRGB(230,240,255)}},hue={on=false,cc=nil,settings={speed=1,saturation=0.4,brightness=0}},trail={on=false,trail=nil,a0=nil,a1=nil,settings={lifetime=0.8,width=0.6,color=Color3.fromRGB(120,200,255),bright=1}},pulse={on=false,light=nil,settings={range=12,bright=2,speed=2,color=Color3.fromRGB(255,220,160)}},}_a.VFX_DEFAULTS={}for _bm,_bn in pairs(_a.VFX)do _a.VFX_DEFAULTS[_bm]={}for _bo,_bp in pairs(_bn.settings)do if typeof(_bp)==string.char(67,111,108,111,114,51)then _a.VFX_DEFAULTS[_bm][_bo]={__color=true,r=_bp.R,g=_bp.G,b=_bp.B}else _a.VFX_DEFAULTS[_bm][_bo]=_bp end end end _a.orbitAngle=0 _a.hueT=0 _a.pulseT=0 function _a.ensureOrbit()local _bq=_a.VFX.orbit local _br=_a.lp.Character and _a.lp.Character:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))if not _br then return nil end if _bq.emitter and _bq.emitter.Parent and _bq.attach and _bq.attach.Parent==_br then return _bq end _a.safeDestroy(_bq.emitter);_a.safeDestroy(_bq.attach)local _bs=Instance.new(string.char(65,116,116,97,99,104,109,101,110,116));_bs.Name=string.char(67,84,68,95,79,114,98,105,116);_bs.Parent=_br local _bt=Instance.new(string.char(80,97,114,116,105,99,108,101,69,109,105,116,116,101,114))_bt.Name=string.char(67,84,68,95,79,114,98,105,116,80,97,114,116,115);_bt.Texture=string.char(114,98,120,97,115,115,101,116,58,47,47,116,101,120,116,117,114,101,115,47,112,97,114,116,105,99,108,101,115,47,115,112,97,114,107,108,101,115,95,109,97,105,110,46,100,100,115)_bt.Lifetime=NumberRange.new(1,1.5);_bt.Rate=0;_bt.Speed=NumberRange.new(0,0);_bt.Drag=0 _bt.Rotation=NumberRange.new(0,360);_bt.RotSpeed=NumberRange.new(-180,180)_bt.SpreadAngle=Vector2.new(0,0);_bt.LightInfluence=0;_bt.Size=NumberSequence.new(0.4)_bt.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(1,1)})_bt.Parent=_bs;_bq.attach=_bs;_bq.emitter=_bt;return _bq end function _a.applyOrbit()local _bu=_a.VFX.orbit;local _bv=_bu.emitter;if not _bv then return end local _bw=_bu.settings _a.setProp(_bv,string.char(67,111,108,111,114),ColorSequence.new(_bw.color))_a.setProp(_bv,string.char(76,105,103,104,116,69,109,105,115,115,105,111,110),_bw.bright>1 and 1 or 0)_a.setProp(_bv,string.char(83,105,122,101),NumberSequence.new((tonumber(_bw.size)or 1)*0.4))_a.setProp(_bv,string.char(82,97,116,101),_bu.on and(math.clamp(tonumber(_bw.count)or 20,1,60)*2)or 0)_a.setProp(_bv,string.char(69,110,97,98,108,101,100),_bu.on)end function _a.applyLighting()local _bx=_a.VFX.lighting if _bx.on then if not _bx.bloom or not _bx.bloom.Parent then _bx.bloom=Instance.new(string.char(66,108,111,111,109,69,102,102,101,99,116));_bx.bloom.Name=string.char(67,84,68,95,66,108,111,111,109);_bx.bloom.Parent=_a.Lighting end if not _bx.cc or not _bx.cc.Parent then _bx.cc=Instance.new(string.char(67,111,108,111,114,67,111,114,114,101,99,116,105,111,110,69,102,102,101,99,116));_bx.cc.Name=string.char(67,84,68,95,67,67);_bx.cc.Parent=_a.Lighting end local _by=_bx.settings _a.setProp(_bx.bloom,string.char(73,110,116,101,110,115,105,116,121),_by.bloomIntensity)_a.setProp(_bx.bloom,string.char(83,105,122,101),_by.bloomSize)_a.setProp(_bx.bloom,string.char(84,104,114,101,115,104,111,108,100),_by.bloomThreshold)_a.setProp(_bx.cc,string.char(67,111,110,116,114,97,115,116),_by.contrast)_a.setProp(_bx.cc,string.char(83,97,116,117,114,97,116,105,111,110),_by.saturation)_a.setProp(_bx.cc,string.char(84,105,110,116,67,111,108,111,114),_by.tint)else _a.safeDestroy(_bx.bloom);_bx.bloom=nil _a.safeDestroy(_bx.cc);_bx.cc=nil end end function _a.applyDistort()local _bz=_a.VFX.distort if _bz.on then if not _bz.blur or not _bz.blur.Parent then _bz.blur=Instance.new(string.char(66,108,117,114,69,102,102,101,99,116));_bz.blur.Name=string.char(67,84,68,95,68,105,115,116,111,114,116,95,66,108,117,114);_bz.blur.Parent=_a.Lighting end if not _bz.cc or not _bz.cc.Parent then _bz.cc=Instance.new(string.char(67,111,108,111,114,67,111,114,114,101,99,116,105,111,110,69,102,102,101,99,116));_bz.cc.Name=string.char(67,84,68,95,68,105,115,116,111,114,116,95,67,67);_bz.cc.Parent=_a.Lighting end _a.setProp(_bz.blur,string.char(83,105,122,101),tonumber(_bz.settings.blur)or 4)_a.setProp(_bz.cc,string.char(67,111,110,116,114,97,115,116),tonumber(_bz.settings.contrast)or 0.4)_a.setProp(_bz.cc,string.char(66,114,105,103,104,116,110,101,115,115),tonumber(_bz.settings.bright)or 0.05)_a.setProp(_bz.cc,string.char(84,105,110,116,67,111,108,111,114),_bz.settings.tint or Color3.fromRGB(230,240,255))else _a.safeDestroy(_bz.blur);_bz.blur=nil _a.safeDestroy(_bz.cc);_bz.cc=nil end end function _a.applyHue()local _bA=_a.VFX.hue if _bA.on then if not _bA.cc or not _bA.cc.Parent then _bA.cc=Instance.new(string.char(67,111,108,111,114,67,111,114,114,101,99,116,105,111,110,69,102,102,101,99,116));_bA.cc.Name=string.char(67,84,68,95,72,117,101,95,67,67);_bA.cc.Parent=_a.Lighting end _a.setProp(_bA.cc,string.char(83,97,116,117,114,97,116,105,111,110),_bA.settings.saturation)_a.setProp(_bA.cc,string.char(66,114,105,103,104,116,110,101,115,115),_bA.settings.brightness)else _a.safeDestroy(_bA.cc);_bA.cc=nil end end function _a.ensureTrail()local _bB=_a.VFX.trail local _bC=_a.lp.Character and _a.lp.Character:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))if not _bC then return nil end if _bB.trail and _bB.trail.Parent and _bB.a0 and _bB.a0.Parent==_bC then return _bB end _a.safeDestroy(_bB.trail);_a.safeDestroy(_bB.a0);_a.safeDestroy(_bB.a1)local _bD=Instance.new(string.char(65,116,116,97,99,104,109,101,110,116));_bD.Name=string.char(67,84,68,95,84,114,97,105,108,65,48)local _bE=Instance.new(string.char(65,116,116,97,99,104,109,101,110,116));_bE.Name=string.char(67,84,68,95,84,114,97,105,108,65,49)_bD.Position=Vector3.new(0,0.5,0);_bE.Position=Vector3.new(0,-0.5,0)_bD.Parent=_bC;_bE.Parent=_bC local _bF=Instance.new(string.char(84,114,97,105,108));_bF.Name=string.char(67,84,68,95,84,114,97,105,108)_bF.Attachment0=_bD;_bF.Attachment1=_bE _bF.Lifetime=0.8;_bF.MinLength=0;_bF.FaceCamera=true;_bF.LightEmission=1;_bF.LightInfluence=0 _bF.Parent=_bC _bB.a0,_bB.a1,_bB.trail=_bD,_bE,_bF return _bB end function _a.applyTrail()local _bG=_a.VFX.trail;local _bH=_bG.trail;if not _bH then return end _a.setProp(_bH,string.char(76,105,102,101,116,105,109,101),_bG.settings.lifetime)_a.setProp(_bH,string.char(87,105,100,116,104,83,99,97,108,101),NumberSequence.new(_bG.settings.width))_a.setProp(_bH,string.char(67,111,108,111,114),ColorSequence.new(_bG.settings.color))_a.setProp(_bH,string.char(76,105,103,104,116,69,109,105,115,115,105,111,110),_bG.settings.bright>1 and 1 or(_bG.settings.bright or 0))_a.setProp(_bH,string.char(69,110,97,98,108,101,100),_bG.on)if _bG.a0 then _a.setProp(_bG.a0,string.char(86,105,115,105,98,108,101),_bG.on)end if _bG.a1 then _a.setProp(_bG.a1,string.char(86,105,115,105,98,108,101),_bG.on)end end function _a.ensurePulse()local _bI=_a.VFX.pulse local _bJ=_a.lp.Character and _a.lp.Character:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))if not _bJ then return nil end if _bI.light and _bI.light.Parent==_bJ then return _bI end _a.safeDestroy(_bI.light)local _bK=Instance.new(string.char(80,111,105,110,116,76,105,103,104,116));_bK.Name=string.char(67,84,68,95,80,117,108,115,101);_bK.Shadows=false;_bK.Parent=_bJ _bI.light=_bK;return _bI end function _a.applyPulse()local _bL=_a.VFX.pulse;local _bM=_bL.light;if not _bM then return end _a.setProp(_bM,string.char(67,111,108,111,114),_bL.settings.color)_a.setProp(_bM,string.char(82,97,110,103,101),_bL.settings.range)_a.setProp(_bM,string.char(66,114,105,103,104,116,110,101,115,115),_bL.on and _bL.settings.bright or 0)_a.setProp(_bM,string.char(69,110,97,98,108,101,100),_bL.on)end function _a.applyVFXSettings()if _a.VFX.orbit.on then _a.ensureOrbit()end if _a.VFX.trail.on then _a.ensureTrail()end if _a.VFX.pulse.on then _a.ensurePulse()end _a.applyOrbit();_a.applyLighting();_a.applyDistort();_a.applyHue();_a.applyTrail();_a.applyPulse()end function _a.applyClientFx()if _a.HUD.blur>0 then if not _a.HUD.blurFx or not _a.HUD.blurFx.Parent then _a.HUD.blurFx=Instance.new(string.char(66,108,117,114,69,102,102,101,99,116));_a.HUD.blurFx.Name=string.char(75,111,82,105,52,95,66,108,117,114);_a.HUD.blurFx.Parent=_a.Lighting end _a.setProp(_a.HUD.blurFx,string.char(83,105,122,101),_a.HUD.blur)else _a.safeDestroy(_a.HUD.blurFx);_a.HUD.blurFx=nil end if _a.HUD.glow>0 then if not _a.HUD.glowFx or not _a.HUD.glowFx.Parent then _a.HUD.glowFx=Instance.new(string.char(66,108,111,111,109,69,102,102,101,99,116));_a.HUD.glowFx.Name=string.char(75,111,82,105,52,95,71,108,111,119);_a.HUD.glowFx.Parent=_a.Lighting end _a.setProp(_a.HUD.glowFx,string.char(73,110,116,101,110,115,105,116,121),_a.HUD.glow)_a.setProp(_a.HUD.glowFx,string.char(83,105,122,101),24)_a.setProp(_a.HUD.glowFx,string.char(84,104,114,101,115,104,111,108,100),0.9)else _a.safeDestroy(_a.HUD.glowFx);_a.HUD.glowFx=nil end end _a.autosaveReady=false _a.autosavePending=false _a.autosaveTimer=nil function _a.colorToTable(_bN)return{__color=true,r=_bN.R,g=_bN.G,b=_bN.B}end function _a.tableToColor(_bO)return Color3.new(_bO.r,_bO.g,_bO.b)end function _a.snapshotVFX()local _bP={}for _bQ,_bR in pairs(_a.VFX)do local _bS={}for _bT,_bU in pairs(_bR.settings)do if typeof(_bU)==string.char(67,111,108,111,114,51)then _bS[_bT]=_a.colorToTable(_bU)else _bS[_bT]=_bU end end _bP[_bQ]={on=_bR.on,settings=_bS}end return _bP end function _a.snapshotHUD()return{themeId=_a.HUD.themeId,outlineId=_a.HUD.outlineId,outlineThickness=_a.HUD.outlineThickness,outlineTransparency=_a.HUD.outlineTransparency,olAnimSpeed=_a.HUD.olAnimSpeed,olSections=_a.HUD.olSections,olButtons=_a.HUD.olButtons,olTabs=_a.HUD.olTabs,rainbowSpeed=_a.HUD.rainbowSpeed,hueSpeed=_a.HUD.hueSpeed,blur=_a.HUD.blur,glow=_a.HUD.glow}end function _a.doAutosave()_a.autosavePending=false if not _a.autosaveReady then return end _a.writeJSON(_a.HUD_FILE,{owner=_a.MY_NICK,saved=os.date(string.char(37,100,46,37,109,46,37,89,32,37,72,58,37,77,58,37,83)),vfx=_a.snapshotVFX(),hud=_a.snapshotHUD()})_a.writeJSON(_a.VOTE_FILE,{mode=_a.S.voteMode,auto=_a.S.autoVote})end function _a.scheduleAutosave()if not _a.autosaveReady or _a.autosavePending then return end _a.autosavePending=true if _a.autosaveTimer then task.cancel(_a.autosaveTimer)end _a.autosaveTimer=task.delay(1,function()_a.autosaveTimer=nil;if _a.alive()then _a.doAutosave()end end)end function _a.saveNow()if _a.autosaveTimer then task.cancel(_a.autosaveTimer);_a.autosaveTimer=nil end _a.autosavePending=false _a.doAutosave()end function _a.money()local _bV=_a.lp:FindFirstChild(string.char(108,101,97,100,101,114,115,116,97,116,115));local _bW=_bV and _bV:FindFirstChild(string.char(77,111,110,101,121));return _bW and _bW.Value or 0 end function _a.curWave()return tonumber(workspace:GetAttribute(string.char(87,97,118,101)))or 0 end function _a.waveTime()return os.clock()-_a.S.waveStart end function _a.safeGet(_bX,_bY)if not _bX then return nil end local _bZ,_ca=pcall(function()return _bX[_bY]end)if _bZ then return _ca end return nil end function _a.tryFireConnections(_cb)if not _cb or not getconnections then return false end local _cc=false for _cd,_ce in ipairs({string.char(65,99,116,105,118,97,116,101,100),string.char(77,111,117,115,101,66,117,116,116,111,110,49,67,108,105,99,107),string.char(77,111,117,115,101,66,117,116,116,111,110,49,68,111,119,110),string.char(77,111,117,115,101,66,117,116,116,111,110,49,85,112)})do local _cf=_a.safeGet(_cb,_ce)if _cf then local _cg,_ch=pcall(getconnections,_cf)if _cg and type(_ch)==string.char(116,97,98,108,101)then for _ci,_cj in ipairs(_ch)do pcall(function()if _cj.Fire then _cj:Fire()elseif _cj.Function then _cj.Function()end end);_cc=true end end end end if firesignal then for _ck,_cl in ipairs({string.char(65,99,116,105,118,97,116,101,100),string.char(77,111,117,115,101,66,117,116,116,111,110,49,67,108,105,99,107),string.char(77,111,117,115,101,66,117,116,116,111,110,49,68,111,119,110),string.char(77,111,117,115,101,66,117,116,116,111,110,49,85,112)})do local _cm=_a.safeGet(_cb,_cl);if _cm then pcall(firesignal,_cm)end end end return _cc end function _a.simulateClick(_cn)if not _cn then return false end local _co,_cp=pcall(function()return _cn.AbsolutePosition end);if not _co or not _cp then return false end local _cq,_cr=pcall(function()return _cn.AbsoluteSize end);if not _cq or not _cr then return false end local _cs=_cp.X+_cr.X/2;local _ct=_cp.Y+_cr.Y/2 if mousemoveabs then pcall(mousemoveabs,_cs,_ct);task.wait(0.02)end if mouse1press and mouse1release then pcall(mouse1press);task.wait(0.02);pcall(mouse1release);return true elseif mouse1click then pcall(mouse1click);return true end return false end function _a.findLabelByText(_cu,_cv)local _cw=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105));if not _cw then return nil end local _cx for _cy,_cz in ipairs(_cw:GetDescendants())do local _cA=nil;pcall(function()_cA=_cz.Text end)if _cA and(_cz:IsA(string.char(84,101,120,116,76,97,98,101,108))or _cz:IsA(string.char(84,101,120,116,66,117,116,116,111,110)))then local _cB=_cv and(_cA==_cu)or(_cA:find(_cu,1,true)~=nil)if _cB then local _cC=true;local _cD=_cz for _cE=1,12 do if _cD and _cD.Visible==false then _cC=false break end;_cD=_cD and _cD.Parent;if not _cD or _cD:IsA(string.char(80,108,97,121,101,114,71,117,105))then break end end if _cC then return _cz end if not _cx then _cx=_cz end end end end return _cx end function _a.getButtonFromLabel(_cF)if not _cF then return nil end local _cG=_cF for _cH=1,8 do if not _cG then break end;if _cG:IsA(string.char(71,117,105,66,117,116,116,111,110))then return _cG end;_cG=_cG.Parent;if _cG and _cG:IsA(string.char(80,108,97,121,101,114,71,117,105))then break end end return _cF end function _a.v3(_cI)return{x=_cI.X,y=_cI.Y,z=_cI.Z}end function _a.unv3(_cJ)return Vector3.new(_cJ.x,_cJ.y,_cJ.z)end function _a.cfs(_cK)return{_cK:GetComponents()}end function _a.uncf(_cL)return CFrame.new(unpack(_cL))end _a.hookReady=false function _a.startFireServerHook()if _a.hookReady then return end local _cM=_a.remote(string.char(84,111,119,101,114,65,100,100));if not _cM then return end local _cN=_cM.FireServer;if type(_cN)~=string.char(102,117,110,99,116,105,111,110)then return end local function _cO(_cP,...)if _cP==_cM then _a.S.pendingTowerAdd={...}end return _cN(_cP,...)end local _cQ=false if hookfunction then _cQ=pcall(function()hookfunction(_cN,newcclosure(_cO))end)end if not _cQ and getrawmetatable and setreadonly and newcclosure then local _cR=getrawmetatable(game)if _cR and _cR.__namecall then local _cS=_cR.__namecall local function _cT(_cU,...)if(getnamecallmethod and getnamecallmethod())==string.char(70,105,114,101,83,101,114,118,101,114)and _cU==_cM then _a.S.pendingTowerAdd={...}end return _cS(_cU,...)end pcall(function()setreadonly(_cR,false);_cR.__namecall=newcclosure(_cT);setreadonly(_cR,true)end)_cQ=true end end _a.hookReady=_cQ end _a.startFireServerHook()function _a.record(_cV)if not _a.S.recording or _a.S.playing then return end _cV.wave=_a.S.wave;_cV.t=math.floor(_a.waveTime()*10)/10 table.insert(_a.S.actions,_cV)_a.log((string.char(226,151,143,32,37,115,32,226,128,148,32,208,178,37,100,44,32,37,46,49,102,209,129)):format(_cV.type,_cV.wave,_cV.t))end function _a.mine(_cW)if type(_cW)~=string.char(116,97,98,108,101)then return false end if _cW.OwnerUserId then return _cW.OwnerUserId==_a.lp.UserId end if _cW.OwnerName then return _cW.OwnerName==_a.lp.Name end return false end function _a.allMacros()local _cX,_cY=pcall(readfile,_a.FILE)if _cX and type(_cY)==string.char(115,116,114,105,110,103)then local _cZ,_da=pcall(function()return _a.HttpService:JSONDecode(_cY)end)if _cZ and type(_da)==string.char(116,97,98,108,101)then return _da end end return{}end function _a.saveMacro(_db)if#_a.S.actions==0 then _a.log(string.char(208,191,209,131,209,129,209,130,208,190));return nil end local _dc=0 for _dd,_de in ipairs(_a.S.actions)do if _de.type==string.char(112,108,97,99,101)or _de.type==string.char(117,112,103,114,97,100,101)or _de.type==string.char(115,101,108,108)then _dc+=1 end end if _dc==0 then _a.log(string.char(208,189,208,181,209,130,32,208,177,208,176,209,136,208,181,208,189));return nil end local _df=tostring(workspace:GetAttribute(string.char(77,97,112))or string.char(63))if not _db or _db==""then _db=(string.char(37,115,32,37,115)):format(_df,os.date(string.char(37,100,46,37,109,32,37,72,58,37,77)))end local _dg=_a.allMacros()if _dg[_db]then local _dh,_di=_db,2 repeat _db=(string.char(37,115,32,40,37,100,41)):format(_dh,_di);_di+=1 until not _dg[_db]end _dg[_db]={map=_df,mode=tostring(workspace:GetAttribute(string.char(77,111,100,101))or""),autoskip=_a.autoSkipOn and _a.autoSkipOn()or false,playAgain=_a.S.playAgain,actions=_a.S.actions,saved=os.date(string.char(37,100,46,37,109,46,37,89,32,37,72,58,37,77)),owner=_a.MY_NICK}local _dj=pcall(writefile,_a.FILE,_a.HttpService:JSONEncode(_dg))if not _dj then _a.log(string.char(102,97,105,108));return nil end _a.log((string.char(209,129,208,190,209,133,209,128,32,194,171,37,115,194,187,58,32,37,100)):format(_db,#_a.S.actions))return _db end function _a.fire(_dk,_dl)local _dm=_a.remote(_dk);if not _dm then return false end if _dl==nil then _dm:FireServer()else _dm:FireServer(_dl)end return true end function _a.waitMoment(_dn,_do)while _a.alive()and _a.S.playing do if _a.S.wave>_dn then return true end if _a.S.wave==_dn and _a.waveTime()>=_do then return true end task.wait(0.1)end return false end function _a.liveUnitId(_dp,_dq)for _dr=1,5 do if _a.lp:GetAttribute(string.char(83,108,111,116).._dr..string.char(73,100))==_dq then return _dq end end for _ds=1,5 do if _a.lp:GetAttribute(string.char(83,108,111,116).._ds)==_dp then local _dt=_a.lp:GetAttribute(string.char(83,108,111,116).._ds..string.char(73,100))if _dt and _dt~=""then return _dt end end end return _dq end function _a.buildPlacePayload(_du)local _dv={Name=_du.name,UnitId=_a.liveUnitId(_du.name,_du.unitId)}if _du.pos then _dv.Pos=_a.unv3(_du.pos)end if _du.cf then _dv.CFrame=_a.uncf(_du.cf)end return _dv end function _a.playAction(_dw,_dx)if _dw.type==string.char(112,108,97,99,101)then _dx.placeNo+=1;local _dy=_dx.placeNo local _dz=_a.S.placed local _dA=os.clock()local _dB=0 while _a.alive()and _a.S.playing and _a.S.placed==_dz and os.clock()-_dA<25 do if not _a.remote(string.char(84,111,119,101,114,65,100,100))then task.wait(0.5)else if _dw.price and _a.money()<_dw.price then _a.S.status=(string.char(208,182,208,180,209,131,32,37,115)):format(tostring(_dw.name));task.wait(0.5)else if os.clock()-_dB>2 then _a.fire(string.char(84,111,119,101,114,65,100,100),_a.buildPlacePayload(_dw))_dB=os.clock()end task.wait(0.3)end end end if _a.S.placed>_dz and _a.S.lastId then _a.S.playMap[_dy]=_a.S.lastId _a.log((string.char(226,150,182,32,37,115,32,40,35,37,100,41,32,105,100,61,37,115)):format(tostring(_dw.name),_dy,tostring(_a.S.lastId)))else _a.log((string.char(226,150,182,32,102,97,105,108,32,37,115,32,40,112,108,97,99,101,100,61,37,100,44,32,108,97,115,116,73,100,61,37,115,41)):format(tostring(_dw.name),_a.S.placed,tostring(_a.S.lastId)))end elseif _dw.type==string.char(117,112,103,114,97,100,101)then local _dC=_a.S.playMap[_dw.tower]if not _dC then _a.log((string.char(226,172,134,32,35,37,100,32,208,177,208,181,208,183,32,105,100,32,226,128,148,32,208,191,209,128,208,190,208,191,209,131,209,129,208,186)):format(_dw.tower),string.char(119,97,114,110))return end local _dD=_dw.level or((_a.S.levelById[_dC]or 1)+1)local _dE=_a.S.levelById[_dC]or 1 local _dF=os.clock()local _dG=0 while _a.alive()and _a.S.playing and(_a.S.levelById[_dC]or 1)<_dD and os.clock()-_dF<25 do if not _a.remote(string.char(84,111,119,101,114,85,112,103,114,97,100,101))then task.wait(0.5)else if _dw.price and _a.money()<_dw.price then task.wait(0.5)else if os.clock()-_dG>1.5 then _a.fire(string.char(84,111,119,101,114,85,112,103,114,97,100,101),{Id=_dC})_dG=os.clock()end task.wait(0.3)end end end local _dH=_a.S.levelById[_dC]or 1 if _dH>_dE then _a.log((string.char(226,172,134,32,35,37,100,32,108,118,108,32,37,100,226,134,146,37,100)):format(_dw.tower,_dE,_dH))else _a.log((string.char(226,172,134,32,102,97,105,108,32,35,37,100,32,40,108,118,108,61,37,100,44,32,119,97,110,116,61,37,100,41)):format(_dw.tower,_dH,_dD),string.char(119,97,114,110))end elseif _dw.type==string.char(116,97,114,103,101,116)then local _dI=_a.S.playMap[_dw.tower];if _dI then _a.fire(string.char(84,111,119,101,114,84,97,114,103,101,116),{Id=_dI});task.wait(0.3)end elseif _dw.type==string.char(115,101,108,108)then local _dJ=_a.S.playMap[_dw.tower];if _dJ then _a.fire(string.char(84,111,119,101,114,83,101,108,108),{Id=_dJ});task.wait(0.4)end elseif _dw.type==string.char(97,117,116,111,115,107,105,112)then if _a.autoSkipOn()~=_dw.on then pcall(_a.toggleAutoSkip)end elseif _dw.type==string.char(115,107,105,112)then _a.fire(string.char(87,97,118,101,83,107,105,112));task.wait(0.4)end end function _a.play(_dK)local _dL=_a.allMacros()[_dK];if not _dL then _a.log(string.char(208,189,208,181,209,130,58,32)..tostring(_dK));return end _a.resetRecordState()_a.S.wave=_a.curWave()_a.S.waveStart=os.clock()_a.S.playing=true;_a.log((string.char(226,150,182,32,194,171,37,115,194,187,58,32,37,100)):format(_dK,#_dL.actions))if _dL.autoskip and not _a.autoSkipOn()then pcall(_a.toggleAutoSkip)end if _dL.playAgain~=nil then _a.S.playAgain=_dL.playAgain;pcall(writefile,_a.PLAYAGAIN,_a.S.playAgain and string.char(49)or string.char(48))end if _a.S.autoVote and _dL.mode and _dL.mode~=""and _dL.mode~=string.char(110,105,108)then _a.S.voteMode=_dL.mode task.spawn(function()local _dM=os.clock()while _a.alive()and _a.S.playing and os.clock()-_dM<60 do if workspace:GetAttribute(string.char(73,115,86,111,116,105,110,103))then pcall(_a.fire,string.char(77,111,100,101,86,111,116,101),_dL.mode)elseif workspace:GetAttribute(string.char(77,111,100,101))==_dL.mode then break end task.wait(1)end end)end _a.S.playMap={};local _dN={placeNo=0}task.spawn(function()for _dO,_dP in ipairs(_dL.actions)do if not _a.alive()or not _a.S.playing then break end if _a.waitMoment(_dP.wave,_dP.t)then pcall(_a.playAction,_dP,_dN)end end _a.S.playing=false;_a.log(string.char(226,150,182,32,208,180,208,190,208,184,208,179,209,128,208,176,208,189,208,190))end)end function _a.startRecordHooks()local function _dQ(_dR,_dS)if not _a.RE then return end local function _dT(_dU)if not _dU or _dU.Name~=_dR then return end local _dV,_dW=pcall(function()return _dU:GetAttribute(string.char(67,84,68,95,104,111,111,107,101,100))end)if _dV and _dW then return end pcall(function()_dU:SetAttribute(string.char(67,84,68,95,104,111,111,107,101,100),true)end)_dU.OnClientEvent:Connect(function(...)if not _a.alive()then return end pcall(_dS,...)end)end _dT(_a.RE:FindFirstChild(_dR))_a.RE.ChildAdded:Connect(function(_dX)if _dX.Name==_dR then task.wait(0.1)_dT(_dX)end end)end _dQ(string.char(84,111,119,101,114,65,100,100),function(_dY)if not _a.mine(_dY)or not _dY.Id then return end local _dZ=tostring(_dY.Id)if _a.S.idIndex[_dZ]then _a.log(string.char(208,191,208,190,208,178,209,130,208,190,209,128,208,189,209,139,208,185,32,84,111,119,101,114,65,100,100,32,105,100,61).._dZ..string.char(32,226,128,148,32,208,184,208,179,208,189,208,190,209,128),string.char(119,97,114,110))return end _a.S.placed+=1 _a.S.towerIds[_a.S.placed]=_dZ _a.S.idIndex[_dZ]=_a.S.placed _a.S.levelById[_dZ]=_dY.Level or 1 _a.S.lastId=_dZ local _ea=_a.S.pendingTowerAdd local _eb=(_ea and _ea[1]and _ea[1].Name)or _dY.Name local _ec=(_ea and _ea[1]and _ea[1].UnitId)or _dY.UnitId local _ed=(_ea and _ea[1]and _ea[1].Pos)or _dY.Pos local _ee=(_ea and _ea[1]and _ea[1].CFrame)or _dY.CFrame _a.S.pendingTowerAdd=nil _a.record({type=string.char(112,108,97,99,101),name=_eb,unitId=_ec,pos=_ed and _a.v3(_ed)or nil,cf=_ee and _a.cfs(_ee)or nil,price=_dY.Stats and _dY.Stats.Price})end)_dQ(string.char(84,111,119,101,114,85,112,103,114,97,100,101),function(_ef)if type(_ef)~=string.char(116,97,98,108,101)or not _ef.Id then return end local _eg=tostring(_ef.Id)local _eh=_a.S.idIndex[_eg]if not _eh then _a.log(string.char(117,112,103,114,97,100,101,32,208,180,208,187,209,143,32,208,189,208,181,208,184,208,183,208,178,208,181,209,129,209,130,208,189,208,190,208,179,208,190,32,105,100,61).._eg,string.char(119,97,114,110))return end _a.S.levelById[_eg]=_ef.Level or((_a.S.levelById[_eg]or 1)+1)_a.record({type=string.char(117,112,103,114,97,100,101),tower=_eh,level=_ef.Level,price=_ef.Stats and _ef.Stats.Price})end)_dQ(string.char(84,111,119,101,114,84,97,114,103,101,116),function(_ei)if type(_ei)~=string.char(116,97,98,108,101)or not _ei.Id then return end local _ej=_a.S.idIndex[tostring(_ei.Id)]if not _ej then return end _a.record({type=string.char(116,97,114,103,101,116),tower=_ej,mode=_ei.TargetMode})end)_dQ(string.char(84,111,119,101,114,82,101,109,111,118,101),function(_ek)if type(_ek)~=string.char(116,97,98,108,101)or not _ek.Id then return end local _el=tostring(_ek.Id)local _em=_a.S.idIndex[_el]if not _em then return end _a.S.levelById[_el]=nil _a.S.idIndex[_el]=nil _a.record({type=string.char(115,101,108,108),tower=_em})end)_dQ(string.char(84,111,119,101,114,83,101,108,108),function(_en)if type(_en)~=string.char(116,97,98,108,101)or not _en.Id then return end local _eo=tostring(_en.Id)local _ep=_a.S.idIndex[_eo]if not _ep then return end _a.S.levelById[_eo]=nil _a.S.idIndex[_eo]=nil _a.record({type=string.char(115,101,108,108),tower=_ep})end)task.spawn(function()local _eq=os.clock()local _er=_a.gameFolder()local _es=_er and _er:FindFirstChild(string.char(84,111,119,101,114,115))while not _es and _a.alive()and os.clock()-_eq<60 do _er=_a.gameFolder();_es=_er and _er:FindFirstChild(string.char(84,111,119,101,114,115))task.wait(0.5)end if not _es then return end _es.ChildRemoved:Connect(function(_et)if not _a.alive()then return end local _eu=_a.S.idIndex[_et.Name]if _eu then _a.S.idIndex[_et.Name]=nil _a.S.levelById[_et.Name]=nil _a.record({type=string.char(115,101,108,108),tower=_eu})end end)end)task.spawn(function()local _ev=nil while _a.alive()do local _ew=_a.autoSkipOn and _a.autoSkipOn()or false if _ev~=nil and _ew~=_ev and _a.S.recording and not _a.S.playing then _a.record({type=string.char(97,117,116,111,115,107,105,112),on=_ew})end _ev=_ew task.wait(0.3)end end)task.spawn(function()local _ex=_a.lp:WaitForChild(string.char(80,108,97,121,101,114,71,117,105),30)local _ey=_ex and _ex:WaitForChild(string.char(71,97,109,101,85,73),30)local _ez=_ey and _ey:WaitForChild(string.char(83,116,97,116,115),30)local _eA=_ez and _ez:WaitForChild(string.char(87,97,118,101,83,107,105,112,71,117,105),30)if not _eA then return end local function _eB(_eC)if _eC:IsA(string.char(71,117,105,66,117,116,116,111,110))then _eC.Activated:Connect(function()if _a.alive()and workspace:GetAttribute(string.char(67,97,110,83,107,105,112))then _a.record({type=string.char(115,107,105,112)})end end)end end _eB(_eA)for _eD,_eE in ipairs(_eA:GetDescendants())do _eB(_eE)end end)end function _a.tryVoteByMode(_eF)local _eG=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105));if not _eG then return false end local _eH=_a.findLabelByText(_eF,false)if not _eH then local _eI={Insane=string.char(208,145,208,181,208,183,209,131,208,188,208,189),Hard=string.char(208,161,208,187,208,190,208,182,208,189),Normal=string.char(208,158,208,177,209,139,209,135,208,189)}if _eI[_eF]then _eH=_a.findLabelByText(_eI[_eF],false)end end if _eH then local _eJ=_eH for _eK=1,5 do if not _eJ then break end _eJ=_eJ.Parent;if not _eJ then break end for _eL,_eM in ipairs(_eJ:GetDescendants())do local _eN=nil;pcall(function()_eN=_eM.Text end)if _eN and _eM:IsA(string.char(71,117,105,66,117,116,116,111,110))and(_eN:lower():find(string.char(118,111,116,101),1,true)or _eN:lower():find(string.char(208,179,208,190,208,187,208,190,209,129),1,true))then if _a.tryFireConnections(_eM)or _a.simulateClick(_eM)then return true end end end end end return false end function _a.startVoteWatcher()task.spawn(function()local _eO=false while _a.alive()do local _eP=workspace:GetAttribute(string.char(73,115,86,111,116,105,110,103))and true or false if _eP and not _eO then _a.S.votedTick=0 end _eO=_eP if _a.S.autoVote and _eP then local _eQ=_a.S.voteMode or string.char(73,110,115,97,110,101)if os.clock()-_a.S.votedTick>5 then _a.S.votedTick=os.clock()_a.log(string.char(208,179,208,190,208,187,208,190,209,129,209,131,209,142,32,208,183,208,176,32).._eQ)pcall(_a.tryVoteByMode,_eQ)pcall(_a.fire,string.char(77,111,100,101,86,111,116,101),_eQ)end task.wait(1)else task.wait(0.8)end end end)end function _a.autoSkipButton()local _eR=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105))local _eS=_eR and _eR:FindFirstChild(string.char(71,97,109,101,85,73))local _eT=_eS and _eS:FindFirstChild(string.char(83,116,97,116,115))local _eU=_eT and _eT:FindFirstChild(string.char(65,117,116,111,83,107,105,112))return _eU and _eU:FindFirstChild(string.char(66,117,116,116,111,110))end function _a.autoSkipOn()if _a.ownSkip then return true end local _eV=_a.autoSkipButton();local _eW=_eV and _eV:FindFirstChild(string.char(85,73,50))return(_eW and _eW.Visible)or false end _a.ownSkip=false function _a.pressGameButton()local _eX=_a.autoSkipButton();if not _eX or not getconnections then return false end local _eY,_eZ=pcall(getconnections,_eX.Activated);if not _eY or type(_eZ)~=string.char(116,97,98,108,101)or#_eZ==0 then return false end local function _fa()local _fb=_eX:FindFirstChild(string.char(85,73,50));return(_fb and _fb.Visible)or false end local _fc=_fa()for _fd,_fe in ipairs(_eZ)do local _ff=pcall(function()_fe:Fire()end)if not _ff then local _fg,_fh=pcall(function()return _fe.Function end);if _fg and type(_fh)==string.char(102,117,110,99,116,105,111,110)then pcall(_fh)end end task.wait(0.15);if _fa()~=_fc then return true end end return false end function _a.toggleAutoSkip()local _fi=_a.autoSkipOn()if _a.ownSkip then _a.ownSkip=false;_a.log(string.char(208,176,208,178,209,130,208,190,209,129,208,186,208,184,208,191,32,208,178,209,139,208,186,208,187));return true end if _a.pressGameButton()then local _fj=_a.autoSkipOn()_a.log(string.char(208,176,208,178,209,130,208,190,209,129,208,186,208,184,208,191,32)..(_fj and string.char(208,178,208,186,208,187)or string.char(208,178,209,139,208,186,208,187)));return true end if _fi then return false,string.char(208,189,208,181,32,208,189,208,176,208,182,208,176,209,130,209,140)end _a.ownSkip=true;_a.log(string.char(208,176,208,178,209,130,208,190,209,129,208,186,208,184,208,191,32,208,178,208,186,208,187));return true end _a.SPEEDS={1,1.5,2}function _a.currentSpeed()return tonumber(workspace:GetAttribute(string.char(71,97,109,101,83,112,101,101,100)))or _a.S.speed or 1 end function _a.setGameSpeed(_fk)_fk=tonumber(_fk)or 1;_a.S.speed=_fk;_a.writeSavedSpeed(_fk)if not _a.inMatch()then return true end if math.abs(_a.currentSpeed()-_fk)<0.01 then return true end local _fl=_a.rfunc(string.char(67,104,97,110,103,101,83,112,101,101,100));if _fl then pcall(function()_fl:InvokeServer(_fk)end)end return true end _a.MAPS={{id=string.char(67,97,109,101,114,97,109,97,110,32,72,81),ru=string.char(208,168,209,130,208,176,208,177)},{id=string.char(84,111,105,108,101,116,32,67,105,116,121),ru=string.char(208,162,209,131,208,176,208,187,208,181,209,130,209,139)},{id=string.char(68,101,115,101,114,116),ru=string.char(208,159,209,131,209,129,209,130,209,139,208,189,209,143)}}function _a.mapRu(_fm)for _fn,_fo in ipairs(_a.MAPS)do if _fo.id==_fm then return _fo.ru end end return tostring(_fm)end function _a.elevators()local _fp=workspace:FindFirstChild(string.char(69,108,101,118,97,116,111,114,115));return _fp and _fp:GetChildren()or{}end function _a.freeElevator(_fq)local _fr=nil for _fs,_ft in ipairs(_a.elevators())do if _ft:GetAttribute(string.char(77,97,112))==_fq then local _fu=tonumber(_ft:GetAttribute(string.char(80,108,97,121,101,114,115)))or 0 if _fu==0 then return _ft end _fr=(_fr or 0)+1 end end return nil,_fr end function _a.elevatorBase(_fv)return _fv:FindFirstChild(string.char(66,97,115,101,80,97,114,116))or _fv:FindFirstChildWhichIsA(string.char(66,97,115,101,80,97,114,116))end function _a.charParts()local _fw=_a.lp.Character;return _fw and _fw:FindFirstChildOfClass(string.char(72,117,109,97,110,111,105,100)),_fw and _fw:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))end function _a.stepTo(_fx,_fy,_fz,_fA)local _fB,_fC=os.clock(),_fy.Position _fx:MoveTo(_fz)while _a.alive()and os.clock()-_fB<(_fA or 6)do if(_fy.Position-_fz).Magnitude<5 then return true end if os.clock()-_fB>1.5 and(_fy.Position-_fC).Magnitude<1 then _fx.Jump=true;_fx:MoveTo(_fz);_fC=_fy.Position end task.wait(0.25)end return(_fy.Position-_fz).Magnitude<6 end function _a.walkTo(_fD)local _fE=_fD.Position+Vector3.new(0,3,0)for _fF=1,3 do if not _a.alive()then return false end local _fG,_fH=_a.charParts()if _fG and _fH then if(_fH.Position-_fE).Magnitude<10 then return true end local _fI=_a.PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true,AgentMaxSlope=45})local _fJ=pcall(function()_fI:ComputeAsync(_fH.Position,_fE)end)if _fJ and _fI.Status==Enum.PathStatus.Success then for _fK,_fL in ipairs(_fI:GetWaypoints())do if not _a.alive()then return false end _fG,_fH=_a.charParts();if not(_fG and _fH)then break end if _fL.Action==Enum.PathWaypointAction.Jump then _fG.Jump=true end if not _a.stepTo(_fG,_fH,_fL.Position,6)then break end end local _fM,_fN=_a.charParts();if _fN and(_fN.Position-_fE).Magnitude<10 then return true end end end task.wait(0.5)end return false end function _a.enterElevator(_fO)local _fP=_a.rfunc(string.char(69,108,101,118,97,116,111,114,69,110,116,101,114))if _fP then pcall(function()_fP:InvokeServer(_fO.Name)end)end task.wait(1)if(tonumber(_fO:GetAttribute(string.char(80,108,97,121,101,114,115)))or 0)==0 then local _fQ=_a.elevatorBase(_fO)if _fQ then _a.walkTo(_fQ);if _fP then pcall(function()_fP:InvokeServer(_fO.Name)end)end;task.wait(1)end end return(tonumber(_fO:GetAttribute(string.char(80,108,97,121,101,114,115)))or 0)>=1 end function _a.launchMap(_fR,_fS,_fT)_fR=tostring(_fR)local _fU,_fV=_a.freeElevator(_fR)if not _fU then _a.log((string.char(208,189,208,176,32,194,171,37,115,194,187,32,208,183,208,176,208,189,209,143,209,130,208,190)):format(_a.mapRu(_fR)))local _fW=os.clock()repeat task.wait(2);_fU=_a.freeElevator(_fR)until _fU or not(_a.S.playing or _a.S.launching)or os.clock()-_fW>120 if not _fU then _a.log(string.char(208,189,208,181,209,130,32,208,187,208,184,209,132,209,130,208,176));return end end if not _a.enterElevator(_fU)then _a.log(string.char(208,178,209,133,208,190,208,180,32,102,97,105,108));return end local _fX=tonumber(_fU:GetAttribute(string.char(80,108,97,121,101,114,115)))or 0 if _fX>1 then local _fY=_a.rfunc(string.char(69,108,101,118,97,116,111,114,76,101,97,118,101))if _fY then pcall(function()_fY:InvokeServer(_fU.Name)end)end _fT=(_fT or 0)+1;if _fT>=5 then return end return _a.launchMap(_fR,_fS,_fT)end pcall(writefile,_a.AUTOPLAY,_fS or"")_a.log((string.char(209,129,209,130,208,176,209,128,209,130,32,194,171,37,115,194,187)):format(_a.mapRu(_fR)))local _fZ=_a.rfunc(string.char(69,108,101,118,97,116,111,114,83,116,97,114,116))if _fZ then pcall(function()_fZ:InvokeServer(_fU.Name)end)end end function _a.startEndMatchWatcher()task.spawn(function()local _ga=_a.lp:WaitForChild(string.char(80,108,97,121,101,114,71,117,105),30)local _gb=_ga and _ga:WaitForChild(string.char(71,97,109,101,85,73),30)local _gc=_gb and _gb:WaitForChild(string.char(70,105,110,97,108,85,73),30)if not _gc then return end local function _gd(_ge)if not getconnections then return false end for _gf,_gg in ipairs(_gc:GetDescendants())do if _gg:IsA(string.char(71,117,105,66,117,116,116,111,110))then local _gh=(_gg.Text or""):lower();local _gi=false for _gj,_gk in ipairs(_ge)do if _gh:find(_gk,1,true)then _gi=true;break end end if _gi then local _gl,_gm=pcall(getconnections,_gg.Activated)if _gl and type(_gm)==string.char(116,97,98,108,101)and#_gm>0 then for _gn,_go in ipairs(_gm)do local _gp=pcall(function()_go:Fire()end)if not _gp then local _gq,_gr=pcall(function()return _go.Function end);if _gq and type(_gr)==string.char(102,117,110,99,116,105,111,110)then pcall(_gr)end end end return true end end end end return false end local function _gs()if _gd({string.char(108,111,98,98,121),string.char(208,187,208,190,208,177,208,177,208,184),string.char(108,101,97,118,101),string.char(101,120,105,116),string.char(208,178,209,139,209,133,208,190,208,180)})then return true end if _a.fire(string.char(79,110,76,101,97,118,101))then return true end if _a.fire(string.char(76,101,97,118,101))then return true end return false end local function _gt()if _gd({string.char(97,103,97,105,110),string.char(209,129,208,189,208,190,208,178,208,176),string.char(114,101,112,108,97,121),string.char(114,101,116,114,121),string.char(114,101,109,97,116,99,104)})then return true end if _a.fire(string.char(80,108,97,121,65,103,97,105,110))then return true end return false end local function _gu()if not _a.alive()then return end _a.S.playing=false _a.resetRecordState()_a.log(string.char(208,188,208,176,209,130,209,135,32,208,183,208,176,208,186,208,190,208,189,209,135,208,181,208,189,32,226,128,148,32,112,108,97,121,77,97,112,32,208,190,209,135,208,184,209,137,208,181,208,189),string.char(101,118,101,110,116))task.wait(4)if _a.S.playAgain and _a.readName(_a.FARM)==""then if _gt()then return end end local _gv=0 while _a.alive()and _gv<10 do if _gs()then return end;_gv+=1;task.wait(3)end end if _gc.Visible then task.spawn(_gu)end _gc:GetPropertyChangedSignal(string.char(86,105,115,105,98,108,101)):Connect(function()if _gc.Visible then task.spawn(_gu)end end)end)end function _a.startMatchResetWatcher()task.spawn(function()local _gw=_a.inMatch()while _a.alive()do local _gx=_a.inMatch()if _gx and not _gw then _a.resetRecordState()_a.S.wave=_a.curWave()_a.S.waveStart=os.clock()_a.log(string.char(208,189,208,190,208,178,208,176,209,143,32,208,184,208,179,209,128,208,176,32,226,128,148,32,209,129,208,190,209,129,209,130,208,190,209,143,208,189,208,184,208,181,32,209,129,208,177,209,128,208,190,209,136,208,181,208,189,208,190),string.char(101,118,101,110,116))end _gw=_gx task.wait(1)end end)end _a.summonCache={[string.char(83,117,109,109,111,110,32,49)]=nil,[string.char(83,117,109,109,111,110,32,49,48)]=nil}function _a.refreshSummonCache()for _gy,_gz in ipairs({string.char(83,117,109,109,111,110,32,49),string.char(83,117,109,109,111,110,32,49,48)})do local _gA=_a.findLabelByText(_gz,true)if _gA then _a.summonCache[_gz]=_a.getButtonFromLabel(_gA)end end end function _a.fireSummonCached(_gB)local _gC=_a.summonCache[_gB]if _gC and _gC.Parent then if _a.tryFireConnections(_gC)then return true end if _a.simulateClick(_gC)then return true end end _a.refreshSummonCache();_gC=_a.summonCache[_gB]if _gC and _gC.Parent then if _a.tryFireConnections(_gC)then return true end if _a.simulateClick(_gC)then return true end end return false end function _a.startSummonLoop()task.spawn(function()while _a.alive()do local _gD=_a.S.summon1 or _a.S.summon10 if _gD and _a.inMatch()then if _a.S.summon1 then _a.fireSummonCached(string.char(83,117,109,109,111,110,32,49))else _a.fireSummonCached(string.char(83,117,109,109,111,110,32,49,48))end local _gE=math.max(5,tonumber(_a.S.summonDelay)or 60);task.wait(_gE)else task.wait(1)end end end)end _a.gui=nil _a.main=nil _a.topbar=nil _a.tabRow=nil _a.kLogo=nil _a.kLogoGrad=nil _a.brandTitle=nil _a.brandSub=nil _a.statusBar=nil _a.content=nil _a.pageScroll=nil _a.pageHolder=nil _a.pageGroup=nil _a.topLine=nil _a.tabLine=nil _a.statusLine=nil _a.tabButtons={}_a.recW=nil _a.playW=nil _a.delW=nil _a.mapW=nil _a.newW=nil _a.farmW=nil _a.speedW=nil _a.skipW=nil _a.againW=nil _a.voteW=nil _a.autoVoteW=nil _a.nameBox=nil _a.rows={}_a.scroll=nil _a.summon1Btn=nil _a.summon10Btn=nil _a.freePlacementBtn=nil _a.optimizeBtns=nil _a.mainScale=nil _a.dot=nil _a.closeBtn=nil _a._populated=false _a.freePlacement={active=false,saved={}}_a.optimize={shadows=false,gray=false,fx=false,guiAnim=false,sShadows={},sGray={},sFx={}}_a.BTN_H=32 _a.TXT_SZ=13 _a.SLIDER_H=42 _a.TAB_H=32 _a.BTN_PAD=14 _a.BTN_GAP=6 _a.CORNER=10 _a.MAIN_W=_a.IS_MOBILE and 400 or 470 _a.MAIN_H=_a.IS_MOBILE and 480 or 560 _a.LOG_LINE_H=16 _a.LOG_FONT=11 function _a.corner(_gF,_gG)local _gH=Instance.new(string.char(85,73,67,111,114,110,101,114));_gH.CornerRadius=UDim.new(0,_gG or _a.CORNER);_gH.Parent=_gF end function _a.thin(_gI,_gJ)local _gK=Instance.new(string.char(85,73,83,116,114,111,107,101))_a.setProp(_gK,string.char(67,111,108,111,114),_gJ or _a.BASE.line)_a.setProp(_gK,string.char(84,104,105,99,107,110,101,115,115),1)_a.setProp(_gK,string.char(65,112,112,108,121,83,116,114,111,107,101,77,111,100,101),Enum.ApplyStrokeMode.Border)_gK.Parent=_gI _a.outlineStrokes[_gK]=true return _gK end function _a.applyOutline()local _gL=_a.currentOutline()for _gM in pairs(_a.outlineStrokes)do if typeof(_gM)==string.char(73,110,115,116,97,110,99,101)and _gM.Parent then local _gN=_a.getAttr(_gM,string.char(75,111,82,105,52,67,97,114,100))if not _gN then local _gO=_gM.Parent local _gP=string.char(112,97,110,101,108)if _gO:IsA(string.char(84,101,120,116,66,117,116,116,111,110))or _gO:IsA(string.char(73,109,97,103,101,66,117,116,116,111,110))then _gP=string.char(98,117,116,116,111,110)if _a.getAttr(_gO,string.char(75,111,82,105,52,84,97,98))then _gP=string.char(116,97,98)end end local _gQ=(_gP==string.char(112,97,110,101,108)and _a.HUD.olSections)or(_gP==string.char(98,117,116,116,111,110)and _a.HUD.olButtons)or(_gP==string.char(116,97,98)and _a.HUD.olTabs)_a.setProp(_gM,string.char(69,110,97,98,108,101,100),_gQ)if not _gQ then _a.setProp(_gM,string.char(84,114,97,110,115,112,97,114,101,110,99,121),1)else _a.setProp(_gM,string.char(84,104,105,99,107,110,101,115,115),_a.HUD.outlineThickness)if _gL.rainbow then _a.setProp(_gM,string.char(84,114,97,110,115,112,97,114,101,110,99,121),_a.HUD.outlineTransparency)_a.setProp(_gM,string.char(67,111,108,111,114),Color3.new(1,1,1))local _gR=_gM:FindFirstChildOfClass(string.char(85,73,71,114,97,100,105,101,110,116))if not _gR then _gR=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116));_gR.Parent=_gM end _a.setProp(_gR,string.char(67,111,108,111,114),_a.RAINBOW_SEQ)elseif _gL.seq then _a.setProp(_gM,string.char(84,114,97,110,115,112,97,114,101,110,99,121),_a.HUD.outlineTransparency)_a.setProp(_gM,string.char(67,111,108,111,114),Color3.new(1,1,1))local _gS=_gM:FindFirstChildOfClass(string.char(85,73,71,114,97,100,105,101,110,116))if not _gS then _gS=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116));_gS.Parent=_gM end _a.setProp(_gS,string.char(67,111,108,111,114),_gL.seq)else local _gT=_gM:FindFirstChildOfClass(string.char(85,73,71,114,97,100,105,101,110,116));if _gT then _a.safeDestroy(_gT)end if _gL.none then _a.setProp(_gM,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.22)_a.setProp(_gM,string.char(67,111,108,111,114),_a.BASE.line:Lerp(Color3.new(1,1,1),0.20))else _a.setProp(_gM,string.char(84,114,97,110,115,112,97,114,101,110,99,121),_a.HUD.outlineTransparency)_a.setProp(_gM,string.char(67,111,108,111,114),_gL.c or _a.BASE.line)end end end end end end end function _a.pressFx(_gU)if _a.optimize.guiAnim then return end if not _gU or not _gU.Parent then return end local _gV=Instance.new(string.char(70,114,97,109,101))_gV.Size=UDim2.new(1,0,1,0);_gV.BackgroundColor3=Color3.new(1,1,1)_gV.BackgroundTransparency=0.75;_gV.BorderSizePixel=0;_gV.ZIndex=10;_gV.Parent=_gU _a.corner(_gV,_a.CORNER)_a.TweenService:Create(_gV,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1}):Play()local _gW=_gU:FindFirstChildOfClass(string.char(85,73,83,99,97,108,101))if not _gW then _gW=Instance.new(string.char(85,73,83,99,97,108,101));_gW.Parent=_gU end _a.TweenService:Create(_gW,TweenInfo.new(0.07,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=0.92}):Play()task.delay(0.08,function()if _gW and _gW.Parent then _a.TweenService:Create(_gW,TweenInfo.new(0.32,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1}):Play()end end)task.delay(0.5,function()if _gV then _a.safeDestroy(_gV)end end)end function _a.makeButton(_gX,_gY,_gZ,_ha,_hb)_hb=_hb or{}local _hc=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_hc.Size=_hb.size or UDim2.new(1,0,0,_a.BTN_H)_hc.BackgroundColor3=_a.BASE.panel;_hc.BorderSizePixel=0 _hc.Font=_a.FONT;_hc.Text=_gY _hc.TextSize=_a.TXT_SZ;_hc.TextColor3=_gZ or _a.BASE.text _hc.TextXAlignment=_hb.center and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left _hc.AutoButtonColor=false _hc.LayoutOrder=_hb.order or _a.nextOrder();_hc.Parent=_gX _a.corner(_hc,_a.CORNER);_a.thin(_hc)if not _hb.center then local _hd=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_hc);_hd.PaddingLeft=UDim.new(0,12);_hd.Parent=_hc end local _he={obj=_hc,color=_gZ or _a.BASE.text,on=true,baseColor=_gZ or _a.BASE.text}_hc.Activated:Connect(function()if not _he.on then return end;_a.pressFx(_hc);pcall(_ha,_hc)end)if _hb.rmb then _hc.MouseButton2Click:Connect(function()if not _he.on then return end;_a.pressFx(_hc);pcall(_ha,_hc)end)end _a.track(_hc.MouseEnter:Connect(function()if not _he.on or _a.optimize.guiAnim then return end _a.TweenService:Create(_hc,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=_a.BASE.panel:Lerp(_a.BASE.accent,0.12)}):Play()end),_hc)_a.track(_hc.MouseLeave:Connect(function()if _a.optimize.guiAnim then return end if _he.on then _a.TweenService:Create(_hc,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=_a.BASE.panel}):Play()else _a.TweenService:Create(_hc,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=_a.DISABLED.bg}):Play()end end),_hc)_a.widgets[_he]=true;return _he end function _a.setOn(_hf,_hg)if not _hf or _hf.on==_hg then return end _hf.on=_hg local _hh=_hf.obj;_hh.Active=_hg;_hh.Selectable=_hg if _hg then _a.TweenService:Create(_hh,TweenInfo.new(0.15),{BackgroundColor3=_a.BASE.panel,TextColor3=_hf.baseColor or _hf.color,TextTransparency=0}):Play()else _a.TweenService:Create(_hh,TweenInfo.new(0.15),{BackgroundColor3=_a.DISABLED.bg,TextColor3=_a.DISABLED.text,TextTransparency=0.15}):Play()end end function _a.makeSlider(_hi,_hj,_hk,_hl,_hm,_hn,_ho,_hp)local _hq=Instance.new(string.char(70,114,97,109,101))_hq.Size=UDim2.new(1,0,0,_a.SLIDER_H);_hq.BackgroundColor3=_a.BASE.panel _hq.BorderSizePixel=0;_hq.Parent=_hi _a.corner(_hq,_a.CORNER);_a.thin(_hq)local _hr=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_hq);_hr.PaddingLeft=UDim.new(0,10);_hr.PaddingRight=UDim.new(0,10);_hr.PaddingTop=UDim.new(0,4);_hr.PaddingBottom=UDim.new(0,4);_hr.Parent=_hq local _hs=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_hs.Size=UDim2.new(0.6,0,0,14);_hs.Position=UDim2.fromOffset(0,0);_hs.BackgroundTransparency=1 _hs.Font=_a.FONT;_hs.TextSize=_a.TXT_SZ-1;_hs.TextColor3=_a.BASE.text;_hs.TextXAlignment=Enum.TextXAlignment.Left _hs.Text=_hj;_hs.Parent=_hq local _ht=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_ht.Size=UDim2.new(0.4,0,0,14);_ht.Position=UDim2.new(0.6,0,0,0)_ht.BackgroundTransparency=1;_ht.Font=_a.FONT;_ht.TextSize=_a.TXT_SZ-1 _ht.TextColor3=_a.themeAccent();_ht.TextXAlignment=Enum.TextXAlignment.Right;_ht.Parent=_hq local _hu=Instance.new(string.char(70,114,97,109,101))_hu.Size=UDim2.new(1,0,0,6);_hu.Position=UDim2.new(0,0,1,-8)_hu.BackgroundColor3=_a.BASE.bg;_hu.BorderSizePixel=0;_hu.Parent=_hq;_a.corner(_hu,3)local _hv=Instance.new(string.char(70,114,97,109,101))_hv.Size=UDim2.new(0,0,1,0);_hv.BackgroundColor3=_a.BASE.accent _hv.BorderSizePixel=0;_hv.Parent=_hu;_a.corner(_hv,3)_hp=_hp or 1 local function _hw()local _hx=_hm();local _hy=(_hx-_hk)/math.max(1e-6,(_hl-_hk))_a.TweenService:Create(_hv,TweenInfo.new(0.1),{Size=UDim2.new(_hy,0,1,0)}):Play()if _ho then _ht.Text=tostring(math.floor(_hx))else _ht.Text=string.format(string.char(37,46).._hp..string.char(102),_hx)end end _hw()local _hz=false local function _hA(_hB)local _hC=math.clamp((_hB-_hu.AbsolutePosition.X)/_hu.AbsoluteSize.X,0,1)local _hD=_hk+_hC*(_hl-_hk);if _ho then _hD=math.floor(_hD+0.5)end _hn(_hD);_hw()end _a.track(_hu.InputBegan:Connect(function(_hE)if _hE.UserInputType==Enum.UserInputType.MouseButton1 or _hE.UserInputType==Enum.UserInputType.Touch then _hz=true;_hA(_hE.Position.X)end end),_hq)_a.track(_a.UIS.InputChanged:Connect(function(_hF)if _hz and(_hF.UserInputType==Enum.UserInputType.MouseMovement or _hF.UserInputType==Enum.UserInputType.Touch)then _hA(_hF.Position.X)end end),_hq)_a.track(_a.UIS.InputEnded:Connect(function(_hG)if _hG.UserInputType==Enum.UserInputType.MouseButton1 or _hG.UserInputType==Enum.UserInputType.Touch then _hz=false;_a.scheduleAutosave()end end),_hq)local _hH={holder=_hq,fill=_hv,bar=_hu,valLbl=_ht,refresh=_hw}_a.sliders[_hH]=true return _hH end function _a.updateScale()if not _a.mainScale then return end local _hI=workspace.CurrentCamera;if not _hI then return end local _hJ=_hI.ViewportSize local _hK=math.clamp(math.min(_hJ.X/(_a.MAIN_W+10),_hJ.Y/(_a.MAIN_H+10)),0.55,1.0)_a.TweenService:Create(_a.mainScale,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=_hK}):Play()end function _a.clearPage()if not _a.pageHolder then return end for _hL,_hM in ipairs(_a.pageHolder:GetChildren())do if not _hM:IsA(string.char(85,73,76,105,115,116,76,97,121,111,117,116))and not _hM:IsA(string.char(85,73,80,97,100,100,105,110,103))then _a.safeDestroy(_hM)end end _a.pruneDead()end function _a.fillAutoFarm(_hN)local _hO=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_hO.Size=UDim2.new(1,0,0,16);_hO.BackgroundTransparency=1;_hO.LayoutOrder=1 _hO.Font=_a.FONT;_hO.TextSize=10;_hO.TextColor3=_a.BASE.dim;_hO.TextXAlignment=Enum.TextXAlignment.Left _hO.Text=string.char(208,161,208,162,208,160,208,144,208,162,208,149,208,147,208,152,208,152);_hO.Parent=_hN local _hP=Instance.new(string.char(70,114,97,109,101))_hP.Size=UDim2.new(1,0,0,110);_hP.BackgroundColor3=_a.BASE.panel _hP.BorderSizePixel=0;_hP.AutomaticSize=Enum.AutomaticSize.Y;_hP.LayoutOrder=2;_hP.Parent=_hN _a.corner(_hP,_a.CORNER);_a.thin(_hP);_a.scroll=_hP local _hQ=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116));_hQ.Padding=UDim.new(0,3);_hQ.SortOrder=Enum.SortOrder.LayoutOrder;_hQ.Parent=_hP local _hR=Instance.new(string.char(85,73,80,97,100,100,105,110,103));_hR.PaddingTop=UDim.new(0,6);_hR.PaddingBottom=UDim.new(0,6);_hR.PaddingLeft=UDim.new(0,6);_hR.PaddingRight=UDim.new(0,6);_hR.Parent=_hP _a.nameBox=Instance.new(string.char(84,101,120,116,66,111,120))_a.nameBox.Size=UDim2.new(1,0,0,_a.BTN_H);_a.nameBox.BackgroundColor3=_a.BASE.panel;_a.nameBox.BorderSizePixel=0 _a.nameBox.Font=_a.FONT;_a.nameBox.TextSize=_a.TXT_SZ _a.nameBox.TextColor3=_a.BASE.text;_a.nameBox.PlaceholderText=string.char(208,184,208,188,209,143,32,208,180,208,187,209,143,32,208,183,208,176,208,191,208,184,209,129,208,184)_a.nameBox.PlaceholderColor3=_a.BASE.dim;_a.nameBox.Text=""_a.nameBox.TextXAlignment=Enum.TextXAlignment.Left;_a.nameBox.ClearTextOnFocus=false _a.nameBox.LayoutOrder=3;_a.nameBox.Parent=_hN _a.corner(_a.nameBox,_a.CORNER);_a.thin(_a.nameBox)local _hS=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_a.nameBox);_hS.PaddingLeft=UDim.new(0,12);_hS.Parent=_a.nameBox _a.recW=_a.makeButton(_hN,string.char(240,159,148,180,32,32,32,208,151,208,176,208,191,208,184,209,129,209,140),Color3.fromRGB(255,120,140),function()if not _a.inMatch()then _a.pushLog(string.char(209,130,208,190,208,187,209,140,208,186,208,190,32,208,178,32,208,188,208,176,209,130,209,135,208,181),string.char(119,97,114,110));return end if _a.S.recording then _a.S.recording=false local _hT=_a.saveMacro(_a.nameBox.Text)if _hT then _a.S.selected=_hT;_a.writeName(_a.SELECTED,_hT);_a.nameBox.Text=""end _a.populate(string.char(97,117,116,111,102,97,114,109))else if _a.S.playing then _a.S.playing=false end _a.resetRecordState()_a.S.actions={};_a.S.recording=true;_a.S.waveStart=os.clock()_a.pushLog(string.char(240,159,148,180,32,208,191,208,184,209,136,209,131),string.char(111,107))end _a.refreshButtons()end,{order=10})_a.playW=_a.makeButton(_hN,string.char(226,150,182,32,32,32,208,152,208,179,209,128,208,176,209,130,209,140),Color3.fromRGB(120,230,160),function()if _a.S.playing then _a.S.playing=false;pcall(writefile,_a.AUTOPLAY,"");_a.pushLog(string.char(209,129,209,130,208,190,208,191),string.char(119,97,114,110))elseif _a.inLobby()then if not _a.S.selected then _a.pushLog(string.char(208,189,208,181,209,130,32,208,178,209,139,208,177,208,190,209,128,208,176),string.char(119,97,114,110));return end _a.S.launching=true task.spawn(function()local _hU=_a.allMacros()[_a.S.selected]local _hV,_hW=pcall(_a.launchMap,_hU and _hU.map,_a.S.selected)if not _hV then _a.log(string.char(208,183,208,176,208,191,209,131,209,129,208,186,58,32)..tostring(_hW))end _a.S.launching=false;_a.refreshButtons()end)else if _a.S.recording then _a.S.recording=false end if not _a.S.selected then _a.pushLog(string.char(208,189,208,181,209,130,32,208,178,209,139,208,177,208,190,209,128,208,176),string.char(119,97,114,110));return end _a.play(_a.S.selected)end _a.refreshButtons()end,{order=11})_a.delW=_a.makeButton(_hN,string.char(240,159,151,145,32,32,32,208,163,208,180,208,176,208,187,208,184,209,130,209,140),Color3.fromRGB(220,130,130),function()local _hX=_a.allMacros()if not _a.S.selected or not _hX[_a.S.selected]then return end _hX[_a.S.selected]=nil;pcall(writefile,_a.FILE,_a.HttpService:JSONEncode(_hX))_a.pushLog(string.char(209,131,208,180,208,176,208,187,208,181,208,189,208,176,32,194,171).._a.S.selected..string.char(194,187),string.char(119,97,114,110))_a.S.selected=nil;_a.writeName(_a.SELECTED,"")_a.populate(string.char(97,117,116,111,102,97,114,109))end,{order=12})_a.voteW=_a.makeButton(_hN,string.char(240,159,151,179,32,32,32,208,147,208,190,208,187,208,190,209,129,58,32)..tostring(_a.S.voteMode),_a.themeAccent(),function()local _hY={string.char(78,111,114,109,97,108),string.char(72,97,114,100),string.char(73,110,115,97,110,101)}local _hZ=_a.S.voteMode or string.char(73,110,115,97,110,101);local _ia=1 for _ib,_ic in ipairs(_hY)do if _ic==_hZ then _ia=_ib;break end end _a.S.voteMode=_hY[(_ia%#_hY)+1]_a.voteW.obj.Text=string.char(240,159,151,179,32,32,32,208,147,208,190,208,187,208,190,209,129,58,32).._a.S.voteMode _a.pushLog(string.char(208,179,208,190,208,187,208,190,209,129,32,226,134,146,32).._a.S.voteMode,string.char(101,118,101,110,116))_a.scheduleAutosave()end,{order=13})_a.autoVoteW=_a.makeButton(_hN,string.char(240,159,164,150,32,32,32,208,144,208,178,209,130,208,190,45,208,179,208,190,208,187,208,190,209,129,58,32)..(_a.S.autoVote and string.char(208,178,208,186,208,187)or string.char(208,178,209,139,208,186,208,187)),_a.BASE.ok,function()_a.S.autoVote=not _a.S.autoVote _a.autoVoteW.obj.Text=string.char(240,159,164,150,32,32,32,208,144,208,178,209,130,208,190,45,208,179,208,190,208,187,208,190,209,129,58,32)..(_a.S.autoVote and string.char(208,178,208,186,208,187)or string.char(208,178,209,139,208,186,208,187))_a.autoVoteW.color=_a.S.autoVote and _a.BASE.ok or _a.BASE.dim if _a.autoVoteW.on then _a.autoVoteW.obj.TextColor3=_a.autoVoteW.color end _a.pushLog(string.char(208,176,208,178,209,130,208,190,45,208,179,208,190,208,187,208,190,209,129,32)..(_a.S.autoVote and string.char(208,178,208,186,208,187)or string.char(208,178,209,139,208,186,208,187)),string.char(105,110,102,111))_a.scheduleAutosave()end,{order=14})_a.speedW=_a.makeButton(_hN,string.char(226,154,161,32,32,32,208,161,208,186,208,190,209,128,208,190,209,129,209,130,209,140,58,32,120,49),_a.BASE.orange,function()local _id=_a.currentSpeed();local _ie=1 for _if,_ig in ipairs(_a.SPEEDS)do if math.abs(_ig-_id)<0.01 then _ie=_if;break end end local _ih=_a.SPEEDS[(_ie%#_a.SPEEDS)+1]_a.setGameSpeed(_ih);_a.pushLog(string.char(120)..tostring(_ih),string.char(101,118,101,110,116));_a.refreshButtons()end,{order=30})_a.skipW=_a.makeButton(_hN,string.char(226,143,173,32,32,32,208,144,208,178,209,130,208,190,209,129,208,186,208,184,208,191),_a.BASE.dim,function()if _a.toggleAutoSkip()then _a.pushLog(string.char(208,176,208,178,209,130,208,190,209,129,208,186,208,184,208,191,32,208,190,208,186),string.char(111,107))else _a.pushLog(string.char(208,189,208,181,32,208,189,208,176,208,182,208,176,209,130,209,140),string.char(101,114,114))end _a.refreshButtons()end,{order=32})_a.farmW=_a.makeButton(_hN,string.char(226,153,187,32,32,32,208,145,208,181,209,129,208,186,208,190,208,189,208,181,209,135,208,189,209,139,208,185,32,209,132,208,176,209,128,208,188),Color3.fromRGB(130,220,170),function()if _a.readName(_a.FARM)~=""then _a.writeName(_a.FARM,"");_a.pushLog(string.char(209,132,208,176,209,128,208,188,32,208,178,209,139,208,186,208,187),string.char(119,97,114,110))else if not _a.S.selected or not _a.allMacros()[_a.S.selected]then _a.pushLog(string.char(208,178,209,139,208,177,208,181,209,128,208,184),string.char(119,97,114,110));return end _a.writeName(_a.FARM,_a.S.selected);_a.pushLog(string.char(209,132,208,176,209,128,208,188,58,32).._a.S.selected,string.char(111,107))if _a.inLobby()and not _a.S.playing and not _a.S.launching then local _ii=_a.allMacros()[_a.S.selected];_a.S.launching=true task.spawn(function()pcall(_a.launchMap,_ii and _ii.map,_a.S.selected);_a.S.launching=false;_a.refreshButtons()end)end end _a.refreshButtons()end,{order=33})_a.againW=_a.makeButton(_hN,string.char(240,159,148,129,32,32,32,208,159,208,190,209,129,208,187,208,181,32,208,188,208,176,209,130,209,135,208,176,58,32,208,178,32,208,187,208,190,208,177,208,177,208,184),_a.BASE.dim,function()_a.S.playAgain=not _a.S.playAgain _a.writeName(_a.PLAYAGAIN,_a.S.playAgain and string.char(49)or string.char(48))_a.pushLog(_a.S.playAgain and string.char(209,129,208,189,208,190,208,178,208,176)or string.char(208,178,32,208,187,208,190,208,177,208,177,208,184),string.char(105,110,102,111));_a.refreshButtons()end,{order=34})_a.mapW=_a.makeButton(_hN,string.char(240,159,151,186,32,32,32,208,154,208,176,209,128,209,130,208,176,58,32,208,168,209,130,208,176,208,177),_a.themeAccent(),function()local _ij=_a.mapW.obj.Text:match(string.char(208,154,208,176,209,128,209,130,208,176,58,37,115,42,40,46,43,41,36))or _a.MAPS[1].ru local _ik=1 for _il,_im in ipairs(_a.MAPS)do if _im.ru==_ij then _ik=_il;break end end _ik=_ik%#_a.MAPS+1 _a.mapW.obj.Text=string.char(240,159,151,186,32,32,32,208,154,208,176,209,128,209,130,208,176,58,32).._a.MAPS[_ik].ru end,{order=35})_a.newW=_a.makeButton(_hN,string.char(240,159,154,128,32,32,32,208,157,208,190,208,178,209,139,208,185,32,208,188,208,176,209,130,209,135,32,208,190,208,180,208,184,208,189),Color3.fromRGB(140,180,255),function()if _a.S.playing or _a.S.launching then return end local _in=_a.mapW.obj.Text:match(string.char(208,154,208,176,209,128,209,130,208,176,58,37,115,42,40,46,43,41,36))or _a.MAPS[1].ru local _io=_a.MAPS[1].id for _ip,_iq in ipairs(_a.MAPS)do if _iq.ru==_in then _io=_iq.id break end end _a.S.launching=true;_a.refreshButtons()task.spawn(function()local _ir,_is=pcall(_a.launchMap,_io,nil)if not _ir then _a.log(string.char(208,183,208,176,208,191,209,131,209,129,208,186,58,32)..tostring(_is))end _a.S.launching=false;_a.refreshButtons()end)end,{order=36})for _it,_iu in pairs(_a.rows)do _a.safeDestroy(_iu)end _a.rows={}local _iv=_a.allMacros();local _iw={}for _ix in pairs(_iv)do table.insert(_iw,_ix)end table.sort(_iw)for _iy,_iz in ipairs(_iw)do local _iA=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_iA.Size=UDim2.new(1,0,0,26);_iA.BackgroundColor3=_a.BASE.panel;_iA.BorderSizePixel=0 _iA.Font=_a.FONT;_iA.TextSize=11 _iA.TextColor3=_a.BASE.dim;_iA.TextXAlignment=Enum.TextXAlignment.Left _iA.Text=string.char(32,32,194,183,32).._iz;_iA.AutoButtonColor=false _iA.LayoutOrder=_iy;_iA.Parent=_hP _a.corner(_iA,_a.CORNER-2);_a.thin(_iA)_iA.Activated:Connect(function()_a.pressFx(_iA)_a.pushLog(string.char(208,178,209,139,208,177,209,128,208,176,208,189,208,176,58,32).._iz,string.char(101,118,101,110,116))_a.selectRow(_iz)end)if _a.S.selected==_iz then _iA.BackgroundColor3=_a.BASE.accent:Lerp(_a.BASE.panel,0.5);_iA.TextColor3=_a.BASE.text end _a.rows[_iz]=_iA end pcall(_a.applyOutline)end function _a.populate(_iB)if not _a.pageGroup then return end local function _iC()_a.clearPage()if _iB==string.char(97,117,116,111,102,97,114,109)then _a.fillAutoFarm(_a.pageHolder)elseif _iB==string.char(104,101,108,112,101,114)then _a.fillHelper(_a.pageHolder)elseif _iB==string.char(99,104,101,99,107)then _a.fillCheck(_a.pageHolder)elseif _iB==string.char(118,105,115,117,97,108,115)then _a.fillVisuals(_a.pageHolder)elseif _iB==string.char(99,111,110,102,105,103)then _a.fillConfig(_a.pageHolder)elseif _iB==string.char(104,111,116,107,101,121,115)then _a.fillHotkeys(_a.pageHolder)elseif _iB==string.char(116,104,101,109,101,115)then _a.fillThemes(_a.pageHolder)end end if not _a._populated then _a._populated=true;_iC();_a.pageGroup.GroupTransparency=0;return end _a.TweenService:Create(_a.pageGroup,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()task.delay(0.13,function()if not _a.alive()or not _a.pageGroup then return end _iC()_a.pageGroup.GroupTransparency=1 _a.TweenService:Create(_a.pageGroup,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()end)end function _a.selectRow(_iD)_a.S.selected=_iD _a.writeName(_a.SELECTED,_iD)for _iE,_iF in pairs(_a.rows)do if _iF and _iF.Parent and _iF:IsA(string.char(84,101,120,116,66,117,116,116,111,110))then local _iG=(_iE==_iD)_a.TweenService:Create(_iF,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3=_iG and _a.BASE.accent:Lerp(_a.BASE.panel,0.5)or _a.BASE.panel,TextColor3=_iG and _a.BASE.text or _a.BASE.dim,}):Play()end end end function _a.buildUI()local _iH=Instance.new(string.char(83,99,114,101,101,110,71,117,105))_iH.Name=string.char(75,111,82,105,52,95,85,73,95)..tostring(_a.lp.UserId);_iH.ResetOnSpawn=false _iH.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;_iH.IgnoreGuiInset=true pcall(function()_iH.Parent=game:GetService(string.char(67,111,114,101,71,117,105))end)if not _iH.Parent then _iH.Parent=_a.lp:WaitForChild(string.char(80,108,97,121,101,114,71,117,105))end if _a.ENV then _a.ENV[_a.MY_KEY_UI]=_iH end _a.gui=_iH local _iI=Instance.new(string.char(70,114,97,109,101))_iI.Size=UDim2.fromOffset(_a.MAIN_W,_a.MAIN_H)_iI.AnchorPoint=Vector2.new(0.5,0.5);_iI.Position=UDim2.new(0.5,0,0.5,0)_iI.BackgroundColor3=_a.BASE.bg;_iI.BorderSizePixel=0 _iI.Active=true;_iI.ClipsDescendants=true;_iI.Parent=_iH _a.corner(_iI,_a.CORNER+6);_a.thin(_iI);_a.main=_iI local _iJ=Instance.new(string.char(85,73,83,99,97,108,101));_iJ.Scale=0.5;_iJ.Parent=_iI;_a.mainScale=_iJ task.defer(function()_a.updateScale()local _iK=workspace.CurrentCamera if _iK then _iK:GetPropertyChangedSignal(string.char(86,105,101,119,112,111,114,116,83,105,122,101)):Connect(_a.updateScale)end end)local _iL=Instance.new(string.char(70,114,97,109,101))_iL.Size=UDim2.new(1,0,0,42);_iL.BackgroundColor3=_a.BASE.topbar _iL.BorderSizePixel=0;_iL.Parent=_iI;_a.topbar=_iL _a.corner(_iL,_a.CORNER+6)local _iM=Instance.new(string.char(70,114,97,109,101))_iM.Size=UDim2.new(1,0,0,1);_iM.Position=UDim2.new(0,0,1,-1)_iM.BackgroundColor3=_a.BASE.line;_iM.BorderSizePixel=0;_iM.Parent=_iL _a.topLine=_iM local _iN=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_iN.Size=UDim2.fromOffset(26,26);_iN.Position=UDim2.fromOffset(14,8)_iN.BackgroundColor3=Color3.new(1,1,1);_iN.BorderSizePixel=0 _iN.Font=_a.FONT;_iN.TextSize=15 _iN.TextColor3=Color3.new(1,1,1);_iN.Text=string.char(75)_iN.AutoButtonColor=false;_iN.ZIndex=100 _iN.Parent=_iI;_a.kLogo=_iN _a.corner(_iN,_a.CORNER-2)local _iO=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116))_iO.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,_a.currentTheme().c1),ColorSequenceKeypoint.new(1,_a.currentTheme().c2)})_iO.Rotation=45;_iO.Parent=_iN;_a.kLogoGrad=_iO local _iP=Instance.new(string.char(85,73,83,116,114,111,107,101))_a.setProp(_iP,string.char(84,104,105,99,107,110,101,115,115),1)_a.setProp(_iP,string.char(67,111,108,111,114),Color3.fromRGB(0,0,0))_a.setProp(_iP,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.55)_a.setProp(_iP,string.char(65,112,112,108,121,83,116,114,111,107,101,77,111,100,101),Enum.ApplyStrokeMode.Contextual)_iP.Parent=_iN local _iQ=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_iQ.Size=UDim2.new(1,-120,0,16);_iQ.Position=UDim2.fromOffset(48,6)_iQ.BackgroundTransparency=1;_iQ.Font=_a.FONT;_iQ.TextSize=12 _iQ.TextColor3=_a.BASE.text;_iQ.TextXAlignment=Enum.TextXAlignment.Left _iQ.Text=string.char(75,111,82,105,52,32,115,99,114,105,112,116,115);_iQ.Parent=_iL;_a.brandTitle=_iQ local _iR=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_iR.Size=UDim2.new(1,-120,0,12);_iR.Position=UDim2.fromOffset(48,22)_iR.BackgroundTransparency=1;_iR.Font=_a.FONT;_iR.TextSize=10 _iR.TextColor3=_a.BASE.dim;_iR.TextXAlignment=Enum.TextXAlignment.Left _iR.Text=string.char(67,97,109,101,114,97,109,97,110,32,84,68);_iR.Parent=_iL;_a.brandSub=_iR local _iS=Instance.new(string.char(70,114,97,109,101))_iS.Size=UDim2.fromOffset(8,8);_iS.Position=UDim2.new(1,-52,0,17)_iS.BackgroundColor3=_a.BASE.dim;_iS.BorderSizePixel=0;_iS.Parent=_iL;_a.corner(_iS,4)_a.dot=_iS local _iT=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_iT.Size=UDim2.fromOffset(22,22);_iT.Position=UDim2.new(1,-32,0,10)_iT.BackgroundColor3=_a.BASE.panel;_iT.BorderSizePixel=0 _iT.Font=_a.FONT;_iT.TextSize=14;_iT.TextColor3=Color3.fromRGB(230,120,140)_iT.Text=string.char(195,151);_iT.AutoButtonColor=false;_iT.Parent=_iL _a.corner(_iT,11);_a.thin(_iT)_a.closeBtn=_iT _iT.Activated:Connect(function()_a.pressFx(_iT)pcall(function()_a.saveNow()end)task.delay(0.15,function()if _iH then _a.safeDestroy(_iH)end end)end)local _iU=Instance.new(string.char(70,114,97,109,101))_iU.Size=UDim2.new(1,0,0,42);_iU.Position=UDim2.fromOffset(0,42)_iU.BackgroundTransparency=1;_iU.Parent=_iI;_a.tabRow=_iU local _iV=Instance.new(string.char(70,114,97,109,101))_iV.Size=UDim2.new(1,0,0,1);_iV.Position=UDim2.new(0,0,1,-1)_iV.BackgroundColor3=_a.BASE.line;_iV.BorderSizePixel=0;_iV.Parent=_iU _a.tabLine=_iV local _iW=Instance.new(string.char(83,99,114,111,108,108,105,110,103,70,114,97,109,101))_iW.Size=UDim2.new(1,0,1,0);_iW.Position=UDim2.fromOffset(0,0)_iW.BackgroundTransparency=1;_iW.BorderSizePixel=0 _iW.ScrollBarThickness=0 _iW.CanvasSize=UDim2.new(0,0,0,0)_iW.AutomaticCanvasSize=Enum.AutomaticSize.X _iW.ScrollingDirection=Enum.ScrollingDirection.X _iW.ScrollBarImageTransparency=1 _iW.Parent=_iU local _iX=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_iW)_iX.FillDirection=Enum.FillDirection.Horizontal _iX.SortOrder=Enum.SortOrder.LayoutOrder _iX.Padding=UDim.new(0,4);_iX.VerticalAlignment=Enum.VerticalAlignment.Center local _iY=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_iW)_iY.PaddingLeft=UDim.new(0,12);_iY.PaddingRight=UDim.new(0,12);_iY.Parent=_iW local _iZ={{id=string.char(97,117,116,111,102,97,114,109),label=string.char(65,117,116,111,70,97,114,109),icon=string.char(226,154,148)},{id=string.char(104,101,108,112,101,114),label=string.char(72,101,108,112,101,114),icon=string.char(240,159,155,160)},{id=string.char(99,104,101,99,107),label=string.char(67,104,101,99,107),icon=string.char(240,159,148,142)},{id=string.char(118,105,115,117,97,108,115),label=string.char(86,105,115,117,97,108,115),icon=string.char(240,159,145,129)},{id=string.char(99,111,110,102,105,103),label=string.char(67,111,110,102,105,103),icon=string.char(226,154,153)},{id=string.char(104,111,116,107,101,121,115),label=string.char(66,105,110,100,115),icon=string.char(226,140,168)},{id=string.char(116,104,101,109,101,115),label=string.char(84,104,101,109,101,115),icon=string.char(240,159,142,168)},}for _ja,_jb in ipairs(_iZ)do local _jc=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_jc.Size=UDim2.fromOffset(0,26);_jc.AutomaticSize=Enum.AutomaticSize.X _jc.BackgroundColor3=_a.BASE.panel;_jc.BorderSizePixel=0 _jc.Font=_a.FONT;_jc.TextSize=11 _jc.TextColor3=_a.BASE.dim;_jc.TextXAlignment=Enum.TextXAlignment.Center _jc.Text=string.char(32,32).._jb.icon..string.char(32,32).._jb.label..string.char(32,32);_jc.AutoButtonColor=false _jc.LayoutOrder=_ja;_jc.Parent=_iW;_a.corner(_jc,13)pcall(function()_jc:SetAttribute(string.char(75,111,82,105,52,84,97,98),true)end)_a.thin(_jc)_jc.MouseEnter:Connect(function()if _a.S.tab==_jb.id then return end _a.TweenService:Create(_jc,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3=_a.BASE.panel:Lerp(_a.BASE.accent,0.35),TextColor3=_a.BASE.text}):Play()end)_jc.MouseLeave:Connect(function()if _a.S.tab==_jb.id then return end _a.TweenService:Create(_jc,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3=_a.BASE.panel,TextColor3=_a.BASE.dim}):Play()end)_jc.Activated:Connect(function()_a.pressFx(_jc);_a.S.tab=_jb.id local _jd=_jc:FindFirstChildOfClass(string.char(85,73,83,99,97,108,101))if not _jd then _jd=Instance.new(string.char(85,73,83,99,97,108,101));_jd.Parent=_jc end _a.TweenService:Create(_jd,TweenInfo.new(0.1,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.15}):Play()task.delay(0.12,function()if _jd and _jd.Parent then _a.TweenService:Create(_jd,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=1}):Play()end end)for _je,_jf in pairs(_a.tabButtons)do local _jg=(_je==_jb.id)_a.TweenService:Create(_jf.obj,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3=_jg and _a.BASE.accent or _a.BASE.panel,TextColor3=_jg and Color3.new(1,1,1)or _a.BASE.dim}):Play()end _a.populate(_jb.id)end)_a.tabButtons[_jb.id]={obj=_jc,label=_jb.label,icon=_jb.icon}end local _jh=26 local _ji=Instance.new(string.char(70,114,97,109,101))_ji.Size=UDim2.new(1,0,1,-42-42-_jh);_ji.Position=UDim2.fromOffset(0,84)_ji.BackgroundTransparency=1;_ji.ClipsDescendants=true;_ji.Parent=_iI _a.content=_ji local _jj=Instance.new(string.char(67,97,110,118,97,115,71,114,111,117,112))_jj.Size=UDim2.new(1,0,1,0);_jj.BackgroundTransparency=1;_jj.Parent=_ji;_a.pageGroup=_jj local _jk=Instance.new(string.char(83,99,114,111,108,108,105,110,103,70,114,97,109,101))_jk.Size=UDim2.new(1,0,1,0);_jk.BackgroundTransparency=1;_jk.BorderSizePixel=0 _jk.ScrollBarThickness=4;_jk.ScrollBarImageColor3=_a.BASE.line _jk.CanvasSize=UDim2.new(0,0,0,0);_jk.AutomaticCanvasSize=Enum.AutomaticSize.Y _jk.ScrollingDirection=Enum.ScrollingDirection.Y;_jk.Parent=_jj;_a.pageScroll=_jk local _jl=Instance.new(string.char(70,114,97,109,101))_jl.Size=UDim2.new(1,0,0,0);_jl.AutomaticSize=Enum.AutomaticSize.Y _jl.BackgroundTransparency=1;_jl.Parent=_jk;_a.pageHolder=_jl local _jm=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_jl);_jm.Padding=UDim.new(0,_a.BTN_GAP);_jm.SortOrder=Enum.SortOrder.LayoutOrder local _jn=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_jl)_jn.PaddingLeft=UDim.new(0,_a.BTN_PAD);_jn.PaddingRight=UDim.new(0,_a.BTN_PAD)_jn.PaddingTop=UDim.new(0,_a.BTN_PAD);_jn.PaddingBottom=UDim.new(0,_a.BTN_PAD)local _jo=Instance.new(string.char(70,114,97,109,101))_jo.Size=UDim2.new(1,0,0,_jh);_jo.Position=UDim2.new(0,0,1,-_jh)_jo.BackgroundColor3=_a.BASE.topbar;_jo.BorderSizePixel=0;_jo.Parent=_iI;_a.statusBar=_jo _a.corner(_jo,_a.CORNER+6)local _jp=Instance.new(string.char(70,114,97,109,101))_jp.Size=UDim2.new(1,0,0,1);_jp.BackgroundColor3=_a.BASE.line _jp.BorderSizePixel=0;_jp.Parent=_jo;_a.statusLine=_jp local _jq=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_jq.Size=UDim2.new(1,-20,1,0);_jq.Position=UDim2.fromOffset(12,0)_jq.BackgroundTransparency=1;_jq.Font=_a.FONT;_jq.TextSize=10 _jq.TextColor3=_a.BASE.dim;_jq.TextXAlignment=Enum.TextXAlignment.Left _jq.Text=string.char(208,179,208,190,209,130,208,190,208,178);_jq.Parent=_jo;_a.statusLabel=_jq local function _jr(_js)local _jt=false;local _ju,_jv,_jw _js.InputBegan:Connect(function(_jx)if _jx.UserInputType==Enum.UserInputType.MouseButton1 or _jx.UserInputType==Enum.UserInputType.Touch then _jt=true;_jw=false;_ju=_jx.Position;_jv=_iI.Position end end)_a.UIS.InputChanged:Connect(function(_jy)if _jt and(_jy.UserInputType==Enum.UserInputType.MouseMovement or _jy.UserInputType==Enum.UserInputType.Touch)then local _jz=_jy.Position-_ju if math.abs(_jz.X)>4 or math.abs(_jz.Y)>4 then _jw=true end if _jw then _iI.Position=UDim2.new(_jv.X.Scale,_jv.X.Offset+_jz.X,_jv.Y.Scale,_jv.Y.Offset+_jz.Y)end end end)_a.UIS.InputEnded:Connect(function(_jA)if _jA.UserInputType==Enum.UserInputType.MouseButton1 or _jA.UserInputType==Enum.UserInputType.Touch then _jt=false end end)end _jr(_iL)_jr(_jo)do local _jB=false;local _jC,_jD,_jE _iN.InputBegan:Connect(function(_jF)if _jF.UserInputType==Enum.UserInputType.MouseButton1 or _jF.UserInputType==Enum.UserInputType.Touch then _jB=true;_jE=false;_jC=_jF.Position;_jD=_iI.Position end end)_a.UIS.InputChanged:Connect(function(_jG)if _jB and(_jG.UserInputType==Enum.UserInputType.MouseMovement or _jG.UserInputType==Enum.UserInputType.Touch)then local _jH=_jG.Position-_jC if math.abs(_jH.X)>4 or math.abs(_jH.Y)>4 then _jE=true end if _jE then _iI.Position=UDim2.new(_jD.X.Scale,_jD.X.Offset+_jH.X,_jD.Y.Scale,_jD.Y.Offset+_jH.Y)end end end)_a.UIS.InputEnded:Connect(function(_jI)if _jI.UserInputType==Enum.UserInputType.MouseButton1 or _jI.UserInputType==Enum.UserInputType.Touch then if _jB and not _jE then if _a.toggleCollapse then _a.toggleCollapse()end end _jB=false end end)end task.spawn(function()while _a.alive()and _jq.Parent do local _jJ if _a.S.recording then _jJ=(string.char(82,69,67,32,194,183,32,37,100,32,97,99,116)):format(#_a.S.actions)elseif _a.S.playing then _jJ=string.char(80,76,65,89)elseif _a.S.launching then _jJ=string.char(76,65,85,78,67,72)elseif _a.inLobby()then _jJ=string.char(108,111,98,98,121,32,194,183,32).._a.MY_NICK elseif _a.inMatch()then _jJ=string.char(109,97,116,99,104)else _jJ=_a.MY_NICK end local _jK=_a.S.recording and _a.BASE.red or _a.S.playing and _a.BASE.ok or _a.S.launching and _a.BASE.orange or _a.BASE.dim _iS.BackgroundColor3=_jK _jq.Text=(string.char(226,151,143,32,37,115,32,32,32,194,183,32,32,32,208,178,208,190,208,187,208,189,208,176,32,37,100,32,32,32,194,183,32,32,32,36,37,100,32,32,32,194,183,32,32,32,37,115)):format(_jJ,_a.S.wave,_a.money(),_a.S.status or"")task.wait(0.3)end end)end function _a.toggleCollapse()if not _a.main or not _a.kLogo then return end local _jL=_a.currentTheme()if not _a.S.collapsed then _a.S.collapsed=true for _jM in pairs(_a.accordions)do if type(_jM)==string.char(116,97,98,108,101)and _jM.closeInstantly then pcall(_jM.closeInstantly)end end if _a.pageGroup then _a.TweenService:Create(_a.pageGroup,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()end task.delay(0.15,function()for _jN,_jO in ipairs({_a.tabRow,_a.content,_a.statusBar,_a.brandTitle,_a.brandSub,_a.dot,_a.closeBtn,_a.topLine,_a.tabLine,_a.statusLine})do if _jO then _jO.Visible=false end end end)_a.TweenService:Create(_a.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(62,54),BackgroundColor3=_jL.c1}):Play()if _a.topbar then _a.TweenService:Create(_a.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=_jL.c1}):Play()end _a.TweenService:Create(_a.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(6,7),Size=UDim2.fromOffset(50,40),TextSize=24}):Play()if _a.kLogoGrad then _a.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,_jL.c1),ColorSequenceKeypoint.new(1,_jL.c2)})end else _a.S.collapsed=false _a.TweenService:Create(_a.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(_a.MAIN_W,_a.MAIN_H),BackgroundColor3=_a.BASE.bg}):Play()if _a.topbar then _a.TweenService:Create(_a.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=_a.BASE.topbar}):Play()end _a.TweenService:Create(_a.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(14,8),Size=UDim2.fromOffset(26,26),TextSize=15}):Play()if _a.kLogoGrad then _a.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,_jL.c1),ColorSequenceKeypoint.new(1,_jL.c2)})end task.delay(0.12,function()for _jP,_jQ in ipairs({_a.tabRow,_a.content,_a.statusBar,_a.brandTitle,_a.brandSub,_a.dot,_a.closeBtn,_a.topLine,_a.tabLine,_a.statusLine})do if _jQ then _jQ.Visible=true end end if _a.pageGroup then _a.pageGroup.GroupTransparency=1 _a.TweenService:Create(_a.pageGroup,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()end end)end end function _a.toggleFreePlacement()if _a.freePlacement.active then for _jR,_jS in pairs(_a.freePlacement.saved)do if _jR and not _jR.Parent then pcall(function()_jR.Parent=_jS.parent;_jR.CFrame=_jS.cf;_jR.CanQuery=_jS.cq;_jR.CanCollide=_jS.cc;_jR.CanTouch=_jS.ct end)end end _a.freePlacement.saved={};_a.freePlacement.active=false _a.pushLog(string.char(240,159,154,167,32,209,128,208,176,208,183,208,188,208,181,209,137,208,181,208,189,208,184,208,181,32,208,146,208,171,208,154,208,155),string.char(105,110,102,111));return false end local _jT=_a.gameFolder();if not _jT then _a.pushLog(string.char(71,97,109,101,32,208,189,208,181,209,130),string.char(101,114,114));return false end local _jU=_jT:FindFirstChild(string.char(80,97,116,104,115));if not _jU then _a.pushLog(string.char(80,97,116,104,115,32,208,189,208,181,209,130),string.char(101,114,114));return false end local _jV,_jW={},0 for _jX,_jY in ipairs(_jU:GetDescendants())do if _jY:IsA(string.char(66,97,115,101,80,97,114,116))then _jV[_jY]={parent=_jY.Parent,cf=_jY.CFrame,cq=_jY.CanQuery,cc=_jY.CanCollide,ct=_jY.CanTouch}pcall(function()_jY.CanQuery=false;_jY.CanCollide=false;_jY.CanTouch=false;_jY.Parent=nil end)_jW=_jW+1 end end _a.freePlacement.saved=_jV;_a.freePlacement.active=true _a.pushLog((string.char(240,159,154,167,32,209,131,208,180,208,176,208,187,208,181,208,189,208,190,32,208,191,209,131,209,130,208,181,208,185,58,32,37,100)):format(_jW),string.char(111,107));return true end function _a.optSetShadows(_jZ)if _jZ==_a.optimize.shadows then return _jZ end if _jZ then for _ka,_kb in ipairs(workspace:GetDescendants())do if _kb:IsA(string.char(66,97,115,101,80,97,114,116))then _a.optimize.sShadows[_kb]={CastShadow=_kb.CastShadow};pcall(function()_kb.CastShadow=false end)elseif _kb:IsA(string.char(80,111,105,110,116,76,105,103,104,116))or _kb:IsA(string.char(83,112,111,116,76,105,103,104,116))or _kb:IsA(string.char(83,117,114,102,97,99,101,76,105,103,104,116))then _a.optimize.sShadows[_kb]={Shadows=_kb.Shadows};pcall(function()_kb.Shadows=false end)end end _a.optimize.sShadows[_a.Lighting]={GlobalShadows=_a.Lighting.GlobalShadows}pcall(function()_a.Lighting.GlobalShadows=false end);_a.optimize.shadows=true else for _kc,_kd in pairs(_a.optimize.sShadows)do if _kc and(_kc.Parent or _kc==_a.Lighting)then pcall(function()for _ke,_kf in pairs(_kd)do _kc[_ke]=_kf end end)end end _a.optimize.sShadows={};_a.optimize.shadows=false end return _a.optimize.shadows end function _a.optSetGray(_kg)if _kg==_a.optimize.gray then return _kg end if _kg then for _kh,_ki in ipairs(workspace:GetDescendants())do if _ki:IsA(string.char(66,97,115,101,80,97,114,116))then _a.optimize.sGray[_ki]={Material=_ki.Material,Color=_ki.Color,Reflectance=_ki.Reflectance}pcall(function()_ki.Material=Enum.Material.SmoothPlastic;_ki.Color=Color3.fromRGB(120,120,120);_ki.Reflectance=0 end)elseif _ki:IsA(string.char(68,101,99,97,108))or _ki:IsA(string.char(84,101,120,116,117,114,101))then _a.optimize.sGray[_ki]={Transparency=_ki.Transparency};pcall(function()_ki.Transparency=1 end)end end _a.optimize.gray=true else for _kj,_kk in pairs(_a.optimize.sGray)do if _kj and _kj.Parent then pcall(function()for _kl,_km in pairs(_kk)do _kj[_kl]=_km end end)end end _a.optimize.sGray={};_a.optimize.gray=false end return _a.optimize.gray end function _a.optSetFx(_kn)if _kn==_a.optimize.fx then return _kn end if _kn then for _ko,_kp in ipairs(workspace:GetDescendants())do if _kp:IsA(string.char(80,97,114,116,105,99,108,101,69,109,105,116,116,101,114))or _kp:IsA(string.char(70,105,114,101))or _kp:IsA(string.char(83,112,97,114,107,108,101,115))or _kp:IsA(string.char(83,109,111,107,101))or _kp:IsA(string.char(66,101,97,109))or _kp:IsA(string.char(84,114,97,105,108))then _a.optimize.sFx[_kp]={Enabled=_kp.Enabled};pcall(function()_kp.Enabled=false end)elseif _kp:IsA(string.char(66,105,108,108,98,111,97,114,100,71,117,105))or _kp:IsA(string.char(83,117,114,102,97,99,101,71,117,105))then _a.optimize.sFx[_kp]={Enabled=_kp.Enabled};pcall(function()_kp.Enabled=false end)end end for _kq,_kr in ipairs(_a.Lighting:GetChildren())do if _kr:IsA(string.char(80,111,115,116,69,102,102,101,99,116))then _a.optimize.sFx[_kr]={Enabled=_kr.Enabled};pcall(function()_kr.Enabled=false end)elseif _kr:IsA(string.char(65,116,109,111,115,112,104,101,114,101))then _a.optimize.sFx[_kr]={Density=_kr.Density,Haze=_kr.Haze};pcall(function()_kr.Density=0;_kr.Haze=0 end)end end _a.optimize.fx=true else for _ks,_kt in pairs(_a.optimize.sFx)do if _ks and(_ks.Parent or _ks==_a.Lighting)then pcall(function()for _ku,_kv in pairs(_kt)do _ks[_ku]=_kv end end)end end _a.optimize.sFx={};_a.optimize.fx=false end return _a.optimize.fx end function _a.optSetGuiAnim(_kw)_a.optimize.guiAnim=_kw and true or false pcall(function()_a.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat,not _kw)_a.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList,not _kw)_a.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack,not _kw)end)return _a.optimize.guiAnim end function _a.makeCheckRow(_kx,_ky,_kz,_kA,_kB)local _kC=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_kC.Size=UDim2.new(1,0,0,28);_kC.BackgroundColor3=_a.BASE.panel;_kC.BorderSizePixel=0 _kC.Font=_a.FONT;_kC.TextSize=11;_kC.TextColor3=_a.BASE.text _kC.TextXAlignment=Enum.TextXAlignment.Left;_kC.Text=""_kC.AutoButtonColor=false;_kC.LayoutOrder=_kB or 1;_kC.Parent=_kx _a.corner(_kC,_a.CORNER);_a.thin(_kC)local _kD=Instance.new(string.char(70,114,97,109,101))_kD.Size=UDim2.fromOffset(14,14);_kD.Position=UDim2.fromOffset(10,7)_kD.BackgroundColor3=_a.BASE.bg;_kD.BorderSizePixel=0;_kD.Parent=_kC _a.corner(_kD,3);_a.thin(_kD)local _kE=Instance.new(string.char(70,114,97,109,101))_kE.Size=UDim2.new(1,-6,1,-6);_kE.Position=UDim2.fromOffset(3,3)_kE.BackgroundColor3=_a.BASE.accent;_kE.BorderSizePixel=0;_kE.Parent=_kD _a.corner(_kE,2)_kE.Visible=_kz()and true or false local _kF=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_kF.Size=UDim2.new(1,-40,1,0);_kF.Position=UDim2.fromOffset(32,0)_kF.BackgroundTransparency=1;_kF.Font=_a.FONT;_kF.TextSize=11 _kF.TextColor3=_a.BASE.text;_kF.TextXAlignment=Enum.TextXAlignment.Left;_kF.Parent=_kC _kF.Text=_ky _kC.Activated:Connect(function()_a.pressFx(_kC)local _kG=not _kz();_kA(_kG)_kE.Visible=_kG _a.applyOutline();_a.scheduleAutosave()end)return _kC end function _a.fillHelper(_kH)local _kI=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_kI.Size=UDim2.new(1,0,0,16);_kI.BackgroundTransparency=1;_kI.LayoutOrder=1 _kI.Font=_a.FONT;_kI.TextSize=10;_kI.TextColor3=_a.BASE.dim;_kI.TextXAlignment=Enum.TextXAlignment.Left _kI.Text=string.char(208,165,208,149,208,155,208,159,208,149,208,160);_kI.Parent=_kH local _kJ=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_kJ.Size=UDim2.new(1,0,0,16);_kJ.BackgroundTransparency=1;_kJ.LayoutOrder=2 _kJ.Font=_a.FONT;_kJ.TextSize=10;_kJ.TextColor3=_a.BASE.dim;_kJ.TextXAlignment=Enum.TextXAlignment.Left _kJ.Text=string.char(208,160,208,144,208,151,208,156,208,149,208,169,208,149,208,157,208,152,208,149);_kJ.Parent=_kH _a.freePlacementBtn=_a.makeButton(_kH,string.char(240,159,154,167,32,32,32,208,163,208,180,208,176,208,187,208,184,209,130,209,140,32,208,191,209,131,209,130,208,184),_a.BASE.orange,function()local _kK=_a.toggleFreePlacement()if _kK then _a.freePlacementBtn.obj.Text=string.char(226,134,169,32,32,32,208,146,208,181,209,128,208,189,209,131,209,130,209,140,32,208,191,209,131,209,130,208,184);_a.freePlacementBtn.color=Color3.fromRGB(130,220,160)else _a.freePlacementBtn.obj.Text=string.char(240,159,154,167,32,32,32,208,163,208,180,208,176,208,187,208,184,209,130,209,140,32,208,191,209,131,209,130,208,184);_a.freePlacementBtn.color=_a.BASE.orange end if _a.freePlacementBtn.on then _a.freePlacementBtn.obj.TextColor3=_a.freePlacementBtn.color end end,{order=3})local _kL=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_kL.Size=UDim2.new(1,0,0,16);_kL.BackgroundTransparency=1;_kL.LayoutOrder=4 _kL.Font=_a.FONT;_kL.TextSize=10;_kL.TextColor3=_a.BASE.dim;_kL.TextXAlignment=Enum.TextXAlignment.Left _kL.Text=string.char(208,158,208,159,208,162,208,152,208,156,208,152,208,151,208,144,208,166,208,152,208,175);_kL.Parent=_kH local _kM=Instance.new(string.char(70,114,97,109,101))_kM.Size=UDim2.new(1,0,0,28*4+_a.BTN_GAP*3+12);_kM.BackgroundColor3=_a.BASE.bg _kM.BorderSizePixel=0;_kM.LayoutOrder=5;_kM.Parent=_kH _a.corner(_kM,_a.CORNER);_a.thin(_kM)local _kN=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_kM);_kN.Padding=UDim.new(0,_a.BTN_GAP);_kN.SortOrder=Enum.SortOrder.LayoutOrder local _kO=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_kM);_kO.PaddingTop=UDim.new(0,6);_kO.PaddingBottom=UDim.new(0,6)_kO.PaddingLeft=UDim.new(0,6);_kO.PaddingRight=UDim.new(0,6);_kO.Parent=_kM _a.optimizeBtns={}_a.optimizeBtns.shadows=_a.makeCheckRow(_kM,string.char(209,130,208,181,208,189,208,184),function()return _a.optimize.shadows end,function(_kP)return _a.optSetShadows(_kP)end,1)_a.optimizeBtns.gray=_a.makeCheckRow(_kM,string.char(209,129,208,181,209,128,209,139,208,181,32,208,188,208,176,209,130,208,181,209,128,208,184,208,176,208,187,209,139),function()return _a.optimize.gray end,function(_kQ)return _a.optSetGray(_kQ)end,2)_a.optimizeBtns.fx=_a.makeCheckRow(_kM,string.char(209,141,209,132,209,132,208,181,208,186,209,130,209,139,32,40,208,191,208,176,209,128,209,130,208,184,208,186,208,187,209,139,44,32,208,179,208,187,208,190,209,131,41),function()return _a.optimize.fx end,function(_kR)return _a.optSetFx(_kR)end,3)_a.optimizeBtns.guiAnim=_a.makeCheckRow(_kM,string.char(208,176,208,189,208,184,208,188,208,176,209,134,208,184,208,184,32,208,184,208,189,209,130,208,181,209,128,209,132,208,181,208,185,209,129,208,176),function()return _a.optimize.guiAnim end,function(_kS)return _a.optSetGuiAnim(_kS)end,4)local _kT=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_kT.Size=UDim2.new(1,0,0,16);_kT.BackgroundTransparency=1;_kT.LayoutOrder=10 _kT.Font=_a.FONT;_kT.TextSize=10;_kT.TextColor3=_a.BASE.dim;_kT.TextXAlignment=Enum.TextXAlignment.Left _kT.Text=string.char(83,85,77,77,79,78);_kT.Parent=_kH _a.summon1Btn=_a.makeButton(_kH,string.char(240,159,142,176,32,32,32,83,117,109,109,111,110,32,195,151,49),Color3.fromRGB(120,200,255),function()_a.S.summon1=not _a.S.summon1;if _a.S.summon1 then _a.S.summon10=false end _a.refreshSummonCache();_a.refreshSummonUI()end,{order=11})_a.summon10Btn=_a.makeButton(_kH,string.char(240,159,142,176,32,32,32,83,117,109,109,111,110,32,195,151,49,48),Color3.fromRGB(255,180,120),function()_a.S.summon10=not _a.S.summon10;if _a.S.summon10 then _a.S.summon1=false end _a.refreshSummonCache();_a.refreshSummonUI()end,{order=12})local _kV=_a.makeSlider(_kH,string.char(208,183,208,176,208,180,208,181,209,128,208,182,208,186,208,176,44,32,209,129,208,181,208,186),5,600,function()return _a.S.summonDelay end,function(_kU)_a.S.summonDelay=_kU end,true)_kV.holder.LayoutOrder=13 end _a.refreshSummonUI=function()if _a.summon1Btn and _a.summon1Btn.obj.Parent then _a.summon1Btn.obj.Text=(_a.S.summon1 and string.char(226,151,143,32,32,32)or string.char(226,151,139,32,32,32))..string.char(83,117,109,109,111,110,32,195,151,49)_a.summon1Btn.color=_a.S.summon1 and Color3.fromRGB(130,230,160)or Color3.fromRGB(120,200,255)if _a.summon1Btn.on then _a.summon1Btn.obj.TextColor3=_a.summon1Btn.color end end if _a.summon10Btn and _a.summon10Btn.obj.Parent then _a.summon10Btn.obj.Text=(_a.S.summon10 and string.char(226,151,143,32,32,32)or string.char(226,151,139,32,32,32))..string.char(83,117,109,109,111,110,32,195,151,49,48)_a.summon10Btn.color=_a.S.summon10 and Color3.fromRGB(130,230,160)or Color3.fromRGB(255,180,120)if _a.summon10Btn.on then _a.summon10Btn.obj.TextColor3=_a.summon10Btn.color end end end function _a.scanScreen()_a.pushLog(string.char(240,159,147,186,32,209,129,208,186,208,176,208,189,32,209,141,208,186,209,128,208,176,208,189,208,176,46,46,46),string.char(101,118,101,110,116))local _kW=_a.lp:FindFirstChildOfClass(string.char(80,108,97,121,101,114,71,117,105));if not _kW then return end local _kX=0 local function _kY(_kZ)local _la=_kZ for _lb=1,15 do if not _la then return false end;if _la:IsA(string.char(80,108,97,121,101,114,71,117,105))then return true end local _lc,_ld=pcall(function()return _la.Visible end);if _lc and _ld==false then return false end;_la=_la.Parent end return true end local function _le(_lf)if not _kY(_lf)then return end local _lg=false pcall(function()if(_lf:IsA(string.char(84,101,120,116,66,117,116,116,111,110))or _lf:IsA(string.char(84,101,120,116,76,97,98,101,108))or _lf:IsA(string.char(84,101,120,116,66,111,120)))and _lf.Text~=""then _lg=true end end)if _lg then _kX=_kX+1;print((string.char(91,37,48,51,100,93,32,37,115,32,34,37,115,34)):format(_kX,_lf.ClassName,tostring(_lf.Text)))end for _lh,_li in ipairs(_lf:GetChildren())do _le(_li)end end _le(_kW);_a.pushLog((string.char(226,156,133,32,209,141,208,186,209,128,208,176,208,189,58,32,37,100)):format(_kX),string.char(111,107))end function _a.scanGame()_a.pushLog(string.char(240,159,151,130,32,209,129,208,186,208,176,208,189,32,208,184,208,179,209,128,209,139,46,46,46),string.char(101,118,101,110,116))local function _lj(_lk,_ll,_lm)if not _lk then return end local _ln=0 for _lo,_lp in ipairs(_lk:GetChildren())do _ln=_ln+1;if _ln>_ll then break end;print((string.char(91,37,115,93,32,37,115,32,40,37,115,41)):format(_lm,_lp.ClassName,_lp.Name))end end _lj(workspace,80,string.char(119,115));_lj(_a.RS,80,string.char(82,83))local _lq=_a.RS:FindFirstChild(string.char(77,111,100,117,108,101,76,111,97,100,101,114))if _lq then local _lr=_lq:FindFirstChild(string.char(83,104,97,114,101,100));local _ls=_lr and _lr:FindFirstChild(string.char(78,101,116,119,111,114,107))if _ls then local _lt=_ls:FindFirstChild(string.char(82,101,109,111,116,101,69,118,101,110,116));local _lu=_ls:FindFirstChild(string.char(82,101,109,111,116,101,70,117,110,99,116,105,111,110))if _lt then print((string.char(82,69,32,37,100)):format(#_lt:GetChildren()));_lj(_lt,300,string.char(82,69))end if _lu then print((string.char(82,70,32,37,100)):format(#_lu:GetChildren()));_lj(_lu,300,string.char(82,70))end end end _a.pushLog(string.char(226,156,133,32,208,184,208,179,209,128,208,176,32,208,179,208,190,209,130,208,190,208,178),string.char(111,107))end function _a.scanCursor()_a.pushLog(string.char(240,159,150,177,32,51,32,209,129,208,181,208,186),string.char(101,118,101,110,116))task.spawn(function()local _lv=workspace.CurrentCamera;local _lw=os.clock();local _lx=nil while _a.alive()and os.clock()-_lw<3 do local _ly=_a.UIS:GetMouseLocation()local _lz=RaycastParams.new();_lz.FilterType=Enum.RaycastFilterType.Exclude local _lA={};if _a.lp.Character then table.insert(_lA,_a.lp.Character)end;if _a.gui then table.insert(_lA,_a.gui)end _lz.FilterDescendantsInstances=_lA local _lB=_lv:ViewportPointToRay(_ly.X,_ly.Y,0)local _lC=workspace:Raycast(_lB.Origin,_lB.Direction*500,_lz)if _lC and _lC.Instance and _lC.Instance~=_lx then _lx=_lC.Instance;print((string.char(240,159,142,175,32,37,115,32,124,32,37,115)):format(_lC.Instance.Name,_lC.Instance:GetFullName()))end task.wait(0.15)end _a.pushLog(string.char(226,156,133,32,208,186,209,131,209,128,209,129,208,190,209,128,32,208,179,208,190,209,130,208,190,208,178),string.char(111,107))end)end function _a.fillCheck(_lD)local _lE=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_lE.Size=UDim2.new(1,0,0,16);_lE.BackgroundTransparency=1;_lE.LayoutOrder=1 _lE.Font=_a.FONT;_lE.TextSize=10;_lE.TextColor3=_a.BASE.dim;_lE.TextXAlignment=Enum.TextXAlignment.Left _lE.Text=string.char(208,148,208,152,208,144,208,147,208,157,208,158,208,161,208,162,208,152,208,154,208,144);_lE.Parent=_lD _a.makeButton(_lD,string.char(240,159,147,186,32,32,32,208,161,208,186,208,176,208,189,32,209,141,208,186,209,128,208,176,208,189,208,176),Color3.fromRGB(120,200,255),function()_a.scanScreen()end,{order=9})_a.makeButton(_lD,string.char(240,159,151,130,32,32,32,208,161,208,186,208,176,208,189,32,208,184,208,179,209,128,209,139),Color3.fromRGB(160,180,255),function()_a.scanGame()end,{order=10})_a.makeButton(_lD,string.char(240,159,150,177,32,32,32,208,159,208,190,208,180,32,208,186,209,131,209,128,209,129,208,190,209,128,208,190,208,188,32,40,51,32,209,129,208,181,208,186,41),Color3.fromRGB(120,230,160),function()_a.scanCursor()end,{order=11})_a.makeButton(_lD,string.char(226,132,185,32,32,32,208,152,208,189,209,132,208,190,32,208,190,32,208,188,208,176,209,130,209,135,208,181),Color3.fromRGB(180,180,220),function()_a.pushLog((string.char(208,188,208,176,209,130,209,135,61,37,115,32,208,178,208,190,208,187,208,189,208,176,61,37,100)):format(tostring(_a.inMatch()),_a.curWave()),string.char(101,118,101,110,116))end,{order=12})local _lF=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_lF.Size=UDim2.new(1,0,0,16);_lF.BackgroundTransparency=1;_lF.LayoutOrder=20 _lF.Font=_a.FONT;_lF.TextSize=10;_lF.TextColor3=_a.BASE.dim;_lF.TextXAlignment=Enum.TextXAlignment.Left _lF.Text=string.char(208,155,208,158,208,147,208,152);_lF.Parent=_lD local _lG=Instance.new(string.char(70,114,97,109,101))_lG.Size=UDim2.new(1,0,0,160);_lG.BackgroundColor3=_a.BASE.bg _lG.BorderSizePixel=0;_lG.LayoutOrder=21;_lG.Parent=_lD _a.corner(_lG,_a.CORNER);_a.thin(_lG)local _lH=Instance.new(string.char(83,99,114,111,108,108,105,110,103,70,114,97,109,101))_lH.Size=UDim2.new(1,-8,1,-8);_lH.Position=UDim2.fromOffset(4,4)_lH.BackgroundTransparency=1;_lH.BorderSizePixel=0 _lH.ScrollBarThickness=3;_lH.ScrollBarImageColor3=_a.BASE.line _lH.CanvasSize=UDim2.new();_lH.AutomaticCanvasSize=Enum.AutomaticSize.Y _lH.ScrollingDirection=Enum.ScrollingDirection.Y;_lH.Parent=_lG local _lI=Instance.new(string.char(70,114,97,109,101))_lI.Size=UDim2.new(1,0,0,0);_lI.AutomaticSize=Enum.AutomaticSize.Y _lI.BackgroundTransparency=1;_lI.Parent=_lH;_a.logsInner=_lI;_a.logsScroll=_lH local _lJ=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_lI);_lJ.Padding=UDim.new(0,1);_lJ.SortOrder=Enum.SortOrder.LayoutOrder end _a.fxButtons={}function _a.fillVisuals(_lK)local _lL=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_lL.Size=UDim2.new(1,0,0,16);_lL.BackgroundTransparency=1;_lL.LayoutOrder=1 _lL.Font=_a.FONT;_lL.TextSize=10;_lL.TextColor3=_a.BASE.dim;_lL.TextXAlignment=Enum.TextXAlignment.Left _lL.Text=(string.char(208,173,208,164,208,164,208,149,208,154,208,162,208,171,32,32,32,194,183,32,32,32,208,155,208,154,208,156,32,226,128,148,32,208,178,208,186,208,187,47,208,178,209,139,208,186,208,187,44,32,208,159,208,154,208,156,32,226,128,148,32,209,128,208)..string.char(176,209,129,208,186,209,128,209,139,209,130,209,140));_lL.Parent=_lK _a.fxButtons={}local _lM={orbit={{k=string.char(114,97,100,105,117,115),label=string.char(209,128,208,176,208,180,208,184,209,131,209,129),min=1,max=20,int=true},{k=string.char(99,111,117,110,116),label=string.char(208,186,208,190,208,187,45,208,178,208,190),min=1,max=60,int=true},{k=string.char(115,112,101,101,100),label=string.char(209,129,208,186,208,190,209,128,208,190,209,129,209,130,209,140),min=0,max=5},{k=string.char(115,105,122,101),label=string.char(209,128,208,176,208,183,208,188,208,181,209,128),min=0.2,max=2}},lighting={{k=string.char(98,108,111,111,109,73,110,116,101,110,115,105,116,121),label=string.char(98,108,111,111,109,32,209,129,208,184,208,187,208,176),min=0,max=3},{k=string.char(98,108,111,111,109,83,105,122,101),label=string.char(98,108,111,111,109,32,209,128,208,176,208,183,208,188,208,181,209,128),min=0,max=56,int=true},{k=string.char(98,108,111,111,109,84,104,114,101,115,104,111,108,100),label=string.char(98,108,111,111,109,32,208,191,208,190,209,128,208,190,208,179),min=0,max=2},{k=string.char(99,111,110,116,114,97,115,116),label=string.char(208,186,208,190,208,189,209,130,209,128,208,176,209,129,209,130),min=-1,max=1},{k=string.char(115,97,116,117,114,97,116,105,111,110),label=string.char(208,189,208,176,209,129,209,139,209,137,208,181,208,189,208,189,208,190,209,129,209,130,209,140),min=-1,max=1}},distort={{k=string.char(98,108,117,114),label=string.char(209,128,208,176,208,183,208,188,209,139,209,130,208,184,208,181),min=0,max=24,int=true},{k=string.char(99,111,110,116,114,97,115,116),label=string.char(208,186,208,190,208,189,209,130,209,128,208,176,209,129,209,130),min=-1,max=1},{k=string.char(98,114,105,103,104,116),label=string.char(209,143,209,128,208,186,208,190,209,129,209,130,209,140),min=-0.5,max=0.5}},hue={{k=string.char(115,112,101,101,100),label=string.char(209,129,208,186,208,190,209,128,208,190,209,129,209,130,209,140),min=0,max=5},{k=string.char(115,97,116,117,114,97,116,105,111,110),label=string.char(208,189,208,176,209,129,209,139,209,137,46),min=0,max=1},{k=string.char(98,114,105,103,104,116,110,101,115,115),label=string.char(209,143,209,128,208,186,208,190,209,129,209,130,209,140),min=-0.5,max=0.5}},trail={{k=string.char(108,105,102,101,116,105,109,101),label=string.char(208,180,208,187,208,184,208,189,208,176),min=0.2,max=3},{k=string.char(119,105,100,116,104),label=string.char(209,136,208,184,209,128,208,184,208,189,208,176),min=0,max=3},{k=string.char(98,114,105,103,104,116),label=string.char(209,129,208,178,208,181,209,135,208,181,208,189,208,184,208,181),min=0,max=2}},pulse={{k=string.char(114,97,110,103,101),label=string.char(209,128,208,176,208,180,208,184,209,131,209,129),min=1,max=40,int=true},{k=string.char(98,114,105,103,104,116),label=string.char(209,143,209,128,208,186,208,190,209,129,209,130,209,140),min=0,max=10},{k=string.char(115,112,101,101,100),label=string.char(209,129,208,186,208,190,209,128,208,190,209,129,209,130,209,140),min=0,max=6}},}local _lN={orbit=string.char(208,158,209,128,208,177,208,184,209,130,208,176),lighting=string.char(208,159,208,190,209,129,209,130,45,209,141,209,132,209,132,208,181,208,186,209,130,209,139),distort=string.char(208,152,209,129,208,186,208,176,208,182,208,181,208,189,208,184,208,181),hue=string.char(208,159,208,181,209,128,208,181,208,187,208,184,208,178),trail=string.char(208,162,209,128,208,181,208,185,208,187),pulse=string.char(208,159,209,131,208,187,209,140,209,129,208,176,209,134,208,184,209,143)}local function _lO(_lP)local _lQ=_a.fxButtons[_lP];if not _lQ then return end local _lR=_a.VFX[_lP].on _lQ.obj.Text=(_lR and string.char(226,151,143,32,32,32)or string.char(226,151,139,32,32,32))..(_lQ.label or _lP)_lQ.color=_lR and Color3.fromRGB(140,240,160)or _a.BASE.text _lQ.obj.TextColor3=_lQ.color end local _lS=0 for _lT,_lU in ipairs({string.char(111,114,98,105,116),string.char(108,105,103,104,116,105,110,103),string.char(100,105,115,116,111,114,116),string.char(104,117,101),string.char(116,114,97,105,108),string.char(112,117,108,115,101)})do _lS=_lS+1 local _lV=_a.BTN_H local _lW=#_lM[_lU]*(_a.SLIDER_H+_a.BTN_GAP)+4 local _lX=Instance.new(string.char(70,114,97,109,101))_lX.Size=UDim2.new(1,0,0,_lV+2);_lX.BackgroundTransparency=1 _lX.LayoutOrder=10+_lS;_lX.ClipsDescendants=true;_lX.Parent=_lK local _lY=Instance.new(string.char(70,114,97,109,101))_lY.Size=UDim2.new(1,0,0,0);_lY.Position=UDim2.new(0,0,0,_lV+2)_lY.BackgroundColor3=_a.BASE.bg;_lY.BorderSizePixel=0;_lY.ClipsDescendants=true _lY.Visible=false;_lY.Parent=_lX _a.corner(_lY,_a.CORNER);_a.thin(_lY)local _lZ=Instance.new(string.char(70,114,97,109,101))_lZ.Size=UDim2.new(1,-_a.BTN_PAD,0,0);_lZ.Position=UDim2.fromOffset(_a.BTN_PAD/2,_a.BTN_PAD/2)_lZ.AutomaticSize=Enum.AutomaticSize.Y;_lZ.BackgroundTransparency=1;_lZ.Parent=_lY local _ma=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_lZ);_ma.Padding=UDim.new(0,_a.BTN_GAP);_ma.SortOrder=Enum.SortOrder.LayoutOrder local _mb=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_mb.Size=UDim2.new(1,0,0,_lV);_mb.BackgroundColor3=_a.BASE.panel _mb.BorderSizePixel=0;_mb.Font=_a.FONT _mb.TextSize=_a.TXT_SZ;_mb.TextColor3=_a.BASE.text _mb.Text=string.char(226,151,139,32,32,32).._lN[_lU];_mb.TextXAlignment=Enum.TextXAlignment.Left _mb.AutoButtonColor=false;_mb.Parent=_lX _a.corner(_mb,_a.CORNER);_a.thin(_mb)local _mc=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_mb);_mc.PaddingLeft=UDim.new(0,12);_mc.PaddingRight=UDim.new(0,24);_mc.Parent=_mb local _md=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_md.Size=UDim2.fromOffset(20,_lV);_md.Position=UDim2.new(1,-24,0,0)_md.BackgroundTransparency=1;_md.Text=string.char(226,150,188);_md.Font=_a.FONT _md.TextSize=_a.TXT_SZ-2;_md.TextColor3=_a.BASE.dim;_md.Parent=_lX local _me={wrap=_lX,header=_mb,arrow=_md,container=_lY,inner=_lZ,fullH=_lW,open=false}_a.accordions[_me]=true local function _mf()_me.open=not _me.open;if _me.open then _lY.Visible=true end local _mg=_me.open and _lW or 0;local _mh=_me.open and(_lV+2+_lW)or(_lV+2)_a.TweenService:Create(_lY,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,_mg)}):Play()_a.TweenService:Create(_lX,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,_mh)}):Play()_md.Text=_me.open and string.char(226,150,178)or string.char(226,150,188)_md.TextColor3=_me.open and _a.themeAccent()or _a.BASE.dim task.delay(0.4,function()if not _me.open then _lY.Visible=false end end)end _me.toggle=_mf function _me.closeInstantly()_me.open=false;_lY.Visible=false;_lY.Size=UDim2.new(1,0,0,0);_lX.Size=UDim2.new(1,0,0,_lV+2)_md.Text=string.char(226,150,188);_md.TextColor3=_a.BASE.dim end local function _mi()local _mj=_a.VFX[_lU];_mj.on=not _mj.on if _lU==string.char(111,114,98,105,116)then _a.ensureOrbit();_a.applyOrbit()end if _lU==string.char(108,105,103,104,116,105,110,103)then _a.applyLighting()end if _lU==string.char(100,105,115,116,111,114,116)then _a.applyDistort()end if _lU==string.char(104,117,101)then _a.applyHue()end if _lU==string.char(116,114,97,105,108)then _a.ensureTrail();_a.applyTrail()end if _lU==string.char(112,117,108,115,101)then _a.ensurePulse();_a.applyPulse()end _lO(_lU);_a.scheduleAutosave()end _mb.Activated:Connect(function()_a.pressFx(_mb);_mi()end)_mb.MouseButton2Click:Connect(function()_mf()end)_a.track(_mb.MouseEnter:Connect(function()_a.TweenService:Create(_mb,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=_a.BASE.panel:Lerp(_a.BASE.accent,0.12)}):Play()end),_mb)_a.track(_mb.MouseLeave:Connect(function()_a.TweenService:Create(_mb,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=_a.BASE.panel}):Play()end),_mb)_a.fxButtons[_lU]={obj=_mb,color=_a.BASE.text,on=true,label=_lN[_lU],acc=_me}for _mk,_ml in ipairs(_lM[_lU])do local _mn=_a.makeSlider(_lZ,_ml.label,_ml.min,_ml.max,function()return tonumber(_a.VFX[_lU].settings[_ml.k])or _ml.min end,function(_mm)_a.VFX[_lU].settings[_ml.k]=_mm if _lU==string.char(111,114,98,105,116)then _a.applyOrbit()end if _lU==string.char(108,105,103,104,116,105,110,103)then _a.applyLighting()end if _lU==string.char(100,105,115,116,111,114,116)then _a.applyDistort()end if _lU==string.char(104,117,101)then _a.applyHue()end if _lU==string.char(116,114,97,105,108)then _a.applyTrail()end if _lU==string.char(112,117,108,115,101)then _a.applyPulse()end _a.scheduleAutosave()end,_ml.int)_mn.holder.LayoutOrder=_mk end end for _mo in pairs(_a.fxButtons)do _lO(_mo)end end function _a.applyLoadedHUD(_mp)if type(_mp)~=string.char(116,97,98,108,101)then return end if _mp.themeId~=nil then _a.HUD.themeId=_mp.themeId end if _mp.outlineId~=nil then _a.HUD.outlineId=_mp.outlineId end if _mp.outlineThickness~=nil then _a.HUD.outlineThickness=_mp.outlineThickness end if _mp.outlineTransparency~=nil then _a.HUD.outlineTransparency=_mp.outlineTransparency end if _mp.olAnimSpeed~=nil then _a.HUD.olAnimSpeed=_mp.olAnimSpeed end if _mp.olSections~=nil then _a.HUD.olSections=_mp.olSections end if _mp.olButtons~=nil then _a.HUD.olButtons=_mp.olButtons end if _mp.olTabs~=nil then _a.HUD.olTabs=_mp.olTabs end if _mp.rainbowSpeed~=nil then _a.HUD.rainbowSpeed=_mp.rainbowSpeed end if _mp.hueSpeed~=nil then _a.HUD.hueSpeed=_mp.hueSpeed end if _mp.blur~=nil then _a.HUD.blur=_mp.blur end if _mp.glow~=nil then _a.HUD.glow=_mp.glow end end function _a.fillConfig(_mq)local _mr=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_mr.Size=UDim2.new(1,0,0,16);_mr.BackgroundTransparency=1;_mr.LayoutOrder=1 _mr.Font=_a.FONT;_mr.TextSize=10;_mr.TextColor3=_a.BASE.dim;_mr.TextXAlignment=Enum.TextXAlignment.Left _mr.Text=string.char(208,154,208,158,208,157,208,164,208,152,208,147,208,152,32,194,183,32).._a.DATA_DIR;_mr.Parent=_mq local _ms=Instance.new(string.char(84,101,120,116,66,111,120))_ms.Size=UDim2.new(1,0,0,_a.BTN_H);_ms.BackgroundColor3=_a.BASE.panel _ms.BorderSizePixel=0;_ms.Font=_a.FONT;_ms.TextSize=_a.TXT_SZ _ms.TextColor3=_a.BASE.text;_ms.PlaceholderText=string.char(208,184,208,188,209,143,32,208,186,208,190,208,189,209,132,208,184,208,179,208,176)_ms.PlaceholderColor3=_a.BASE.dim;_ms.Text=""_ms.TextXAlignment=Enum.TextXAlignment.Left;_ms.ClearTextOnFocus=false _ms.LayoutOrder=2;_ms.Parent=_mq;_a.corner(_ms,_a.CORNER);_a.thin(_ms)local _mt=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_ms);_mt.PaddingLeft=UDim.new(0,12);_mt.Parent=_ms local function _mu()local _mv,_mw=pcall(readfile,_a.CFG_FILE)if not _mv or type(_mw)~=string.char(115,116,114,105,110,103)then return{}end local _mx,_my=pcall(function()return _a.HttpService:JSONDecode(_mw)end)if _mx and type(_my)==string.char(116,97,98,108,101)then return _my end return{}end _a.makeButton(_mq,string.char(240,159,146,190,32,32,32,208,161,208,190,209,133,209,128,208,176,208,189,208,184,209,130,209,140),Color3.fromRGB(130,230,160),function()if _ms.Text==""then _a.pushLog(string.char(208,178,208,191,208,184,209,136,208,184,209,130,208,181,32,208,184,208,188,209,143),string.char(119,97,114,110));return end local _mz=_mu()_mz[_ms.Text]={owner=_a.MY_NICK,saved=os.date(string.char(37,100,46,37,109,46,37,89,32,37,72,58,37,77)),data={vfx=_a.snapshotVFX(),hud=_a.snapshotHUD()}}_a.writeJSON(_a.CFG_FILE,_mz);_a.pushLog((string.char(194,171,37,115,194,187,32,209,129,208,190,209,133,209,128)):format(_ms.Text),string.char(111,107))end,{order=10})_a.makeButton(_mq,string.char(240,159,147,130,32,32,32,208,151,208,176,208,179,209,128,209,131,208,183,208,184,209,130,209,140),_a.themeAccent(),function()local _mA=_mu();local _mB=_mA[_ms.Text]if not _mB then _a.pushLog(string.char(208,189,208,181,32,208,189,208,176,208,185,208,180,208,181,208,189),string.char(119,97,114,110));return end local _mC=_mB.data or{}if type(_mC.vfx)==string.char(116,97,98,108,101)then for _mD,_mE in pairs(_mC.vfx)do local _mF=_a.VFX[_mD]if _mF then _mF.on=_mE.on==true for _mG,_mH in pairs(_mE.settings or{})do if type(_mH)==string.char(116,97,98,108,101)and _mH.__color then _mF.settings[_mG]=_a.tableToColor(_mH)else _mF.settings[_mG]=_mH end end end end _a.applyVFXSettings()end if type(_mC.hud)==string.char(116,97,98,108,101)then _a.applyLoadedHUD(_mC.hud)_a.applyClientFx();_a.applyHud();_a.applyOutline()end _a.scheduleAutosave();_a.pushLog((string.char(194,171,37,115,194,187,32,208,183,208,176,208,179,209,128)):format(_ms.Text),string.char(111,107))end,{order=11})_a.makeButton(_mq,string.char(240,159,151,145,32,32,32,208,163,208,180,208,176,208,187,208,184,209,130,209,140),Color3.fromRGB(220,130,130),function()local _mI=_mu()if not _mI[_ms.Text]then return end _mI[_ms.Text]=nil;_a.writeJSON(_a.CFG_FILE,_mI)_a.pushLog((string.char(194,171,37,115,194,187,32,209,131,208,180)):format(_ms.Text),string.char(119,97,114,110))end,{order=12})_a.makeButton(_mq,string.char(226,134,186,32,32,32,208,161,208,177,209,128,208,190,209,129),_a.BASE.orange,function()for _mJ,_mK in pairs(_a.VFX)do _mK.on=false for _mL,_mM in pairs(_a.VFX_DEFAULTS[_mJ])do if type(_mM)==string.char(116,97,98,108,101)and _mM.__color then _mK.settings[_mL]=_a.tableToColor(_mM)else _mK.settings[_mL]=_mM end end end _a.HUD.themeId=string.char(118,105,111,108,101,116);_a.HUD.outlineId=string.char(110,111,110,101)_a.applyVFXSettings();_a.applyClientFx();_a.applyHud();_a.applyOutline()_a.scheduleAutosave();_a.pushLog(string.char(209,129,208,177,209,128,208,190,209,129),string.char(119,97,114,110))end,{order=13})end function _a.fillHotkeys(_mN)local _mO=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_mO.Size=UDim2.new(1,0,0,16);_mO.BackgroundTransparency=1;_mO.LayoutOrder=1 _mO.Font=_a.FONT;_mO.TextSize=10;_mO.TextColor3=_a.BASE.dim;_mO.TextXAlignment=Enum.TextXAlignment.Left _mO.Text=string.char(66,73,78,68,83);_mO.Parent=_mN local _mP=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_mP.Size=UDim2.new(1,0,0,120);_mP.BackgroundTransparency=1;_mP.LayoutOrder=2 _mP.Font=_a.FONT;_mP.TextSize=11;_mP.TextColor3=_a.BASE.dim _mP.TextXAlignment=Enum.TextXAlignment.Left;_mP.TextYAlignment=Enum.TextYAlignment.Top _mP.TextWrapped=true _mP.Text=(string.char(208,165,208,190,209,130,208,186,208,181,208,184,32,208,191,208,190,208,186,208,176,32,208,189,208,181,32,209,128,208,181,208,176,208,187,208,184,208,183,208,190,208,178,208,176,208,189,209,139,46,10,10,208,164,209,131,208,189,208,186,209,134,208,184)..string.char(208,184,32,226,128,148,32,209,135,208,181,209,128,208,181,208,183,32,208,178,208,186,208,187,208,176,208,180,208,186,208,184,32,65,117,116,111,70,97,114,109,32,47,32,72,101,108,112,101,114,32,47,32,84,104,101,109,101,115,46))_mP.Parent=_mN end _a.themeCards={}_a.outlineCards={}function _a.fillThemes(_mQ)local _mR=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_mR.Size=UDim2.new(1,0,0,16);_mR.BackgroundTransparency=1;_mR.LayoutOrder=1 _mR.Font=_a.FONT;_mR.TextSize=10;_mR.TextColor3=_a.BASE.dim;_mR.TextXAlignment=Enum.TextXAlignment.Left _mR.Text=string.char(208,166,208,146,208,149,208,162);_mR.Parent=_mQ local _mS=_a.MAIN_W-_a.BTN_PAD*2-8 local _mT=6 local _mU=100 local _mV=math.max(2,math.floor((_mS+_mT)/(_mU+_mT)))local _mW=math.floor((_mS-(_mV-1)*_mT)/_mV)local _mX=34 local _mY=math.max(1,math.ceil(#_a.THEMES/_mV))local _mZ=_mY*(_mX+_mT)local _na=Instance.new(string.char(70,114,97,109,101))_na.Size=UDim2.new(1,0,0,_mZ);_na.BackgroundTransparency=1 _na.LayoutOrder=2;_na.Parent=_mQ local _nb=Instance.new(string.char(85,73,71,114,105,100,76,97,121,111,117,116))_nb.CellSize=UDim2.fromOffset(_mW,_mX);_nb.CellPadding=UDim2.fromOffset(_mT,_mT)_nb.FillDirection=Enum.FillDirection.Horizontal;_nb.FillDirectionMaxCells=_mV _nb.SortOrder=Enum.SortOrder.LayoutOrder;_nb.Parent=_na _a.themeCards={}for _nc,_nd in ipairs(_a.THEMES)do local _ne=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_ne.Size=UDim2.fromOffset(_mW,_mX);_ne.BackgroundColor3=Color3.new(1,1,1)_ne.BorderSizePixel=0;_ne.Text="";_ne.AutoButtonColor=false _ne.LayoutOrder=_nc;_ne.Parent=_na;_a.corner(_ne,_a.CORNER)local _nf=_a.thin(_ne)_a.setProp(_nf,string.char(67,111,108,111,114),_a.BASE.line)_a.setProp(_nf,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.3)pcall(function()_nf:SetAttribute(string.char(75,111,82,105,52,67,97,114,100),true)end)local _ng=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116))_ng.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,_nd.c1),ColorSequenceKeypoint.new(1,_nd.c2)})_ng.Rotation=30;_ng.Parent=_ne local _nh=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_nh.Size=UDim2.new(1,-8,1,0);_nh.Position=UDim2.fromOffset(6,0)_nh.BackgroundTransparency=1;_nh.Font=_a.FONT;_nh.TextSize=11 _nh.TextColor3=Color3.new(1,1,1);_nh.TextXAlignment=Enum.TextXAlignment.Left _nh.TextYAlignment=Enum.TextYAlignment.Center;_nh.Text=_nd.ru;_nh.Parent=_ne local _ni=Instance.new(string.char(85,73,83,116,114,111,107,101))_a.setProp(_ni,string.char(67,111,108,111,114),Color3.fromRGB(0,0,0))_a.setProp(_ni,string.char(84,104,105,99,107,110,101,115,115),1)_a.setProp(_ni,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.4)_a.setProp(_ni,string.char(65,112,112,108,121,83,116,114,111,107,101,77,111,100,101),Enum.ApplyStrokeMode.Contextual)_ni.Parent=_nh _ne.Activated:Connect(function()_a.pressFx(_ne);_a.HUD.themeId=_nd.id;_a.applyHud()for _nj,_nk in pairs(_a.themeCards)do _a.setProp(_nk.stroke,string.char(67,111,108,111,114),(_nj==_nd.id)and Color3.new(1,1,1)or _a.BASE.line)_a.setProp(_nk.stroke,string.char(84,114,97,110,115,112,97,114,101,110,99,121),(_nj==_nd.id)and 0 or 0.3)end _a.scheduleAutosave()end)_a.themeCards[_nd.id]={obj=_ne,stroke=_nf}end for _nl,_nm in pairs(_a.themeCards)do local _nn=(_nl==_a.HUD.themeId)_a.setProp(_nm.stroke,string.char(67,111,108,111,114),_nn and Color3.new(1,1,1)or _a.BASE.line)_a.setProp(_nm.stroke,string.char(84,114,97,110,115,112,97,114,101,110,99,121),_nn and 0 or 0.3)end local _no=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_no.Size=UDim2.new(1,0,0,16);_no.BackgroundTransparency=1;_no.LayoutOrder=3 _no.Font=_a.FONT;_no.TextSize=10;_no.TextColor3=_a.BASE.dim;_no.TextXAlignment=Enum.TextXAlignment.Left _no.Text=string.char(208,158,208,145,208,146,208,158,208,148,208,154,208,144);_no.Parent=_mQ local _np=_mV;local _nq=_mW;local _nr=34 local _ns=math.max(1,math.ceil(#_a.OUTLINES/_np));local _nt=_ns*(_nr+_mT)local _nu=Instance.new(string.char(70,114,97,109,101))_nu.Size=UDim2.new(1,0,0,_nt);_nu.BackgroundTransparency=1 _nu.LayoutOrder=4;_nu.Parent=_mQ local _nv=Instance.new(string.char(85,73,71,114,105,100,76,97,121,111,117,116))_nv.CellSize=UDim2.fromOffset(_nq,_nr);_nv.CellPadding=UDim2.fromOffset(_mT,_mT)_nv.FillDirection=Enum.FillDirection.Horizontal;_nv.FillDirectionMaxCells=_np _nv.SortOrder=Enum.SortOrder.LayoutOrder;_nv.Parent=_nu _a.outlineCards={}for _nw,_nx in ipairs(_a.OUTLINES)do local _ny=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))_ny.Size=UDim2.fromOffset(_nq,_nr);_ny.BackgroundColor3=_a.BASE.panel _ny.BorderSizePixel=0;_ny.Text="";_ny.AutoButtonColor=false _ny.Parent=_nu;_a.corner(_ny,_a.CORNER)local _nz=_a.thin(_ny)_a.setProp(_nz,string.char(84,104,105,99,107,110,101,115,115),2)_a.setProp(_nz,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.1)pcall(function()_nz:SetAttribute(string.char(75,111,82,105,52,67,97,114,100),true)end)if _nx.none then _a.setProp(_nz,string.char(67,111,108,111,114),_a.DISABLED.stroke);_a.setProp(_nz,string.char(84,114,97,110,115,112,97,114,101,110,99,121),0.5)elseif _nx.rainbow then _a.setProp(_nz,string.char(67,111,108,111,114),Color3.new(1,1,1));local _nA=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116));_nA.Color=_a.RAINBOW_SEQ;_nA.Parent=_nz elseif _nx.seq then _a.setProp(_nz,string.char(67,111,108,111,114),Color3.new(1,1,1));local _nB=Instance.new(string.char(85,73,71,114,97,100,105,101,110,116));_nB.Color=_nx.seq;_nB.Parent=_nz else _a.setProp(_nz,string.char(67,111,108,111,114),_nx.c)end local _nC=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_nC.Size=UDim2.new(1,-8,1,0);_nC.Position=UDim2.fromOffset(4,0)_nC.BackgroundTransparency=1;_nC.Font=_a.FONT;_nC.TextSize=10 _nC.TextColor3=_a.BASE.text;_nC.TextXAlignment=Enum.TextXAlignment.Center _nC.Text=_nx.ru;_nC.Parent=_ny _ny.Activated:Connect(function()_a.pressFx(_ny);_a.HUD.outlineId=_nx.id;_a.applyOutline()for _nD,_nE in pairs(_a.outlineCards)do _nE.obj.BackgroundColor3=(_nD==_nx.id)and _a.BASE.accent:Lerp(_a.BASE.panel,0.6)or _a.BASE.panel end _a.scheduleAutosave()end)_a.outlineCards[_nx.id]={obj=_ny,stroke=_nz}end for _nF,_nG in pairs(_a.outlineCards)do _nG.obj.BackgroundColor3=(_nF==_a.HUD.outlineId)and _a.BASE.accent:Lerp(_a.BASE.panel,0.6)or _a.BASE.panel end local _nH=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_nH.Size=UDim2.new(1,0,0,16);_nH.BackgroundTransparency=1;_nH.LayoutOrder=5 _nH.Font=_a.FONT;_nH.TextSize=10;_nH.TextColor3=_a.BASE.dim;_nH.TextXAlignment=Enum.TextXAlignment.Left _nH.Text=string.char(208,157,208,144,208,161,208,162,208,160,208,158,208,153,208,154,208,144);_nH.Parent=_mQ local _nJ=_a.makeSlider(_mQ,string.char(209,130,208,190,208,187,209,137,208,184,208,189,208,176),1,5,function()return _a.HUD.outlineThickness end,function(_nI)_a.HUD.outlineThickness=math.floor(_nI+0.5);_a.applyOutline()end,true)_nJ.holder.LayoutOrder=6 local _nL=_a.makeSlider(_mQ,string.char(208,191,209,128,208,190,208,183,209,128,208,176,209,135,208,189,208,190,209,129,209,130,209,140),0,1,function()return _a.HUD.outlineTransparency end,function(_nK)_a.HUD.outlineTransparency=_nK;_a.applyOutline()end,false,2)_nL.holder.LayoutOrder=7 local _nN=_a.makeSlider(_mQ,string.char(209,129,208,186,208,190,209,128,208,190,209,129,209,130,209,140,32,208,176,208,189,208,184,208,188,208,176,209,134,208,184,208,184),0,4,function()return _a.HUD.olAnimSpeed end,function(_nM)_a.HUD.olAnimSpeed=_nM;_a.scheduleAutosave()end,false,1)_nN.holder.LayoutOrder=8 local _nO=Instance.new(string.char(70,114,97,109,101))_nO.Size=UDim2.new(1,0,0,28*3+_a.BTN_GAP*2+12);_nO.BackgroundColor3=_a.BASE.bg _nO.BorderSizePixel=0;_nO.LayoutOrder=9;_nO.Parent=_mQ _a.corner(_nO,_a.CORNER);_a.thin(_nO)local _nP=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_nO);_nP.Padding=UDim.new(0,_a.BTN_GAP);_nP.SortOrder=Enum.SortOrder.LayoutOrder local _nQ=Instance.new(string.char(85,73,80,97,100,100,105,110,103),_nO);_nQ.PaddingTop=UDim.new(0,6);_nQ.PaddingBottom=UDim.new(0,6)_nQ.PaddingLeft=UDim.new(0,6);_nQ.PaddingRight=UDim.new(0,6);_nQ.Parent=_nO _a.makeCheckRow(_nO,string.char(208,189,208,176,32,209,128,208,176,208,183,208,180,208,181,208,187,209,139),function()return _a.HUD.olSections end,function(_nR)_a.HUD.olSections=_nR end,1)_a.makeCheckRow(_nO,string.char(208,189,208,176,32,208,186,208,189,208,190,208,191,208,186,208,184),function()return _a.HUD.olButtons end,function(_nS)_a.HUD.olButtons=_nS end,2)_a.makeCheckRow(_nO,string.char(208,189,208,176,32,209,130,208,176,208,177,209,139),function()return _a.HUD.olTabs end,function(_nT)_a.HUD.olTabs=_nT end,3)end function _a.applyHud()local _nU=_a.currentTheme()_a.BASE.bg=_nU.c2:Lerp(Color3.fromRGB(20,14,34),0.72)_a.BASE.sidebar=_nU.c1:Lerp(Color3.fromRGB(20,14,34),0.78)_a.BASE.panel=_nU.c1:Lerp(Color3.fromRGB(20,14,34),0.66)_a.BASE.line=_nU.c1:Lerp(Color3.fromRGB(20,14,34),0.42)_a.BASE.topbar=_nU.c1:Lerp(Color3.fromRGB(20,14,34),0.74)_a.BASE.accent=_nU.c1 if _a.S.collapsed then if _a.main then _a.main.BackgroundColor3=_nU.c1 end if _a.topbar then _a.topbar.BackgroundColor3=_nU.c1 end else if _a.main then _a.main.BackgroundColor3=_a.BASE.bg end if _a.topbar then _a.topbar.BackgroundColor3=_a.BASE.topbar end end if _a.kLogo then _a.kLogo.BackgroundColor3=Color3.new(1,1,1)end if _a.kLogoGrad then _a.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,_nU.c1),ColorSequenceKeypoint.new(1,_nU.c2)})end if _a.statusBar and not _a.S.collapsed then _a.statusBar.BackgroundColor3=_a.BASE.topbar end for _nV in pairs(_a.widgets)do if type(_nV)==string.char(116,97,98,108,101)and _nV.obj and _nV.obj.Parent then _nV.obj.BackgroundColor3=_nV.on and _a.BASE.panel or _a.DISABLED.bg end end for _nW in pairs(_a.sliders)do if type(_nW)==string.char(116,97,98,108,101)and _nW.holder and _nW.holder.Parent then if _nW.fill then _nW.fill.BackgroundColor3=_a.BASE.accent end if _nW.valLbl then _nW.valLbl.TextColor3=_a.BASE.accent end end end for _nX,_nY in pairs(_a.tabButtons)do local _nZ=(_a.S.tab==_nX)_nY.obj.BackgroundColor3=_nZ and _a.BASE.accent or _a.BASE.panel _nY.obj.TextColor3=_nZ and Color3.new(1,1,1)or _a.BASE.dim end _a.applyOutline()end function _a.refreshButtons()_a.refreshSummonUI()if _a.recW and _a.recW.obj.Parent then local _oa=not _a.S.recording and not _a.S.playing and not _a.S.launching local _ob=_a.S.selected~=nil and _a.allMacros()[_a.S.selected]~=nil _a.recW.obj.Text=_a.S.recording and(string.char(226,143,185,32,32,32,208,161,209,130,208,190,208,191,32,40)..#_a.S.actions..string.char(41))or string.char(240,159,148,180,32,32,32,208,151,208,176,208,191,208,184,209,129,209,140)_a.playW.obj.Text=(_a.S.playing or _a.S.launching)and string.char(226,143,185,32,32,32,208,161,209,130,208,190,208,191)or(_a.inLobby()and string.char(226,150,182,32,32,32,208,151,208,176,208,191,209,131,209,129,209,130,208,184,209,130,209,140,32,208,188,208,176,209,130,209,135)or string.char(226,150,182,32,32,32,208,152,208,179,209,128,208,176,209,130,209,140))_a.setOn(_a.recW,(_oa or _a.S.recording)and _a.inMatch())_a.setOn(_a.playW,(_oa and _ob)or _a.S.playing or _a.S.launching)_a.setOn(_a.delW,_oa and _ob)end if _a.skipW and _a.skipW.obj.Parent then _a.setOn(_a.skipW,(not _a.S.recording)and _a.inMatch())local _oc=_a.autoSkipOn()_a.skipW.obj.Text=(_oc and string.char(226,151,143,32,32,32)or string.char(226,151,139,32,32,32))..string.char(208,144,208,178,209,130,208,190,209,129,208,186,208,184,208,191)_a.skipW.color=_oc and Color3.fromRGB(130,230,160)or _a.BASE.dim if _a.skipW.on then _a.skipW.obj.TextColor3=_a.skipW.color end end if _a.voteW and _a.voteW.obj.Parent then _a.voteW.obj.Text=string.char(240,159,151,179,32,32,32,208,147,208,190,208,187,208,190,209,129,58,32)..tostring(_a.S.voteMode or string.char(73,110,115,97,110,101))end if _a.autoVoteW and _a.autoVoteW.obj.Parent then _a.autoVoteW.obj.Text=string.char(240,159,164,150,32,32,32,208,144,208,178,209,130,208,190,45,208,179,208,190,208,187,208,190,209,129,58,32)..(_a.S.autoVote and string.char(208,178,208,186,208,187)or string.char(208,178,209,139,208,186,208,187))_a.autoVoteW.color=_a.S.autoVote and _a.BASE.ok or _a.BASE.dim if _a.autoVoteW.on then _a.autoVoteW.obj.TextColor3=_a.autoVoteW.color end end if _a.speedW and _a.speedW.obj.Parent then _a.speedW.obj.Text=string.char(226,154,161,32,32,32,208,161,208,186,208,190,209,128,208,190,209,129,209,130,209,140,58,32,120)..tostring(_a.currentSpeed())end if _a.farmW and _a.farmW.obj.Parent then local _od=_a.readName(_a.FARM)~=""_a.farmW.obj.Text=_od and string.char(226,143,185,32,32,32,208,158,209,129,209,130,208,176,208,189,208,190,208,178,208,184,209,130,209,140,32,209,132,208,176,209,128,208,188)or string.char(226,153,187,32,32,32,208,145,208,181,209,129,208,186,208,190,208,189,208,181,209,135,208,189,209,139,208,185,32,209,132,208,176,209,128,208,188)end if _a.againW and _a.againW.obj.Parent then _a.againW.obj.Text=string.char(240,159,148,129,32,32,32,208,159,208,190,209,129,208,187,208,181,32,208,188,208,176,209,130,209,135,208,176,58,32)..(_a.S.playAgain and string.char(209,129,208,189,208,190,208,178,208,176)or string.char(208,187,208,190,208,177,208,177,208,184))_a.againW.color=_a.S.playAgain and Color3.fromRGB(130,220,170)or _a.BASE.dim if _a.againW.on then _a.againW.obj.TextColor3=_a.againW.color end end end function _a.startWaveWatcher()task.spawn(function()_a.S.wave=_a.curWave()while _a.alive()do local _oe=_a.curWave()if _oe~=_a.S.wave then _a.S.wave,_a.S.waveStart=_oe,os.clock();_a.pushLog((string.char(208,178,208,190,208,187,208,189,208,176,32,37,100)):format(_oe),string.char(101,118,101,110,116))end task.wait(0.1)end end)end function _a.startAutoSkipOwn()task.spawn(function()while _a.alive()do if _a.ownSkip and workspace:GetAttribute(string.char(67,97,110,83,107,105,112))then pcall(_a.fire,string.char(87,97,118,101,83,107,105,112))end;task.wait(1)end end)end function _a.startAutoFarmLoop()task.spawn(function()task.wait(3)while _a.alive()do local _of=_a.readName(_a.FARM)local _og=(_of~=""and _a.allMacros()[_of])or nil if _of~=""and _og then if _a.inMatch()then if not _a.S.playing and not _a.S.recording and not _a.S.launching then task.wait(2)if _a.alive()and _a.inMatch()and not _a.S.playing then _a.log(string.char(208,176,208,178,209,130,208,190,209,132,208,176,209,128,208,188,58,32,208,184,208,179,209,128,208,176,209,142,32,194,171).._of..string.char(194,187))_a.S.selected=_of pcall(_a.play,_of)_a.refreshButtons()end end elseif _a.inLobby()and not _a.S.playing and not _a.S.launching then if os.clock()-(_a.S.launchCooldown or 0)>5 then _a.log(string.char(208,176,208,178,209,130,208,190,209,132,208,176,209,128,208,188,58,32,208,181,208,180,209,131,32,208,189,208,176,32,194,171).._a.mapRu(_og.map)..string.char(194,187))_a.S.launching=true;_a.refreshButtons()pcall(_a.launchMap,_og.map,_of)_a.S.launching=false;_a.S.launchCooldown=os.clock();_a.refreshButtons()end end end task.wait(2)end end)end function _a.startSpeedApplier()task.spawn(function()while _a.alive()do if _a.inMatch()and _a.S.speed then local _oh=_a.currentSpeed()local _oi=tonumber(_a.S.speed)or 1 if math.abs(_oh-_oi)>0.01 then _a.setGameSpeed(_oi)end end task.wait(2)end end)end function _a.startVFXLoops()task.spawn(function()while _a.alive()do local _oj=_a.RunService.RenderStepped:Wait()if _a.VFX.orbit.on then local _ok=_a.ensureOrbit()if _ok and _ok.attach then _a.orbitAngle=_a.orbitAngle+_oj*(tonumber(_ok.settings.speed)or 1)*2 local _ol=math.clamp(tonumber(_ok.settings.radius)or 6,1,30)_ok.attach.Position=Vector3.new(math.cos(_a.orbitAngle)*_ol,math.sin(_a.orbitAngle*2)*0.6,math.sin(_a.orbitAngle)*_ol)_a.applyOrbit()end end if _a.VFX.hue.on and _a.VFX.hue.cc then _a.hueT=(_a.hueT+_oj*(tonumber(_a.VFX.hue.settings.speed)or 1)*(tonumber(_a.HUD.hueSpeed)or 1)*0.25)%1 _a.setProp(_a.VFX.hue.cc,string.char(84,105,110,116,67,111,108,111,114),Color3.fromHSV(_a.hueT,0.8,1))end if _a.VFX.pulse.on and _a.VFX.pulse.light then _a.pulseT=_a.pulseT+_oj*(tonumber(_a.VFX.pulse.settings.speed)or 2)_a.setProp(_a.VFX.pulse.light,string.char(66,114,105,103,104,116,110,101,115,115),(math.sin(_a.pulseT)*0.5+0.5)*(tonumber(_a.VFX.pulse.settings.bright)or 2))end end end)_a.lp.CharacterAdded:Connect(function()task.wait(1);if not _a.alive()then return end if _a.VFX.orbit.on then _a.ensureOrbit();_a.applyOrbit()end if _a.VFX.trail.on then _a.ensureTrail();_a.applyTrail()end if _a.VFX.pulse.on then _a.ensurePulse();_a.applyPulse()end end)end function _a.startOutlineAnim()task.spawn(function()local _om=0 while _a.alive()do local _on=_a.RunService.RenderStepped:Wait()local _oo=_a.currentOutline()if(_oo.rainbow or(_oo.seq and _oo.anim))and not _a.optimize.guiAnim then local _op=(tonumber(_oo.animMul)or 1)*(tonumber(_a.HUD.olAnimSpeed)or 1)*(tonumber(_a.HUD.rainbowSpeed)or 1)_om=(_om-_on*0.5*_op)%1 for _oq in pairs(_a.outlineStrokes)do if typeof(_oq)==string.char(73,110,115,116,97,110,99,101)and _oq.Parent then local _or=_a.getProp(_oq,string.char(69,110,97,98,108,101,100),false)if _or then local _os=_oq:FindFirstChildOfClass(string.char(85,73,71,114,97,100,105,101,110,116))if _os then _a.setProp(_os,string.char(79,102,102,115,101,116),Vector2.new(_om,0))end end end end end end end)end function _a.startLogsLoop()task.spawn(function()local _ot=0 while _a.alive()do if _a.logsInner and _a.logsInner.Parent and(_a.logsUpdated or#_a.logsBuf~=_ot)then _a.logsUpdated=false;_ot=#_a.logsBuf for _ou,_ov in ipairs(_a.logsInner:GetChildren())do if _ov:IsA(string.char(84,101,120,116,76,97,98,101,108))then _ov:Destroy()end end for _ow,_ox in ipairs(_a.logsBuf)do local _oy=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_oy.Size=UDim2.new(1,-4,0,_a.LOG_LINE_H);_oy.BackgroundTransparency=1 _oy.Font=Enum.Font.Code;_oy.TextSize=_a.LOG_FONT _oy.TextColor3=_a.LOG_COLORS[_ox.k]or _a.LOG_COLORS.info _oy.TextXAlignment=Enum.TextXAlignment.Left _oy.LayoutOrder=_ow;_oy.Text=string.char(91).._ox.t..string.char(93,32).._ox.m;_oy.Parent=_a.logsInner end task.defer(function()if _a.logsScroll and _a.logsScroll.Parent then _a.logsScroll.CanvasPosition=Vector2.new(0,_a.logsScroll.AbsoluteCanvasSize.Y)end end)end task.wait(0.2)end end)end function _a.loadHud()local _oz=_a.readJSON(_a.HUD_FILE);if not _oz then return end if type(_oz.vfx)==string.char(116,97,98,108,101)then for _oA,_oB in pairs(_oz.vfx)do local _oC=_a.VFX[_oA]if _oC then _oC.on=_oB.on==true for _oD,_oE in pairs(_oB.settings or{})do if type(_oE)==string.char(116,97,98,108,101)and _oE.__color then _oC.settings[_oD]=_a.tableToColor(_oE)else _oC.settings[_oD]=_oE end end end end end if type(_oz.hud)==string.char(116,97,98,108,101)then _a.applyLoadedHUD(_oz.hud)end end _a.safeRun=function(_oF,_oG)local _oH,_oI=pcall(_oG);if not _oH then warn(string.char(91,75,111,82,105,52,93,32).._oF..string.char(58,32)..tostring(_oI));_a.pushLog(_oF..string.char(32,101,114,114),string.char(101,114,114))end end _a.safeRun(string.char(98,117,105,108,100,85,73),_a.buildUI)_a.safeRun(string.char(112,111,112,117,108,97,116,101),function()_a.populate(_a.S.tab or string.char(97,117,116,111,102,97,114,109))end)_a.loadHud()_a.safeRun(string.char(97,112,112,108,121,86,70,88,83,101,116,116,105,110,103,115),_a.applyVFXSettings)_a.safeRun(string.char(97,112,112,108,121,67,108,105,101,110,116,70,120),_a.applyClientFx)_a.safeRun(string.char(97,112,112,108,121,72,117,100),_a.applyHud)_a.safeRun(string.char(97,112,112,108,121,79,117,116,108,105,110,101),_a.applyOutline)_a.safeRun(string.char(114,101,102,114,101,115,104,66,117,116,116,111,110,115),_a.refreshButtons)_a.startWaveWatcher()_a.startAutoSkipOwn()_a.startVFXLoops()_a.startOutlineAnim()_a.startSummonLoop()_a.startLogsLoop()_a.startRecordHooks()_a.startEndMatchWatcher()_a.startMatchResetWatcher()_a.startAutoFarmLoop()_a.startSpeedApplier()_a.startVoteWatcher()task.spawn(function()while _a.alive()do task.wait(0.5);pcall(_a.refreshButtons)end end)_a.autosaveReady=true _a.pushLog(string.char(208,179,208,190,209,130,208,190,208,178,58,32)..(_a.IS_MOBILE and string.char(77,79,66,73,76,69)or string.char(80,67)),string.char(111,107))if _a.ENV then _a.ENV.CTD_MACRO_API={launchMap=_a.launchMap,play=_a.play,allMacros=_a.allMacros,toggleAutoSkip=_a.toggleAutoSkip,autoSkipOn=_a.autoSkipOn,state=_a.S,K=_a}end
+--[[ KoRi4 scripts — CAMERAMAN TD — v43 (Real-fix + rebind + upgrade fix) ]]
+
+local K = {}
+K.Players=game:GetService("Players")
+K.RS=game:GetService("ReplicatedStorage")
+K.HttpService=game:GetService("HttpService")
+K.TweenService=game:GetService("TweenService")
+K.RunService=game:GetService("RunService")
+K.UIS=game:GetService("UserInputService")
+K.Lighting=game:GetService("Lighting")
+K.PathfindingService=game:GetService("PathfindingService")
+K.StarterGui=game:GetService("StarterGui")
+
+do local t0=os.clock() while not K.Players.LocalPlayer and os.clock()-t0<15 do task.wait(0.1) end end
+K.lp=K.Players.LocalPlayer
+if not K.lp then error("LocalPlayer nil") end
+K.MY_NICK=tostring(K.lp.Name)
+K.IS_MOBILE=K.UIS.TouchEnabled and not K.UIS.KeyboardEnabled
+
+K.INSTANCE=tostring(os.clock()).."_"..tostring(math.random(1e6))
+K.ENV=(getgenv and getgenv()) or nil
+K.MY_KEY="CTD_MACRO_"..tostring(K.lp.UserId)
+K.MY_KEY_UI="CTD_MACRO_UI_"..tostring(K.lp.UserId)
+if K.ENV then
+    pcall(function() K.ENV[K.MY_KEY_UI]:Destroy() end)
+    pcall(function() K.ENV.CTD_MACRO_UI:Destroy() end)
+    K.ENV[K.MY_KEY]=K.INSTANCE
+end
+function K.alive() return not K.ENV or K.ENV[K.MY_KEY]==K.INSTANCE end
+
+function K.setProp(obj,prop,value) if not obj then return false end return (pcall(function() obj[prop]=value end)) end
+function K.getProp(obj,prop,default) if not obj then return default end local ok,v=pcall(function() return obj[prop] end); if ok then return v end; return default end
+function K.safeDestroy(o) if not o then return end pcall(function() o:Destroy() end) end
+function K.setAttr(o,k,v) if not o then return end pcall(function() o:SetAttribute(k,v) end) end
+function K.getAttr(o,k) if not o then return nil end local ok,v=pcall(function() return o:GetAttribute(k) end); if ok then return v end; return nil end
+
+K.outlineStrokes={} K.widgets={} K.accordions={} K.sliders={} K._order=0
+function K.nextOrder() K._order=K._order+1; return K._order end
+
+function K.pruneDead()
+    for st in pairs(K.outlineStrokes) do if typeof(st)~="Instance" or not st.Parent then K.outlineStrokes[st]=nil end end
+    for w in pairs(K.widgets) do if type(w)~="table" or not w.obj or not w.obj.Parent then K.widgets[w]=nil end end
+    for a in pairs(K.accordions) do if type(a)~="table" or not a.wrap or not a.wrap.Parent then K.accordions[a]=nil end end
+    for s in pairs(K.sliders) do if type(s)~="table" or not s.holder or not s.holder.Parent then K.sliders[s]=nil end end
+end
+function K.track(conn,parent)
+    if not conn or not parent then return conn end
+    local dead=false; local c2
+    c2=parent.Destroying:Connect(function()
+        if dead then return end; dead=true
+        pcall(function() conn:Disconnect() end)
+        pcall(function() c2:Disconnect() end)
+    end)
+    return conn
+end
+
+pcall(function()
+    local cg=game:GetService("CoreGui")
+    for _,name in ipairs({"CTD_Macro"}) do local o=cg:FindFirstChild(name); if o then o:Destroy() end end
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    if pg then for _,name in ipairs({"CTD_Macro"}) do local o=pg:FindFirstChild(name); if o then o:Destroy() end end end
+end)
+
+K.DATA_DIR=""
+pcall(function()
+    if makefolder and isfolder then
+        if not isfolder("ctd_data") then makefolder("ctd_data") end
+        K.DATA_DIR="ctd_data/"
+    end
+end)
+
+K.RE=nil K.RF=nil
+do
+    local ml=K.RS:WaitForChild("ModuleLoader",20)
+    local sh=ml and ml:WaitForChild("Shared",20)
+    local nw=sh and sh:WaitForChild("Network",20)
+    K.RE=nw and nw:WaitForChild("RemoteEvent",20)
+    K.RF=nw and nw:FindFirstChild("RemoteFunction")
+end
+function K.remote(n) return K.RE and K.RE:FindFirstChild(n) end
+function K.rfunc(n) return K.RF and K.RF:FindFirstChild(n) end
+function K.gameFolder() return workspace:FindFirstChild("Game") end
+function K.inMatch()
+    if K.remote("TowerAdd")~=nil then return true end
+    if K.gameFolder()~=nil then return true end
+    if workspace:GetAttribute("IsVoting") then return true end
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    if pg and pg:FindFirstChild("GameUI") then return true end
+    return false
+end
+function K.inLobby() return not K.inMatch() and workspace:FindFirstChild("Elevators")~=nil end
+do local t0=os.clock() while not K.inMatch() and not K.inLobby() and os.clock()-t0<15 do task.wait(0.25) end end
+
+K.NICK_SAFE=K.MY_NICK:gsub("[^%w_%-%.]","_")
+K.FILE=K.DATA_DIR.."ctd_macro.json"
+K.FARM=K.DATA_DIR..("ctd_farm_%s.txt"):format(K.NICK_SAFE)
+K.SELECTED=K.DATA_DIR..("ctd_selected_%s.txt"):format(K.NICK_SAFE)
+K.AUTOPLAY=K.DATA_DIR..("ctd_autoplay_%s.txt"):format(K.NICK_SAFE)
+K.PLAYAGAIN=K.DATA_DIR..("ctd_playagain_%s.txt"):format(K.NICK_SAFE)
+K.SPEED_FILE=K.DATA_DIR..("ctd_speed_%s.txt"):format(K.NICK_SAFE)
+K.CFG_FILE=K.DATA_DIR..("ctd_cfg_%s.json"):format(K.NICK_SAFE)
+K.HUD_FILE=K.DATA_DIR..("ctd_hud_%s.json"):format(K.NICK_SAFE)
+K.VOTE_FILE=K.DATA_DIR..("ctd_vote_%s.json"):format(K.NICK_SAFE)
+
+function K.readName(f) local ok,v=pcall(readfile,f); if not ok or type(v)~="string" then return "" end; return (v:gsub("^%s+",""):gsub("%s+$","")) end
+function K.writeName(f,v) pcall(writefile,f,v or "") end
+function K.readSavedSpeed() local v=tonumber(K.readName(K.SPEED_FILE)); if v==1 or v==1.5 or v==2 then return v end; return 1 end
+function K.writeSavedSpeed(v) pcall(writefile,K.SPEED_FILE,tostring(tonumber(v) or 1)) end
+function K.readJSON(p)
+    local ok,raw=pcall(readfile,p); if not ok or type(raw)~="string" then return nil end
+    local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+    if g and type(d)=="table" then return d end
+    return nil
+end
+function K.writeJSON(p,t) pcall(writefile,p,K.HttpService:JSONEncode(t)) end
+
+local voteCfg=K.readJSON(K.VOTE_FILE) or {}
+K.S={recording=false,playing=false,launching=false,actions={},towerIds={},idIndex={},placed=0,levelById={},playMap={},lastId=nil,
+    wave=0,waveStart=os.clock(),status="готов",playAgain=K.readName(K.PLAYAGAIN)=="1",speed=K.readSavedSpeed(),
+    tab="autofarm",collapsed=false,summon1=false,summon10=false,summonDelay=60,
+    gameDelay=500,selected=K.readName(K.SELECTED),
+    voteMode=voteCfg.mode or "Insane",autoVote=(voteCfg.auto~=false)}
+if K.S.selected=="" then K.S.selected=nil end
+K.S.launchCooldown=0 K.S.pendingTowerAdd=nil K.S.votedTick=0 K.S.lastVotedMode=nil
+
+function K.resetRecordState()
+    K.S.placed=0 K.S.towerIds={} K.S.idIndex={} K.S.levelById={}
+    K.S.playMap={} K.S.lastId=nil K.S.pendingTowerAdd=nil
+end
+
+K.MAX_LOGS=80 K.logsBuf={} K.logsUpdated=false
+function K.pushLog(t,k)
+    k=k or "info"
+    table.insert(K.logsBuf,{t=os.date("%H:%M:%S"),m=tostring(t),k=k})
+    if #K.logsBuf>K.MAX_LOGS then table.remove(K.logsBuf,1) end
+    K.logsUpdated=true
+end
+function K.log(s,k) print("[KoRi4] "..s); K.S.status=s; K.pushLog(s,k or "info") end
+
+K.FONT=Enum.Font.RobotoMono
+K.BASE={bg=Color3.fromRGB(20,14,34),panel=Color3.fromRGB(30,20,50),line=Color3.fromRGB(58,42,88),
+    text=Color3.fromRGB(228,220,245),dim=Color3.fromRGB(140,120,175),sidebar=Color3.fromRGB(24,16,40),
+    topbar=Color3.fromRGB(26,18,44),accent=Color3.fromRGB(170,120,255),ok=Color3.fromRGB(120,230,160),
+    red=Color3.fromRGB(230,90,110),orange=Color3.fromRGB(255,180,90)}
+K.DISABLED={bg=Color3.fromRGB(22,16,36),text=Color3.fromRGB(72,60,95),stroke=Color3.fromRGB(40,30,60)}
+K.LOG_COLORS={info=Color3.fromRGB(180,170,200),ok=Color3.fromRGB(140,240,160),warn=Color3.fromRGB(255,200,100),
+    err=Color3.fromRGB(255,120,120),event=Color3.fromRGB(150,200,255)}
+
+K.THEMES={
+    {id="violet",ru="Фиолет",c1=Color3.fromRGB(150,120,255),c2=Color3.fromRGB(90,180,255)},
+    {id="combat",ru="Комбат",c1=Color3.fromRGB(90,100,255),c2=Color3.fromRGB(160,60,220)},
+    {id="siren",ru="Сирена",c1=Color3.fromRGB(255,90,160),c2=Color3.fromRGB(255,140,120)},
+    {id="mint",ru="Мятно-мал",c1=Color3.fromRGB(120,240,200),c2=Color3.fromRGB(255,90,140)},
+    {id="twilight",ru="Сумерки",c1=Color3.fromRGB(90,60,180),c2=Color3.fromRGB(50,30,90)},
+    {id="ruby",ru="Рубин",c1=Color3.fromRGB(200,30,60),c2=Color3.fromRGB(255,100,80)},
+    {id="space",ru="Космос",c1=Color3.fromRGB(60,30,120),c2=Color3.fromRGB(20,10,60)},
+    {id="amber",ru="Аметист",c1=Color3.fromRGB(160,90,220),c2=Color3.fromRGB(255,220,90)},
+    {id="peach",ru="Персик",c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,120,120)},
+    {id="lavender",ru="Лаванда",c1=Color3.fromRGB(180,160,240),c2=Color3.fromRGB(80,140,255)},
+    {id="wine",ru="Вино",c1=Color3.fromRGB(120,40,90),c2=Color3.fromRGB(40,90,160)},
+    {id="sunset",ru="Закат",c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,120)},
+    {id="orange",ru="Оранж",c1=Color3.fromRGB(255,140,60),c2=Color3.fromRGB(255,80,150)},
+    {id="lime",ru="Лайм",c1=Color3.fromRGB(120,220,90),c2=Color3.fromRGB(255,120,200)},
+    {id="lime2",ru="Эвкалипт",c1=Color3.fromRGB(80,180,140),c2=Color3.fromRGB(40,120,90)},
+    {id="rasp",ru="Малина",c1=Color3.fromRGB(255,60,120),c2=Color3.fromRGB(255,140,60)},
+    {id="frost",ru="Мороз",c1=Color3.fromRGB(220,240,255),c2=Color3.fromRGB(160,180,220)},
+    {id="cold",ru="Холод",c1=Color3.fromRGB(90,180,220),c2=Color3.fromRGB(40,100,180)},
+    {id="storm",ru="Шторм",c1=Color3.fromRGB(60,90,180),c2=Color3.fromRGB(20,40,90)},
+    {id="dark",ru="Тёмный",c1=Color3.fromRGB(90,90,110),c2=Color3.fromRGB(30,30,40)},
+    {id="redgray",ru="Кр-сер",c1=Color3.fromRGB(220,70,70),c2=Color3.fromRGB(80,40,40)},
+    {id="bluegray",ru="Син-сер",c1=Color3.fromRGB(80,140,230),c2=Color3.fromRGB(40,60,90)},
+    {id="gold",ru="Золото",c1=Color3.fromRGB(230,190,70),c2=Color3.fromRGB(120,90,30)},
+    {id="ocean",ru="Океан",c1=Color3.fromRGB(80,150,238),c2=Color3.fromRGB(234,88,150)},
+    {id="neonpink",ru="Неон-розовый",c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(255,140,80)},
+    {id="cyberpurple",ru="Кибер-фиол",c1=Color3.fromRGB(120,60,220),c2=Color3.fromRGB(255,80,180)},
+    {id="candy",ru="Карамель",c1=Color3.fromRGB(255,120,180),c2=Color3.fromRGB(120,200,255)},
+    {id="aqua",ru="Аква",c1=Color3.fromRGB(80,220,220),c2=Color3.fromRGB(60,150,220)},
+    {id="forest",ru="Лес",c1=Color3.fromRGB(60,180,120),c2=Color3.fromRGB(20,80,60)},
+    {id="royal",ru="Роял",c1=Color3.fromRGB(80,60,200),c2=Color3.fromRGB(180,140,255)},
+    {id="crimson",ru="Багровый",c1=Color3.fromRGB(200,30,50),c2=Color3.fromRGB(120,20,40)},
+    {id="coral",ru="Коралл",c1=Color3.fromRGB(255,120,100),c2=Color3.fromRGB(255,180,140)},
+    {id="pistachio",ru="Фисташка",c1=Color3.fromRGB(180,220,140),c2=Color3.fromRGB(90,180,110)},
+    {id="autumn",ru="Осень",c1=Color3.fromRGB(255,150,40),c2=Color3.fromRGB(255,80,60)},
+    {id="deepblue",ru="Глубокий",c1=Color3.fromRGB(30,60,180),c2=Color3.fromRGB(120,180,255)},
+    {id="teal",ru="Бирюза",c1=Color3.fromRGB(20,180,180),c2=Color3.fromRGB(255,150,140)},
+    {id="mintgreen",ru="Мятный",c1=Color3.fromRGB(80,230,180),c2=Color3.fromRGB(120,200,240)},
+    {id="pinkpurple",ru="Розово-фиол",c1=Color3.fromRGB(255,80,200),c2=Color3.fromRGB(140,60,200)},
+    {id="sunrise",ru="Рассвет",c1=Color3.fromRGB(255,180,140),c2=Color3.fromRGB(255,80,120)},
+}
+K.OUTLINES={
+    {id="none",ru="Нет",none=true},{id="white",ru="Белая",c=Color3.fromRGB(230,230,240)},
+    {id="violet",ru="Фиолет",c=Color3.fromRGB(150,120,255)},{id="red",ru="Красная",c=Color3.fromRGB(230,80,80)},
+    {id="green",ru="Зелёная",c=Color3.fromRGB(90,230,140)},{id="blue",ru="Синяя",c=Color3.fromRGB(90,160,255)},
+    {id="gold",ru="Золото",c=Color3.fromRGB(240,200,90)},{id="pink",ru="Розовая",c=Color3.fromRGB(255,120,190)},
+    {id="rainbow",ru="Радуга",rainbow=true,anim=true},
+    {id="rainbow_slow",ru="Радуга-плав",rainbow=true,anim=true,animMul=0.35},
+}
+K.RAINBOW_SEQ=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,70,90)),
+    ColorSequenceKeypoint.new(0.16,Color3.fromRGB(255,150,60)),
+    ColorSequenceKeypoint.new(0.33,Color3.fromRGB(255,230,70)),
+    ColorSequenceKeypoint.new(0.5,Color3.fromRGB(90,230,150)),
+    ColorSequenceKeypoint.new(0.66,Color3.fromRGB(70,170,255)),
+    ColorSequenceKeypoint.new(0.83,Color3.fromRGB(160,90,255)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(255,70,90)),
+})
+
+K.HUD={themeId="violet",outlineId="none",outlineThickness=1,outlineTransparency=0,olAnimSpeed=1,
+    olSections=true,olButtons=true,olTabs=true,rainbowSpeed=1,hueSpeed=1,blur=0,glow=0,blurFx=nil,glowFx=nil}
+function K.currentTheme() for _,t in ipairs(K.THEMES) do if t.id==K.HUD.themeId then return t end end return K.THEMES[1] end
+function K.themeAccent() return K.currentTheme().c1 end
+function K.currentOutline() for _,o in ipairs(K.OUTLINES) do if o.id==K.HUD.outlineId then return o end end return K.OUTLINES[1] end
+
+K.VFX={
+    orbit={on=false,emitter=nil,attach=nil,settings={radius=6,count=20,color=Color3.fromRGB(120,200,255),bright=1,speed=1,size=1}},
+    lighting={on=false,bloom=nil,cc=nil,sunrays=nil,settings={bloomIntensity=1.2,bloomSize=24,bloomThreshold=0.9,contrast=0.1,saturation=0.15,tint=Color3.fromRGB(255,255,255)}},
+    distort={on=false,blur=nil,cc=nil,settings={blur=4,contrast=0.4,bright=0.05,tint=Color3.fromRGB(230,240,255)}},
+    hue={on=false,cc=nil,settings={speed=1,saturation=0.4,brightness=0}},
+    trail={on=false,trail=nil,a0=nil,a1=nil,settings={lifetime=0.8,width=0.6,color=Color3.fromRGB(120,200,255),bright=1}},
+    pulse={on=false,light=nil,settings={range=12,bright=2,speed=2,color=Color3.fromRGB(255,220,160)}},
+}
+K.VFX_DEFAULTS={}
+for kind,fx in pairs(K.VFX) do
+    K.VFX_DEFAULTS[kind]={}
+    for k,v in pairs(fx.settings) do
+        if typeof(v)=="Color3" then K.VFX_DEFAULTS[kind][k]={__color=true,r=v.R,g=v.G,b=v.B}
+        else K.VFX_DEFAULTS[kind][k]=v end
+    end
+end
+K.orbitAngle=0 K.hueT=0 K.pulseT=0
+
+function K.ensureOrbit()
+    local fx=K.VFX.orbit
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.emitter and fx.emitter.Parent and fx.attach and fx.attach.Parent==hrp then return fx end
+    K.safeDestroy(fx.emitter); K.safeDestroy(fx.attach)
+    local a=Instance.new("Attachment"); a.Name="CTD_Orbit"; a.Parent=hrp
+    local e=Instance.new("ParticleEmitter")
+    e.Name="CTD_OrbitParts"; e.Texture="rbxasset://textures/particles/sparkles_main.dds"
+    e.Lifetime=NumberRange.new(1,1.5); e.Rate=0; e.Speed=NumberRange.new(0,0); e.Drag=0
+    e.Rotation=NumberRange.new(0,360); e.RotSpeed=NumberRange.new(-180,180)
+    e.SpreadAngle=Vector2.new(0,0); e.LightInfluence=0; e.Size=NumberSequence.new(0.4)
+    e.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(1,1)})
+    e.Parent=a; fx.attach=a; fx.emitter=e; return fx
+end
+function K.applyOrbit()
+    local fx=K.VFX.orbit; local e=fx.emitter; if not e then return end
+    local st=fx.settings
+    K.setProp(e,"Color",ColorSequence.new(st.color))
+    K.setProp(e,"LightEmission",st.bright>1 and 1 or 0)
+    K.setProp(e,"Size",NumberSequence.new((tonumber(st.size) or 1)*0.4))
+    K.setProp(e,"Rate",fx.on and (math.clamp(tonumber(st.count) or 20,1,60)*2) or 0)
+    K.setProp(e,"Enabled",fx.on)
+end
+function K.applyLighting()
+    local fx=K.VFX.lighting
+    if fx.on then
+        if not fx.bloom or not fx.bloom.Parent then fx.bloom=Instance.new("BloomEffect"); fx.bloom.Name="CTD_Bloom"; fx.bloom.Parent=K.Lighting end
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_CC"; fx.cc.Parent=K.Lighting end
+        local st=fx.settings
+        K.setProp(fx.bloom,"Intensity",st.bloomIntensity)
+        K.setProp(fx.bloom,"Size",st.bloomSize)
+        K.setProp(fx.bloom,"Threshold",st.bloomThreshold)
+        K.setProp(fx.cc,"Contrast",st.contrast)
+        K.setProp(fx.cc,"Saturation",st.saturation)
+        K.setProp(fx.cc,"TintColor",st.tint)
+    else
+        K.safeDestroy(fx.bloom); fx.bloom=nil
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.applyDistort()
+    local fx=K.VFX.distort
+    if fx.on then
+        if not fx.blur or not fx.blur.Parent then fx.blur=Instance.new("BlurEffect"); fx.blur.Name="CTD_Distort_Blur"; fx.blur.Parent=K.Lighting end
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_Distort_CC"; fx.cc.Parent=K.Lighting end
+        K.setProp(fx.blur,"Size",tonumber(fx.settings.blur) or 4)
+        K.setProp(fx.cc,"Contrast",tonumber(fx.settings.contrast) or 0.4)
+        K.setProp(fx.cc,"Brightness",tonumber(fx.settings.bright) or 0.05)
+        K.setProp(fx.cc,"TintColor",fx.settings.tint or Color3.fromRGB(230,240,255))
+    else
+        K.safeDestroy(fx.blur); fx.blur=nil
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.applyHue()
+    local fx=K.VFX.hue
+    if fx.on then
+        if not fx.cc or not fx.cc.Parent then fx.cc=Instance.new("ColorCorrectionEffect"); fx.cc.Name="CTD_Hue_CC"; fx.cc.Parent=K.Lighting end
+        K.setProp(fx.cc,"Saturation",fx.settings.saturation)
+        K.setProp(fx.cc,"Brightness",fx.settings.brightness)
+    else
+        K.safeDestroy(fx.cc); fx.cc=nil
+    end
+end
+function K.ensureTrail()
+    local fx=K.VFX.trail
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.trail and fx.trail.Parent and fx.a0 and fx.a0.Parent==hrp then return fx end
+    K.safeDestroy(fx.trail); K.safeDestroy(fx.a0); K.safeDestroy(fx.a1)
+    local a0=Instance.new("Attachment"); a0.Name="CTD_TrailA0"
+    local a1=Instance.new("Attachment"); a1.Name="CTD_TrailA1"
+    a0.Position=Vector3.new(0,0.5,0); a1.Position=Vector3.new(0,-0.5,0)
+    a0.Parent=hrp; a1.Parent=hrp
+    local t=Instance.new("Trail"); t.Name="CTD_Trail"
+    t.Attachment0=a0; t.Attachment1=a1
+    t.Lifetime=0.8; t.MinLength=0; t.FaceCamera=true; t.LightEmission=1; t.LightInfluence=0
+    t.Parent=hrp
+    fx.a0,fx.a1,fx.trail=a0,a1,t
+    return fx
+end
+function K.applyTrail()
+    local fx=K.VFX.trail; local t=fx.trail; if not t then return end
+    K.setProp(t,"Lifetime",fx.settings.lifetime)
+    K.setProp(t,"WidthScale",NumberSequence.new(fx.settings.width))
+    K.setProp(t,"Color",ColorSequence.new(fx.settings.color))
+    K.setProp(t,"LightEmission",fx.settings.bright>1 and 1 or (fx.settings.bright or 0))
+    K.setProp(t,"Enabled",fx.on)
+    if fx.a0 then K.setProp(fx.a0,"Visible",fx.on) end
+    if fx.a1 then K.setProp(fx.a1,"Visible",fx.on) end
+end
+function K.ensurePulse()
+    local fx=K.VFX.pulse
+    local hrp=K.lp.Character and K.lp.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    if fx.light and fx.light.Parent==hrp then return fx end
+    K.safeDestroy(fx.light)
+    local l=Instance.new("PointLight"); l.Name="CTD_Pulse"; l.Shadows=false; l.Parent=hrp
+    fx.light=l; return fx
+end
+function K.applyPulse()
+    local fx=K.VFX.pulse; local l=fx.light; if not l then return end
+    K.setProp(l,"Color",fx.settings.color)
+    K.setProp(l,"Range",fx.settings.range)
+    K.setProp(l,"Brightness",fx.on and fx.settings.bright or 0)
+    K.setProp(l,"Enabled",fx.on)
+end
+function K.applyVFXSettings()
+    if K.VFX.orbit.on then K.ensureOrbit() end
+    if K.VFX.trail.on then K.ensureTrail() end
+    if K.VFX.pulse.on then K.ensurePulse() end
+    K.applyOrbit(); K.applyLighting(); K.applyDistort(); K.applyHue(); K.applyTrail(); K.applyPulse()
+end
+function K.applyClientFx()
+    if K.HUD.blur>0 then
+        if not K.HUD.blurFx or not K.HUD.blurFx.Parent then K.HUD.blurFx=Instance.new("BlurEffect"); K.HUD.blurFx.Name="KoRi4_Blur"; K.HUD.blurFx.Parent=K.Lighting end
+        K.setProp(K.HUD.blurFx,"Size",K.HUD.blur)
+    else K.safeDestroy(K.HUD.blurFx); K.HUD.blurFx=nil end
+    if K.HUD.glow>0 then
+        if not K.HUD.glowFx or not K.HUD.glowFx.Parent then K.HUD.glowFx=Instance.new("BloomEffect"); K.HUD.glowFx.Name="KoRi4_Glow"; K.HUD.glowFx.Parent=K.Lighting end
+        K.setProp(K.HUD.glowFx,"Intensity",K.HUD.glow)
+        K.setProp(K.HUD.glowFx,"Size",24)
+        K.setProp(K.HUD.glowFx,"Threshold",0.9)
+    else K.safeDestroy(K.HUD.glowFx); K.HUD.glowFx=nil end
+end
+
+K.autosaveReady=false K.autosavePending=false K.autosaveTimer=nil
+function K.colorToTable(c) return {__color=true,r=c.R,g=c.G,b=c.B} end
+function K.tableToColor(t) return Color3.new(t.r,t.g,t.b) end
+function K.snapshotVFX()
+    local out={}
+    for kind,fx in pairs(K.VFX) do
+        local s={}
+        for k,v in pairs(fx.settings) do if typeof(v)=="Color3" then s[k]=K.colorToTable(v) else s[k]=v end end
+        out[kind]={on=fx.on,settings=s}
+    end
+    return out
+end
+function K.snapshotHUD()
+    return {themeId=K.HUD.themeId,outlineId=K.HUD.outlineId,outlineThickness=K.HUD.outlineThickness,
+        outlineTransparency=K.HUD.outlineTransparency,olAnimSpeed=K.HUD.olAnimSpeed,
+        olSections=K.HUD.olSections,olButtons=K.HUD.olButtons,olTabs=K.HUD.olTabs,
+        rainbowSpeed=K.HUD.rainbowSpeed,hueSpeed=K.HUD.hueSpeed,blur=K.HUD.blur,glow=K.HUD.glow}
+end
+function K.doAutosave()
+    K.autosavePending=false
+    if not K.autosaveReady then return end
+    K.writeJSON(K.HUD_FILE,{owner=K.MY_NICK,saved=os.date("%d.%m.%Y %H:%M:%S"),vfx=K.snapshotVFX(),hud=K.snapshotHUD()})
+    K.writeJSON(K.VOTE_FILE,{mode=K.S.voteMode,auto=K.S.autoVote})
+end
+function K.scheduleAutosave()
+    if not K.autosaveReady or K.autosavePending then return end
+    K.autosavePending=true
+    if K.autosaveTimer then task.cancel(K.autosaveTimer) end
+    K.autosaveTimer=task.delay(1,function() K.autosaveTimer=nil; if K.alive() then K.doAutosave() end end)
+end
+function K.saveNow()
+    if K.autosaveTimer then task.cancel(K.autosaveTimer); K.autosaveTimer=nil end
+    K.autosavePending=false K.doAutosave()
+end
+
+function K.money() local ls=K.lp:FindFirstChild("leaderstats"); local m=ls and ls:FindFirstChild("Money"); return m and m.Value or 0 end
+function K.curWave() return tonumber(workspace:GetAttribute("Wave")) or 0 end
+function K.waveTime() return os.clock()-K.S.waveStart end
+
+function K.safeGet(obj,key) if not obj then return nil end local ok,v=pcall(function() return obj[key] end) if ok then return v end return nil end
+function K.tryFireConnections(obj)
+    if not obj or not getconnections then return false end
+    local fired=false
+    for _,evName in ipairs({"Activated","MouseButton1Click","MouseButton1Down","MouseButton1Up"}) do
+        local sig=K.safeGet(obj,evName)
+        if sig then
+            local ok,conns=pcall(getconnections,sig)
+            if ok and type(conns)=="table" then
+                for _,c in ipairs(conns) do pcall(function() if c.Fire then c:Fire() elseif c.Function then c.Function() end end); fired=true end
+            end
+        end
+    end
+    if firesignal then
+        for _,evName in ipairs({"Activated","MouseButton1Click","MouseButton1Down","MouseButton1Up"}) do
+            local sig=K.safeGet(obj,evName); if sig then pcall(firesignal,sig) end
+        end
+    end
+    return fired
+end
+function K.simulateClick(obj)
+    if not obj then return false end
+    local ok,ap=pcall(function() return obj.AbsolutePosition end); if not ok or not ap then return false end
+    local ok2,as=pcall(function() return obj.AbsoluteSize end); if not ok2 or not as then return false end
+    local x=ap.X+as.X/2; local y=ap.Y+as.Y/2
+    if mousemoveabs then pcall(mousemoveabs,x,y); task.wait(0.02) end
+    if mouse1press and mouse1release then pcall(mouse1press); task.wait(0.02); pcall(mouse1release); return true
+    elseif mouse1click then pcall(mouse1click); return true end
+    return false
+end
+function K.findLabelByText(text,exact)
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return nil end
+    local fallback
+    for _,d in ipairs(pg:GetDescendants()) do
+        local txt=nil; pcall(function() txt=d.Text end)
+        if txt and (d:IsA("TextLabel") or d:IsA("TextButton")) then
+            local match=exact and (txt==text) or (txt:find(text,1,true)~=nil)
+            if match then
+                local vis=true; local cur=d
+                for _=1,12 do if cur and cur.Visible==false then vis=false break end; cur=cur and cur.Parent; if not cur or cur:IsA("PlayerGui") then break end end
+                if vis then return d end
+                if not fallback then fallback=d end
+            end
+        end
+    end
+    return fallback
+end
+function K.getButtonFromLabel(lbl)
+    if not lbl then return nil end
+    local obj=lbl
+    for _=1,8 do if not obj then break end; if obj:IsA("GuiButton") then return obj end; obj=obj.Parent; if obj and obj:IsA("PlayerGui") then break end end
+    return lbl
+end
+
+function K.v3(v) return {x=v.X,y=v.Y,z=v.Z} end
+function K.unv3(t) return Vector3.new(t.x,t.y,t.z) end
+function K.cfs(c) return {c:GetComponents()} end
+function K.uncf(t) return CFrame.new(unpack(t)) end
+
+K.hookReady=false
+function K.startFireServerHook()
+    if K.hookReady then return end
+    local ta=K.remote("TowerAdd"); if not ta then return end
+    local old=ta.FireServer; if type(old)~="function" then return end
+    local function hooked(self, ...)
+        if self==ta then K.S.pendingTowerAdd={...} end
+        return old(self, ...)
+    end
+    local ok=false
+    if hookfunction then ok=pcall(function() hookfunction(old,newcclosure(hooked)) end) end
+    if not ok and getrawmetatable and setreadonly and newcclosure then
+        local mt=getrawmetatable(game)
+        if mt and mt.__namecall then
+            local oldN=mt.__namecall
+            local function hookedN(self, ...)
+                if (getnamecallmethod and getnamecallmethod())=="FireServer" and self==ta then K.S.pendingTowerAdd={...} end
+                return oldN(self, ...)
+            end
+            pcall(function() setreadonly(mt,false); mt.__namecall=newcclosure(hookedN); setreadonly(mt,true) end)
+            ok=true
+        end
+    end
+    K.hookReady=ok
+end
+K.startFireServerHook()
+
+function K.record(a)
+    if not K.S.recording or K.S.playing then return end
+    a.wave=K.S.wave; a.t=math.floor(K.waveTime()*10)/10
+    table.insert(K.S.actions,a)
+    K.log(("● %s — в%d, %.1fс"):format(a.type,a.wave,a.t))
+end
+function K.mine(d)
+    if type(d)~="table" then return false end
+    if d.OwnerUserId then return d.OwnerUserId==K.lp.UserId end
+    if d.OwnerName then return d.OwnerName==K.lp.Name end
+    return false
+end
+function K.allMacros()
+    local ok,raw=pcall(readfile,K.FILE)
+    if ok and type(raw)=="string" then
+        local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+        if g and type(d)=="table" then return d end
+    end
+    return {}
+end
+function K.saveMacro(name)
+    if #K.S.actions==0 then K.log("пусто"); return nil end
+    local real=0
+    for _,a in ipairs(K.S.actions) do if a.type=="place" or a.type=="upgrade" or a.type=="sell" then real+=1 end end
+    if real==0 then K.log("нет башен"); return nil end
+    local map=tostring(workspace:GetAttribute("Map") or "?")
+    if not name or name=="" then name=("%s %s"):format(map,os.date("%d.%m %H:%M")) end
+    local all=K.allMacros()
+    if all[name] then
+        local base,i=name,2
+        repeat name=("%s (%d)"):format(base,i); i+=1 until not all[name]
+    end
+    all[name]={map=map,mode=tostring(workspace:GetAttribute("Mode") or ""),
+        autoskip=K.autoSkipOn and K.autoSkipOn() or false,playAgain=K.S.playAgain,
+        actions=K.S.actions,saved=os.date("%d.%m.%Y %H:%M"),owner=K.MY_NICK}
+    local ok=pcall(writefile,K.FILE,K.HttpService:JSONEncode(all))
+    if not ok then K.log("fail"); return nil end
+    K.log(("сохр «%s»: %d"):format(name,#K.S.actions))
+    return name
+end
+function K.fire(name,payload)
+    local r=K.remote(name); if not r then return false end
+    if payload==nil then r:FireServer() else r:FireServer(payload) end
+    return true
+end
+function K.waitMoment(wave,t)
+    while K.alive() and K.S.playing do
+        if K.S.wave>wave then return true end
+        if K.S.wave==wave and K.waveTime()>=t then return true end
+        task.wait(0.1)
+    end
+    return false
+end
+function K.liveUnitId(name,recorded)
+    for i=1,5 do if K.lp:GetAttribute("Slot"..i.."Id")==recorded then return recorded end end
+    for i=1,5 do
+        if K.lp:GetAttribute("Slot"..i)==name then
+            local id=K.lp:GetAttribute("Slot"..i.."Id")
+            if id and id~="" then return id end
+        end
+    end
+    return recorded
+end
+function K.buildPlacePayload(a)
+    local p={Name=a.name,UnitId=K.liveUnitId(a.name,a.unitId)}
+    if a.pos then p.Pos=K.unv3(a.pos) end
+    if a.cf then p.CFrame=K.uncf(a.cf) end
+    return p
+end
+
+-- ✅ playAction: place с таймаутом 25с и без спама, upgrade с логом результата
+function K.playAction(a,ctx)
+    if a.type=="place" then
+        ctx.placeNo+=1; local myNo=ctx.placeNo
+        local before=K.S.placed
+        local t0=os.clock()
+        local lastFire=0
+        while K.alive() and K.S.playing and K.S.placed==before and os.clock()-t0<25 do
+            if not K.remote("TowerAdd") then
+                task.wait(0.5)
+            else
+                if a.price and K.money()<a.price then
+                    K.S.status=("жду %s"):format(tostring(a.name)); task.wait(0.5)
+                else
+                    if os.clock()-lastFire>2 then
+                        K.fire("TowerAdd",K.buildPlacePayload(a))
+                        lastFire=os.clock()
+                    end
+                    task.wait(0.3)
+                end
+            end
+        end
+        if K.S.placed>before and K.S.lastId then
+            K.S.playMap[myNo]=K.S.lastId
+            K.log(("▶ %s (#%d) id=%s"):format(tostring(a.name),myNo,tostring(K.S.lastId)))
+        else
+            K.log(("▶ fail %s (placed=%d, lastId=%s)"):format(
+                tostring(a.name),K.S.placed,tostring(K.S.lastId)))
+        end
+
+    elseif a.type=="upgrade" then
+        local id=K.S.playMap[a.tower]
+        if not id then
+            K.log(("⬆ #%d без id — пропуск"):format(a.tower),"warn")
+            return
+        end
+        local want = a.level or ((K.S.levelById[id] or 1) + 1)
+        local beforeLvl = K.S.levelById[id] or 1
+        local t0 = os.clock()
+        local lastFire = 0
+        while K.alive() and K.S.playing
+            and (K.S.levelById[id] or 1) < want
+            and os.clock()-t0 < 25 do
+            if not K.remote("TowerUpgrade") then
+                task.wait(0.5)
+            else
+                if a.price and K.money() < a.price then
+                    task.wait(0.5)
+                else
+                    if os.clock()-lastFire > 1.5 then
+                        K.fire("TowerUpgrade", {Id=id})
+                        lastFire = os.clock()
+                    end
+                    task.wait(0.3)
+                end
+            end
+        end
+        local nowLvl = K.S.levelById[id] or 1
+        if nowLvl > beforeLvl then
+            K.log(("⬆ #%d lvl %d→%d"):format(a.tower, beforeLvl, nowLvl))
+        else
+            K.log(("⬆ fail #%d (lvl=%d, want=%d)"):format(a.tower, nowLvl, want),"warn")
+        end
+
+    elseif a.type=="target" then
+        local id=K.S.playMap[a.tower]; if id then K.fire("TowerTarget",{Id=id}); task.wait(0.3) end
+    elseif a.type=="sell" then
+        local id=K.S.playMap[a.tower]; if id then K.fire("TowerSell",{Id=id}); task.wait(0.4) end
+    elseif a.type=="autoskip" then
+        if K.autoSkipOn()~=a.on then pcall(K.toggleAutoSkip) end
+    elseif a.type=="skip" then K.fire("WaveSkip"); task.wait(0.4)
+    end
+end
+
+function K.play(name)
+    local m=K.allMacros()[name]; if not m then K.log("нет: "..tostring(name)); return end
+    K.resetRecordState()
+    K.S.wave=K.curWave()
+    K.S.waveStart=os.clock()
+    K.S.playing=true; K.log(("▶ «%s»: %d"):format(name,#m.actions))
+    if m.autoskip and not K.autoSkipOn() then pcall(K.toggleAutoSkip) end
+    if m.playAgain~=nil then K.S.playAgain=m.playAgain; pcall(writefile,K.PLAYAGAIN,K.S.playAgain and "1" or "0") end
+    if K.S.autoVote and m.mode and m.mode~="" and m.mode~="nil" then
+        K.S.voteMode=m.mode
+        task.spawn(function()
+            local t0=os.clock()
+            while K.alive() and K.S.playing and os.clock()-t0<60 do
+                if workspace:GetAttribute("IsVoting") then pcall(K.fire,"ModeVote",m.mode)
+                elseif workspace:GetAttribute("Mode")==m.mode then break end
+                task.wait(1)
+            end
+        end)
+    end
+    K.S.playMap={}; local ctx={placeNo=0}
+    task.spawn(function()
+        for _,a in ipairs(m.actions) do
+            if not K.alive() or not K.S.playing then break end
+            if K.waitMoment(a.wave,a.t) then pcall(K.playAction,a,ctx) end
+        end
+        K.S.playing=false; K.log("▶ доиграно")
+    end)
+end
+
+-- ✅ startRecordHooks: единый bind() для ВСЕХ remote'ов через ChildAdded
+function K.startRecordHooks()
+    local function bind(name, handler)
+        if not K.RE then return end
+        local function attach(r)
+            if not r or r.Name ~= name then return end
+            local ok, done = pcall(function() return r:GetAttribute("CTD_hooked") end)
+            if ok and done then return end
+            pcall(function() r:SetAttribute("CTD_hooked", true) end)
+            r.OnClientEvent:Connect(function(...)
+                if not K.alive() then return end
+                pcall(handler, ...)
+            end)
+        end
+        attach(K.RE:FindFirstChild(name))
+        K.RE.ChildAdded:Connect(function(c)
+            if c.Name == name then
+                task.wait(0.1)
+                attach(c)
+            end
+        end)
+    end
+
+    bind("TowerAdd", function(d)
+        if not K.mine(d) or not d.Id then return end
+        local id = tostring(d.Id)
+        if K.S.idIndex[id] then
+            K.log("повторный TowerAdd id="..id.." — игнор","warn")
+            return
+        end
+        K.S.placed += 1
+        K.S.towerIds[K.S.placed] = id
+        K.S.idIndex[id] = K.S.placed
+        K.S.levelById[id] = d.Level or 1
+        K.S.lastId = id
+        local fired  = K.S.pendingTowerAdd
+        local name   = (fired and fired[1] and fired[1].Name) or d.Name
+        local unitId = (fired and fired[1] and fired[1].UnitId) or d.UnitId
+        local pos    = (fired and fired[1] and fired[1].Pos) or d.Pos
+        local cf     = (fired and fired[1] and fired[1].CFrame) or d.CFrame
+        K.S.pendingTowerAdd = nil
+        K.record({type="place", name=name, unitId=unitId,
+            pos=pos and K.v3(pos) or nil, cf=cf and K.cfs(cf) or nil,
+            price=d.Stats and d.Stats.Price})
+    end)
+
+    bind("TowerUpgrade", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then
+            K.log("upgrade для неизвестного id="..id,"warn")
+            return
+        end
+        K.S.levelById[id] = d.Level or ((K.S.levelById[id] or 1) + 1)
+        K.record({type="upgrade", tower=idx, level=d.Level, price=d.Stats and d.Stats.Price})
+    end)
+
+    bind("TowerTarget", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local idx = K.S.idIndex[tostring(d.Id)]
+        if not idx then return end
+        K.record({type="target", tower=idx, mode=d.TargetMode})
+    end)
+
+    bind("TowerRemove", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then return end
+        K.S.levelById[id] = nil
+        K.S.idIndex[id] = nil
+        K.record({type="sell", tower=idx})
+    end)
+    bind("TowerSell", function(d)
+        if type(d) ~= "table" or not d.Id then return end
+        local id = tostring(d.Id)
+        local idx = K.S.idIndex[id]
+        if not idx then return end
+        K.S.levelById[id] = nil
+        K.S.idIndex[id] = nil
+        K.record({type="sell", tower=idx})
+    end)
+
+    task.spawn(function()
+        local t0 = os.clock()
+        local g = K.gameFolder()
+        local folder = g and g:FindFirstChild("Towers")
+        while not folder and K.alive() and os.clock()-t0 < 60 do
+            g = K.gameFolder(); folder = g and g:FindFirstChild("Towers")
+            task.wait(0.5)
+        end
+        if not folder then return end
+        folder.ChildRemoved:Connect(function(c)
+            if not K.alive() then return end
+            local idx = K.S.idIndex[c.Name]
+            if idx then
+                K.S.idIndex[c.Name] = nil
+                K.S.levelById[c.Name] = nil
+                K.record({type="sell", tower=idx})
+            end
+        end)
+    end)
+
+    task.spawn(function()
+        local was = nil
+        while K.alive() do
+            local now = K.autoSkipOn and K.autoSkipOn() or false
+            if was ~= nil and now ~= was and K.S.recording and not K.S.playing then
+                K.record({type="autoskip", on=now})
+            end
+            was = now
+            task.wait(0.3)
+        end
+    end)
+
+    task.spawn(function()
+        local pg = K.lp:WaitForChild("PlayerGui", 30)
+        local gameUI = pg and pg:WaitForChild("GameUI", 30)
+        local stats = gameUI and gameUI:WaitForChild("Stats", 30)
+        local skip = stats and stats:WaitForChild("WaveSkipGui", 30)
+        if not skip then return end
+        local function hook(btn)
+            if btn:IsA("GuiButton") then
+                btn.Activated:Connect(function()
+                    if K.alive() and workspace:GetAttribute("CanSkip") then
+                        K.record({type="skip"})
+                    end
+                end)
+            end
+        end
+        hook(skip)
+        for _, d in ipairs(skip:GetDescendants()) do hook(d) end
+    end)
+end
+
+function K.tryVoteByMode(mode)
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return false end
+    local target=K.findLabelByText(mode,false)
+    if not target then
+        local ru={Insane="Безумн",Hard="Сложн",Normal="Обычн"}
+        if ru[mode] then target=K.findLabelByText(ru[mode],false) end
+    end
+    if target then
+        local root=target
+        for _=1,5 do
+            if not root then break end
+            root=root.Parent; if not root then break end
+            for _,c in ipairs(root:GetDescendants()) do
+                local t=nil; pcall(function() t=c.Text end)
+                if t and c:IsA("GuiButton") and (t:lower():find("vote",1,true) or t:lower():find("голос",1,true)) then
+                    if K.tryFireConnections(c) or K.simulateClick(c) then return true end
+                end
+            end
+        end
+    end
+    return false
+end
+function K.startVoteWatcher()
+    task.spawn(function()
+        local last=false
+        while K.alive() do
+            local cur=workspace:GetAttribute("IsVoting") and true or false
+            if cur and not last then K.S.votedTick=0 end
+            last=cur
+            if K.S.autoVote and cur then
+                local mode=K.S.voteMode or "Insane"
+                if os.clock()-K.S.votedTick > 5 then
+                    K.S.votedTick=os.clock()
+                    K.log("голосую за "..mode)
+                    pcall(K.tryVoteByMode,mode)
+                    pcall(K.fire,"ModeVote",mode)
+                end
+                task.wait(1)
+            else task.wait(0.8) end
+        end
+    end)
+end
+
+function K.autoSkipButton()
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui")
+    local gameUI=pg and pg:FindFirstChild("GameUI")
+    local stats=gameUI and gameUI:FindFirstChild("Stats")
+    local box=stats and stats:FindFirstChild("AutoSkip")
+    return box and box:FindFirstChild("Button")
+end
+function K.autoSkipOn()
+    if K.ownSkip then return true end
+    local b=K.autoSkipButton(); local ui2=b and b:FindFirstChild("UI2")
+    return (ui2 and ui2.Visible) or false
+end
+K.ownSkip=false
+function K.pressGameButton()
+    local b=K.autoSkipButton(); if not b or not getconnections then return false end
+    local ok,conns=pcall(getconnections,b.Activated); if not ok or type(conns)~="table" or #conns==0 then return false end
+    local function state() local ui2=b:FindFirstChild("UI2"); return (ui2 and ui2.Visible) or false end
+    local was=state()
+    for _,c in ipairs(conns) do
+        local okc=pcall(function() c:Fire() end)
+        if not okc then local okf,fn=pcall(function() return c.Function end); if okf and type(fn)=="function" then pcall(fn) end end
+        task.wait(0.15); if state()~=was then return true end
+    end
+    return false
+end
+function K.toggleAutoSkip()
+    local was=K.autoSkipOn()
+    if K.ownSkip then K.ownSkip=false; K.log("автоскип выкл"); return true end
+    if K.pressGameButton() then
+        local now=K.autoSkipOn()
+        K.log("автоскип "..(now and "вкл" or "выкл")); return true
+    end
+    if was then return false,"не нажать" end
+    K.ownSkip=true; K.log("автоскип вкл"); return true
+end
+
+K.SPEEDS={1,1.5,2}
+function K.currentSpeed() return tonumber(workspace:GetAttribute("GameSpeed")) or K.S.speed or 1 end
+function K.setGameSpeed(v)
+    v=tonumber(v) or 1; K.S.speed=v; K.writeSavedSpeed(v)
+    if not K.inMatch() then return true end
+    if math.abs(K.currentSpeed()-v)<0.01 then return true end
+    local f=K.rfunc("ChangeSpeed"); if f then pcall(function() f:InvokeServer(v) end) end
+    return true
+end
+
+K.MAPS={{id="Cameraman HQ",ru="Штаб"},{id="Toilet City",ru="Туалеты"},{id="Desert",ru="Пустыня"}}
+function K.mapRu(id) for _,m in ipairs(K.MAPS) do if m.id==id then return m.ru end end return tostring(id) end
+function K.elevators() local f=workspace:FindFirstChild("Elevators"); return f and f:GetChildren() or {} end
+function K.freeElevator(map)
+    local busy=nil
+    for _,m in ipairs(K.elevators()) do
+        if m:GetAttribute("Map")==map then
+            local n=tonumber(m:GetAttribute("Players")) or 0
+            if n==0 then return m end
+            busy=(busy or 0)+1
+        end
+    end
+    return nil,busy
+end
+function K.elevatorBase(m) return m:FindFirstChild("BasePart") or m:FindFirstChildWhichIsA("BasePart") end
+function K.charParts() local ch=K.lp.Character; return ch and ch:FindFirstChildOfClass("Humanoid"),ch and ch:FindFirstChild("HumanoidRootPart") end
+function K.stepTo(hum,hrp,point,limit)
+    local t0,last=os.clock(),hrp.Position
+    hum:MoveTo(point)
+    while K.alive() and os.clock()-t0<(limit or 6) do
+        if (hrp.Position-point).Magnitude<5 then return true end
+        if os.clock()-t0>1.5 and (hrp.Position-last).Magnitude<1 then hum.Jump=true; hum:MoveTo(point); last=hrp.Position end
+        task.wait(0.25)
+    end
+    return (hrp.Position-point).Magnitude<6
+end
+function K.walkTo(part)
+    local target=part.Position+Vector3.new(0,3,0)
+    for _=1,3 do
+        if not K.alive() then return false end
+        local hum,hrp=K.charParts()
+        if hum and hrp then
+            if (hrp.Position-target).Magnitude<10 then return true end
+            local path=K.PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true,AgentMaxSlope=45})
+            local built=pcall(function() path:ComputeAsync(hrp.Position,target) end)
+            if built and path.Status==Enum.PathStatus.Success then
+                for _,wp in ipairs(path:GetWaypoints()) do
+                    if not K.alive() then return false end
+                    hum,hrp=K.charParts(); if not (hum and hrp) then break end
+                    if wp.Action==Enum.PathWaypointAction.Jump then hum.Jump=true end
+                    if not K.stepTo(hum,hrp,wp.Position,6) then break end
+                end
+                local _,h2=K.charParts(); if h2 and (h2.Position-target).Magnitude<10 then return true end
+            end
+        end
+        task.wait(0.5)
+    end
+    return false
+end
+function K.enterElevator(el)
+    local enter=K.rfunc("ElevatorEnter")
+    if enter then pcall(function() enter:InvokeServer(el.Name) end) end
+    task.wait(1)
+    if (tonumber(el:GetAttribute("Players")) or 0)==0 then
+        local base=K.elevatorBase(el)
+        if base then K.walkTo(base); if enter then pcall(function() enter:InvokeServer(el.Name) end) end; task.wait(1) end
+    end
+    return (tonumber(el:GetAttribute("Players")) or 0)>=1
+end
+function K.launchMap(map,strategy,tries)
+    map=tostring(map)
+    local el,busy=K.freeElevator(map)
+    if not el then
+        K.log(("на «%s» занято"):format(K.mapRu(map)))
+        local t0=os.clock()
+        repeat task.wait(2); el=K.freeElevator(map) until el or not (K.S.playing or K.S.launching) or os.clock()-t0>120
+        if not el then K.log("нет лифта"); return end
+    end
+    if not K.enterElevator(el) then K.log("вход fail"); return end
+    local inside=tonumber(el:GetAttribute("Players")) or 0
+    if inside>1 then
+        local leave=K.rfunc("ElevatorLeave")
+        if leave then pcall(function() leave:InvokeServer(el.Name) end) end
+        tries=(tries or 0)+1; if tries>=5 then return end
+        return K.launchMap(map,strategy,tries)
+    end
+    pcall(writefile,K.AUTOPLAY,strategy or "")
+    K.log(("старт «%s»"):format(K.mapRu(map)))
+    local start=K.rfunc("ElevatorStart")
+    if start then pcall(function() start:InvokeServer(el.Name) end) end
+end
+
+function K.startEndMatchWatcher()
+    task.spawn(function()
+        local pg=K.lp:WaitForChild("PlayerGui",30)
+        local gameUI=pg and pg:WaitForChild("GameUI",30)
+        local final=gameUI and gameUI:WaitForChild("FinalUI",30)
+        if not final then return end
+        local function clickFinal(words)
+            if not getconnections then return false end
+            for _,d in ipairs(final:GetDescendants()) do
+                if d:IsA("GuiButton") then
+                    local t=(d.Text or ""):lower(); local hit=false
+                    for _,w in ipairs(words) do if t:find(w,1,true) then hit=true; break end end
+                    if hit then
+                        local ok,cs=pcall(getconnections,d.Activated)
+                        if ok and type(cs)=="table" and #cs>0 then
+                            for _,c in ipairs(cs) do
+                                local okc=pcall(function() c:Fire() end)
+                                if not okc then local okf,fn=pcall(function() return c.Function end); if okf and type(fn)=="function" then pcall(fn) end end
+                            end
+                            return true
+                        end
+                    end
+                end
+            end
+            return false
+        end
+        local function goLobby()
+            if clickFinal({"lobby","лобби","leave","exit","выход"}) then return true end
+            if K.fire("OnLeave") then return true end
+            if K.fire("Leave") then return true end
+            return false
+        end
+        local function goAgain()
+            if clickFinal({"again","снова","replay","retry","rematch"}) then return true end
+            if K.fire("PlayAgain") then return true end
+            return false
+        end
+        local function leave()
+            if not K.alive() then return end
+            K.S.playing=false
+            K.resetRecordState()
+            K.log("матч закончен — playMap очищен","event")
+            task.wait(4)
+            if K.S.playAgain and K.readName(K.FARM)=="" then
+                if goAgain() then return end
+            end
+            local tries=0
+            while K.alive() and tries<10 do if goLobby() then return end; tries+=1; task.wait(3) end
+        end
+        if final.Visible then task.spawn(leave) end
+        final:GetPropertyChangedSignal("Visible"):Connect(function() if final.Visible then task.spawn(leave) end end)
+    end)
+end
+
+function K.startMatchResetWatcher()
+    task.spawn(function()
+        local wasInMatch = K.inMatch()
+        while K.alive() do
+            local nowInMatch = K.inMatch()
+            if nowInMatch and not wasInMatch then
+                K.resetRecordState()
+                K.S.wave = K.curWave()
+                K.S.waveStart = os.clock()
+                K.log("новая игра — состояние сброшено","event")
+            end
+            wasInMatch = nowInMatch
+            task.wait(1)
+        end
+    end)
+end
+
+K.summonCache={["Summon 1"]=nil,["Summon 10"]=nil}
+function K.refreshSummonCache()
+    for _,text in ipairs({"Summon 1","Summon 10"}) do
+        local lbl=K.findLabelByText(text,true)
+        if lbl then K.summonCache[text]=K.getButtonFromLabel(lbl) end
+    end
+end
+function K.fireSummonCached(text)
+    local btn=K.summonCache[text]
+    if btn and btn.Parent then
+        if K.tryFireConnections(btn) then return true end
+        if K.simulateClick(btn) then return true end
+    end
+    K.refreshSummonCache(); btn=K.summonCache[text]
+    if btn and btn.Parent then
+        if K.tryFireConnections(btn) then return true end
+        if K.simulateClick(btn) then return true end
+    end
+    return false
+end
+function K.startSummonLoop()
+    task.spawn(function()
+        while K.alive() do
+            local on=K.S.summon1 or K.S.summon10
+            if on and K.inMatch() then
+                if K.S.summon1 then K.fireSummonCached("Summon 1") else K.fireSummonCached("Summon 10") end
+                local delay=math.max(5,tonumber(K.S.summonDelay) or 60); task.wait(delay)
+            else task.wait(1) end
+        end
+    end)
+end
+
+-- ═══ UI ═══
+K.gui=nil K.main=nil K.topbar=nil K.tabRow=nil K.kLogo=nil K.kLogoGrad=nil
+K.brandTitle=nil K.brandSub=nil K.statusBar=nil K.content=nil K.pageScroll=nil K.pageHolder=nil K.pageGroup=nil
+K.topLine=nil K.tabLine=nil K.statusLine=nil K.tabButtons={}
+K.recW=nil K.playW=nil K.delW=nil K.mapW=nil K.newW=nil K.farmW=nil
+K.speedW=nil K.skipW=nil K.againW=nil K.voteW=nil K.autoVoteW=nil
+K.nameBox=nil K.rows={} K.scroll=nil K.summon1Btn=nil K.summon10Btn=nil
+K.freePlacementBtn=nil K.optimizeBtns=nil K.mainScale=nil K.dot=nil K.closeBtn=nil
+K._populated=false
+K.freePlacement={active=false,saved={}}
+K.optimize={shadows=false,gray=false,fx=false,guiAnim=false,sShadows={},sGray={},sFx={}}
+
+K.BTN_H=32 K.TXT_SZ=13 K.SLIDER_H=42 K.TAB_H=32
+K.BTN_PAD=14 K.BTN_GAP=6 K.CORNER=10
+K.MAIN_W=K.IS_MOBILE and 400 or 470
+K.MAIN_H=K.IS_MOBILE and 480 or 560
+K.LOG_LINE_H=16 K.LOG_FONT=11
+
+function K.corner(p,r) local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,r or K.CORNER); c.Parent=p end
+
+function K.thin(p,col)
+    local s=Instance.new("UIStroke")
+    K.setProp(s,"Color",col or K.BASE.line)
+    K.setProp(s,"Thickness",1)
+    K.setProp(s,"ApplyStrokeMode",Enum.ApplyStrokeMode.Border)
+    s.Parent=p
+    K.outlineStrokes[s]=true
+    return s
+end
+
+function K.applyOutline()
+    local o=K.currentOutline()
+    for st in pairs(K.outlineStrokes) do
+        if typeof(st)=="Instance" and st.Parent then
+            local isCard=K.getAttr(st,"KoRi4Card")
+            if not isCard then
+                local p=st.Parent
+                local cat="panel"
+                if p:IsA("TextButton") or p:IsA("ImageButton") then
+                    cat="button"
+                    if K.getAttr(p,"KoRi4Tab") then cat="tab" end
+                end
+                local active=(cat=="panel" and K.HUD.olSections) or (cat=="button" and K.HUD.olButtons) or (cat=="tab" and K.HUD.olTabs)
+                K.setProp(st,"Enabled",active)
+                if not active then
+                    K.setProp(st,"Transparency",1)
+                else
+                    K.setProp(st,"Thickness",K.HUD.outlineThickness)
+                    if o.rainbow then
+                        K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                        K.setProp(st,"Color",Color3.new(1,1,1))
+                        local g=st:FindFirstChildOfClass("UIGradient")
+                        if not g then g=Instance.new("UIGradient"); g.Parent=st end
+                        K.setProp(g,"Color",K.RAINBOW_SEQ)
+                    elseif o.seq then
+                        K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                        K.setProp(st,"Color",Color3.new(1,1,1))
+                        local g=st:FindFirstChildOfClass("UIGradient")
+                        if not g then g=Instance.new("UIGradient"); g.Parent=st end
+                        K.setProp(g,"Color",o.seq)
+                    else
+                        local old=st:FindFirstChildOfClass("UIGradient"); if old then K.safeDestroy(old) end
+                        if o.none then
+                            K.setProp(st,"Transparency",0.22)
+                            K.setProp(st,"Color",K.BASE.line:Lerp(Color3.new(1,1,1),0.20))
+                        else
+                            K.setProp(st,"Transparency",K.HUD.outlineTransparency)
+                            K.setProp(st,"Color",o.c or K.BASE.line)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+function K.pressFx(button)
+    if K.optimize.guiAnim then return end
+    if not button or not button.Parent then return end
+    local ov=Instance.new("Frame")
+    ov.Size=UDim2.new(1,0,1,0); ov.BackgroundColor3=Color3.new(1,1,1)
+    ov.BackgroundTransparency=0.75; ov.BorderSizePixel=0; ov.ZIndex=10; ov.Parent=button
+    K.corner(ov,K.CORNER)
+    K.TweenService:Create(ov,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1}):Play()
+    local us=button:FindFirstChildOfClass("UIScale")
+    if not us then us=Instance.new("UIScale"); us.Parent=button end
+    K.TweenService:Create(us,TweenInfo.new(0.07,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=0.92}):Play()
+    task.delay(0.08,function()
+        if us and us.Parent then K.TweenService:Create(us,TweenInfo.new(0.32,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1}):Play() end
+    end)
+    task.delay(0.5,function() if ov then K.safeDestroy(ov) end end)
+end
+
+function K.makeButton(parent,text,color,fn,opts)
+    opts=opts or {}
+    local b=Instance.new("TextButton")
+    b.Size=opts.size or UDim2.new(1,0,0,K.BTN_H)
+    b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+    b.Font=K.FONT; b.Text=text
+    b.TextSize=K.TXT_SZ; b.TextColor3=color or K.BASE.text
+    b.TextXAlignment=opts.center and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left
+    b.AutoButtonColor=false
+    b.LayoutOrder=opts.order or K.nextOrder(); b.Parent=parent
+    K.corner(b,K.CORNER); K.thin(b)
+    if not opts.center then
+        local p=Instance.new("UIPadding",b); p.PaddingLeft=UDim.new(0,12); p.Parent=b
+    end
+    local w={obj=b,color=color or K.BASE.text,on=true,baseColor=color or K.BASE.text}
+    b.Activated:Connect(function() if not w.on then return end; K.pressFx(b); pcall(fn,b) end)
+    if opts.rmb then b.MouseButton2Click:Connect(function() if not w.on then return end; K.pressFx(b); pcall(fn,b) end) end
+    K.track(b.MouseEnter:Connect(function() if not w.on or K.optimize.guiAnim then return end
+        K.TweenService:Create(b,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.12)}):Play() end), b)
+    K.track(b.MouseLeave:Connect(function() if K.optimize.guiAnim then return end
+        if w.on then K.TweenService:Create(b,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel}):Play()
+        else K.TweenService:Create(b,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.DISABLED.bg}):Play() end end), b)
+    K.widgets[w]=true; return w
+end
+function K.setOn(w,on)
+    if not w or w.on==on then return end
+    w.on=on
+    local b=w.obj; b.Active=on; b.Selectable=on
+    if on then K.TweenService:Create(b,TweenInfo.new(0.15),{BackgroundColor3=K.BASE.panel,TextColor3=w.baseColor or w.color,TextTransparency=0}):Play()
+    else K.TweenService:Create(b,TweenInfo.new(0.15),{BackgroundColor3=K.DISABLED.bg,TextColor3=K.DISABLED.text,TextTransparency=0.15}):Play() end
+end
+
+function K.makeSlider(parent,label,minV,maxV,getFn,setFn,isInt,decimals)
+    local holder=Instance.new("Frame")
+    holder.Size=UDim2.new(1,0,0,K.SLIDER_H); holder.BackgroundColor3=K.BASE.panel
+    holder.BorderSizePixel=0; holder.Parent=parent
+    K.corner(holder,K.CORNER); K.thin(holder)
+    local pad=Instance.new("UIPadding",holder); pad.PaddingLeft=UDim.new(0,10); pad.PaddingRight=UDim.new(0,10); pad.PaddingTop=UDim.new(0,4); pad.PaddingBottom=UDim.new(0,4); pad.Parent=holder
+    local lbl=Instance.new("TextLabel")
+    lbl.Size=UDim2.new(0.6,0,0,14); lbl.Position=UDim2.fromOffset(0,0); lbl.BackgroundTransparency=1
+    lbl.Font=K.FONT; lbl.TextSize=K.TXT_SZ-1; lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Left
+    lbl.Text=label; lbl.Parent=holder
+    local valLbl=Instance.new("TextLabel")
+    valLbl.Size=UDim2.new(0.4,0,0,14); valLbl.Position=UDim2.new(0.6,0,0,0)
+    valLbl.BackgroundTransparency=1; valLbl.Font=K.FONT; valLbl.TextSize=K.TXT_SZ-1
+    valLbl.TextColor3=K.themeAccent(); valLbl.TextXAlignment=Enum.TextXAlignment.Right; valLbl.Parent=holder
+    local bar=Instance.new("Frame")
+    bar.Size=UDim2.new(1,0,0,6); bar.Position=UDim2.new(0,0,1,-8)
+    bar.BackgroundColor3=K.BASE.bg; bar.BorderSizePixel=0; bar.Parent=holder; K.corner(bar,3)
+    local fill=Instance.new("Frame")
+    fill.Size=UDim2.new(0,0,1,0); fill.BackgroundColor3=K.BASE.accent
+    fill.BorderSizePixel=0; fill.Parent=bar; K.corner(fill,3)
+    decimals=decimals or 1
+    local function refresh()
+        local v=getFn(); local t=(v-minV)/math.max(1e-6,(maxV-minV))
+        K.TweenService:Create(fill,TweenInfo.new(0.1),{Size=UDim2.new(t,0,1,0)}):Play()
+        if isInt then valLbl.Text=tostring(math.floor(v)) else valLbl.Text=string.format("%."..decimals.."f",v) end
+    end
+    refresh()
+    local dragging=false
+    local function setFromInput(ix)
+        local rel=math.clamp((ix-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1)
+        local v=minV+rel*(maxV-minV); if isInt then v=math.floor(v+0.5) end
+        setFn(v); refresh()
+    end
+    K.track(bar.InputBegan:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then dragging=true; setFromInput(input.Position.X) end end), holder)
+    K.track(K.UIS.InputChanged:Connect(function(input) if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then setFromInput(input.Position.X) end end), holder)
+    K.track(K.UIS.InputEnded:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then dragging=false; K.scheduleAutosave() end end), holder)
+    local ref={holder=holder,fill=fill,bar=bar,valLbl=valLbl,refresh=refresh}
+    K.sliders[ref]=true
+    return ref
+end
+
+function K.updateScale()
+    if not K.mainScale then return end
+    local cam=workspace.CurrentCamera; if not cam then return end
+    local vp=cam.ViewportSize
+    local fitScale=math.clamp(math.min(vp.X/(K.MAIN_W+10),vp.Y/(K.MAIN_H+10)),0.55,1.0)
+    K.TweenService:Create(K.mainScale,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=fitScale}):Play()
+end
+
+function K.clearPage()
+    if not K.pageHolder then return end
+    for _,ch in ipairs(K.pageHolder:GetChildren()) do
+        if not ch:IsA("UIListLayout") and not ch:IsA("UIPadding") then K.safeDestroy(ch) end
+    end
+    K.pruneDead()
+end
+
+function K.fillAutoFarm(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="СТРАТЕГИИ"; t.Parent=parent
+
+    local scroll=Instance.new("Frame")
+    scroll.Size=UDim2.new(1,0,0,110); scroll.BackgroundColor3=K.BASE.panel
+    scroll.BorderSizePixel=0; scroll.AutomaticSize=Enum.AutomaticSize.Y; scroll.LayoutOrder=2; scroll.Parent=parent
+    K.corner(scroll,K.CORNER); K.thin(scroll); K.scroll=scroll
+    local sl=Instance.new("UIListLayout"); sl.Padding=UDim.new(0,3); sl.SortOrder=Enum.SortOrder.LayoutOrder; sl.Parent=scroll
+    local sp=Instance.new("UIPadding"); sp.PaddingTop=UDim.new(0,6); sp.PaddingBottom=UDim.new(0,6); sp.PaddingLeft=UDim.new(0,6); sp.PaddingRight=UDim.new(0,6); sp.Parent=scroll
+
+    K.nameBox=Instance.new("TextBox")
+    K.nameBox.Size=UDim2.new(1,0,0,K.BTN_H); K.nameBox.BackgroundColor3=K.BASE.panel; K.nameBox.BorderSizePixel=0
+    K.nameBox.Font=K.FONT; K.nameBox.TextSize=K.TXT_SZ
+    K.nameBox.TextColor3=K.BASE.text; K.nameBox.PlaceholderText="имя для записи"
+    K.nameBox.PlaceholderColor3=K.BASE.dim; K.nameBox.Text=""
+    K.nameBox.TextXAlignment=Enum.TextXAlignment.Left; K.nameBox.ClearTextOnFocus=false
+    K.nameBox.LayoutOrder=3; K.nameBox.Parent=parent
+    K.corner(K.nameBox,K.CORNER); K.thin(K.nameBox)
+    local npad=Instance.new("UIPadding",K.nameBox); npad.PaddingLeft=UDim.new(0,12); npad.Parent=K.nameBox
+
+    K.recW=K.makeButton(parent,"🔴   Запись",Color3.fromRGB(255,120,140),function()
+        if not K.inMatch() then K.pushLog("только в матче","warn"); return end
+        if K.S.recording then
+            K.S.recording=false
+            local saved=K.saveMacro(K.nameBox.Text)
+            if saved then K.S.selected=saved; K.writeName(K.SELECTED,saved); K.nameBox.Text="" end
+            K.populate("autofarm")
+        else
+            if K.S.playing then K.S.playing=false end
+            K.resetRecordState()
+            K.S.actions={}; K.S.recording=true; K.S.waveStart=os.clock()
+            K.pushLog("🔴 пишу","ok")
+        end
+        K.refreshButtons()
+    end,{order=10})
+
+    K.playW=K.makeButton(parent,"▶   Играть",Color3.fromRGB(120,230,160),function()
+        if K.S.playing then K.S.playing=false; pcall(writefile,K.AUTOPLAY,""); K.pushLog("стоп","warn")
+        elseif K.inLobby() then
+            if not K.S.selected then K.pushLog("нет выбора","warn"); return end
+            K.S.launching=true
+            task.spawn(function()
+                local m=K.allMacros()[K.S.selected]
+                local ok,err=pcall(K.launchMap,m and m.map,K.S.selected)
+                if not ok then K.log("запуск: "..tostring(err)) end
+                K.S.launching=false; K.refreshButtons()
+            end)
+        else
+            if K.S.recording then K.S.recording=false end
+            if not K.S.selected then K.pushLog("нет выбора","warn"); return end
+            K.play(K.S.selected)
+        end
+        K.refreshButtons()
+    end,{order=11})
+
+    K.delW=K.makeButton(parent,"🗑   Удалить",Color3.fromRGB(220,130,130),function()
+        local all=K.allMacros()
+        if not K.S.selected or not all[K.S.selected] then return end
+        all[K.S.selected]=nil; pcall(writefile,K.FILE,K.HttpService:JSONEncode(all))
+        K.pushLog("удалена «"..K.S.selected.."»","warn")
+        K.S.selected=nil; K.writeName(K.SELECTED,"")
+        K.populate("autofarm")
+    end,{order=12})
+
+    K.voteW=K.makeButton(parent,"🗳   Голос: "..tostring(K.S.voteMode),K.themeAccent(),function()
+        local order={"Normal","Hard","Insane"}
+        local cur=K.S.voteMode or "Insane"; local idx=1
+        for i,v in ipairs(order) do if v==cur then idx=i; break end end
+        K.S.voteMode=order[(idx % #order)+1]
+        K.voteW.obj.Text="🗳   Голос: "..K.S.voteMode
+        K.pushLog("голос → "..K.S.voteMode,"event")
+        K.scheduleAutosave()
+    end,{order=13})
+
+    K.autoVoteW=K.makeButton(parent,"🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл"),K.BASE.ok,function()
+        K.S.autoVote=not K.S.autoVote
+        K.autoVoteW.obj.Text="🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл")
+        K.autoVoteW.color=K.S.autoVote and K.BASE.ok or K.BASE.dim
+        if K.autoVoteW.on then K.autoVoteW.obj.TextColor3=K.autoVoteW.color end
+        K.pushLog("авто-голос "..(K.S.autoVote and "вкл" or "выкл"),"info")
+        K.scheduleAutosave()
+    end,{order=14})
+
+    K.speedW=K.makeButton(parent,"⚡   Скорость: x1",K.BASE.orange,function()
+        local cur=K.currentSpeed(); local idx=1
+        for i,v in ipairs(K.SPEEDS) do if math.abs(v-cur)<0.01 then idx=i; break end end
+        local nextV=K.SPEEDS[(idx % #K.SPEEDS)+1]
+        K.setGameSpeed(nextV); K.pushLog("x"..tostring(nextV),"event"); K.refreshButtons()
+    end,{order=30})
+
+    K.skipW=K.makeButton(parent,"⏭   Автоскип",K.BASE.dim,function()
+        if K.toggleAutoSkip() then K.pushLog("автоскип ок","ok") else K.pushLog("не нажать","err") end
+        K.refreshButtons()
+    end,{order=32})
+
+    K.farmW=K.makeButton(parent,"♻   Бесконечный фарм",Color3.fromRGB(130,220,170),function()
+        if K.readName(K.FARM)~="" then K.writeName(K.FARM,""); K.pushLog("фарм выкл","warn")
+        else
+            if not K.S.selected or not K.allMacros()[K.S.selected] then K.pushLog("выбери","warn"); return end
+            K.writeName(K.FARM,K.S.selected); K.pushLog("фарм: "..K.S.selected,"ok")
+            if K.inLobby() and not K.S.playing and not K.S.launching then
+                local m=K.allMacros()[K.S.selected]; K.S.launching=true
+                task.spawn(function() pcall(K.launchMap,m and m.map,K.S.selected); K.S.launching=false; K.refreshButtons() end)
+            end
+        end
+        K.refreshButtons()
+    end,{order=33})
+
+    K.againW=K.makeButton(parent,"🔁   После матча: в лобби",K.BASE.dim,function()
+        K.S.playAgain=not K.S.playAgain
+        K.writeName(K.PLAYAGAIN,K.S.playAgain and "1" or "0")
+        K.pushLog(K.S.playAgain and "снова" or "в лобби","info"); K.refreshButtons()
+    end,{order=34})
+
+    K.mapW=K.makeButton(parent,"🗺   Карта: Штаб",K.themeAccent(),function()
+        local cur=K.mapW.obj.Text:match("Карта:%s*(.+)$") or K.MAPS[1].ru
+        local idx=1
+        for i,m in ipairs(K.MAPS) do if m.ru==cur then idx=i; break end end
+        idx=idx % #K.MAPS+1
+        K.mapW.obj.Text="🗺   Карта: "..K.MAPS[idx].ru
+    end,{order=35})
+
+    K.newW=K.makeButton(parent,"🚀   Новый матч один",Color3.fromRGB(140,180,255),function()
+        if K.S.playing or K.S.launching then return end
+        local cur=K.mapW.obj.Text:match("Карта:%s*(.+)$") or K.MAPS[1].ru
+        local mapId=K.MAPS[1].id
+        for _,m in ipairs(K.MAPS) do if m.ru==cur then mapId=m.id break end end
+        K.S.launching=true; K.refreshButtons()
+        task.spawn(function()
+            local ok,err=pcall(K.launchMap,mapId,nil)
+            if not ok then K.log("запуск: "..tostring(err)) end
+            K.S.launching=false; K.refreshButtons()
+        end)
+    end,{order=36})
+
+    for _,r in pairs(K.rows) do K.safeDestroy(r) end
+    K.rows={}
+    local all=K.allMacros(); local names={}
+    for k in pairs(all) do table.insert(names,k) end
+    table.sort(names)
+    for i,name in ipairs(names) do
+        local row=Instance.new("TextButton")
+        row.Size=UDim2.new(1,0,0,26); row.BackgroundColor3=K.BASE.panel; row.BorderSizePixel=0
+        row.Font=K.FONT; row.TextSize=11
+        row.TextColor3=K.BASE.dim; row.TextXAlignment=Enum.TextXAlignment.Left
+        row.Text="  · "..name; row.AutoButtonColor=false
+        row.LayoutOrder=i; row.Parent=scroll
+        K.corner(row,K.CORNER-2); K.thin(row)
+        row.Activated:Connect(function()
+            K.pressFx(row)
+            K.pushLog("выбрана: "..name,"event")
+            K.selectRow(name)
+        end)
+        if K.S.selected==name then row.BackgroundColor3=K.BASE.accent:Lerp(K.BASE.panel,0.5); row.TextColor3=K.BASE.text end
+        K.rows[name]=row
+    end
+    pcall(K.applyOutline)
+end
+
+function K.populate(tabId)
+    if not K.pageGroup then return end
+    local function fill()
+        K.clearPage()
+        if tabId=="autofarm" then K.fillAutoFarm(K.pageHolder)
+        elseif tabId=="helper" then K.fillHelper(K.pageHolder)
+        elseif tabId=="check" then K.fillCheck(K.pageHolder)
+        elseif tabId=="visuals" then K.fillVisuals(K.pageHolder)
+        elseif tabId=="config" then K.fillConfig(K.pageHolder)
+        elseif tabId=="hotkeys" then K.fillHotkeys(K.pageHolder)
+        elseif tabId=="themes" then K.fillThemes(K.pageHolder) end
+    end
+    if not K._populated then
+        K._populated=true; fill(); K.pageGroup.GroupTransparency=0; return
+    end
+    K.TweenService:Create(K.pageGroup,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()
+    task.delay(0.13,function()
+        if not K.alive() or not K.pageGroup then return end
+        fill()
+        K.pageGroup.GroupTransparency=1
+        K.TweenService:Create(K.pageGroup,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
+    end)
+end
+
+function K.selectRow(name)
+    K.S.selected=name
+    K.writeName(K.SELECTED,name)
+    for n,r in pairs(K.rows) do
+        if r and r.Parent and r:IsA("TextButton") then
+            local on=(n==name)
+            K.TweenService:Create(r,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=on and K.BASE.accent:Lerp(K.BASE.panel,0.5) or K.BASE.panel,
+                TextColor3=on and K.BASE.text or K.BASE.dim,
+            }):Play()
+        end
+    end
+end
+
+function K.buildUI()
+    local gui=Instance.new("ScreenGui")
+    gui.Name="KoRi4_UI_"..tostring(K.lp.UserId); gui.ResetOnSpawn=false
+    gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; gui.IgnoreGuiInset=true
+    pcall(function() gui.Parent=game:GetService("CoreGui") end)
+    if not gui.Parent then gui.Parent=K.lp:WaitForChild("PlayerGui") end
+    if K.ENV then K.ENV[K.MY_KEY_UI]=gui end
+    K.gui=gui
+
+    local main=Instance.new("Frame")
+    main.Size=UDim2.fromOffset(K.MAIN_W,K.MAIN_H)
+    main.AnchorPoint=Vector2.new(0.5,0.5); main.Position=UDim2.new(0.5,0,0.5,0)
+    main.BackgroundColor3=K.BASE.bg; main.BorderSizePixel=0
+    main.Active=true; main.ClipsDescendants=true; main.Parent=gui
+    K.corner(main,K.CORNER+6); K.thin(main); K.main=main
+    local mainScale=Instance.new("UIScale"); mainScale.Scale=0.5; mainScale.Parent=main; K.mainScale=mainScale
+    task.defer(function()
+        K.updateScale()
+        local cam=workspace.CurrentCamera
+        if cam then cam:GetPropertyChangedSignal("ViewportSize"):Connect(K.updateScale) end
+    end)
+
+    local topbar=Instance.new("Frame")
+    topbar.Size=UDim2.new(1,0,0,42); topbar.BackgroundColor3=K.BASE.topbar
+    topbar.BorderSizePixel=0; topbar.Parent=main; K.topbar=topbar
+    K.corner(topbar,K.CORNER+6)
+    local topLine=Instance.new("Frame")
+    topLine.Size=UDim2.new(1,0,0,1); topLine.Position=UDim2.new(0,0,1,-1)
+    topLine.BackgroundColor3=K.BASE.line; topLine.BorderSizePixel=0; topLine.Parent=topbar
+    K.topLine=topLine
+
+    local kLogo=Instance.new("TextButton")
+    kLogo.Size=UDim2.fromOffset(26,26); kLogo.Position=UDim2.fromOffset(14,8)
+    kLogo.BackgroundColor3=Color3.new(1,1,1); kLogo.BorderSizePixel=0
+    kLogo.Font=K.FONT; kLogo.TextSize=15
+    kLogo.TextColor3=Color3.new(1,1,1); kLogo.Text="K"
+    kLogo.AutoButtonColor=false; kLogo.ZIndex=100
+    kLogo.Parent=main; K.kLogo=kLogo
+    K.corner(kLogo,K.CORNER-2)
+    local kGrad=Instance.new("UIGradient")
+    kGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,K.currentTheme().c1),ColorSequenceKeypoint.new(1,K.currentTheme().c2)})
+    kGrad.Rotation=45; kGrad.Parent=kLogo; K.kLogoGrad=kGrad
+    local kTextStroke=Instance.new("UIStroke")
+    K.setProp(kTextStroke,"Thickness",1)
+    K.setProp(kTextStroke,"Color",Color3.fromRGB(0,0,0))
+    K.setProp(kTextStroke,"Transparency",0.55)
+    K.setProp(kTextStroke,"ApplyStrokeMode",Enum.ApplyStrokeMode.Contextual)
+    kTextStroke.Parent=kLogo
+
+    local brandTitle=Instance.new("TextLabel")
+    brandTitle.Size=UDim2.new(1,-120,0,16); brandTitle.Position=UDim2.fromOffset(48,6)
+    brandTitle.BackgroundTransparency=1; brandTitle.Font=K.FONT; brandTitle.TextSize=12
+    brandTitle.TextColor3=K.BASE.text; brandTitle.TextXAlignment=Enum.TextXAlignment.Left
+    brandTitle.Text="KoRi4 scripts"; brandTitle.Parent=topbar; K.brandTitle=brandTitle
+    local brandSub=Instance.new("TextLabel")
+    brandSub.Size=UDim2.new(1,-120,0,12); brandSub.Position=UDim2.fromOffset(48,22)
+    brandSub.BackgroundTransparency=1; brandSub.Font=K.FONT; brandSub.TextSize=10
+    brandSub.TextColor3=K.BASE.dim; brandSub.TextXAlignment=Enum.TextXAlignment.Left
+    brandSub.Text="Cameraman TD"; brandSub.Parent=topbar; K.brandSub=brandSub
+
+    local dot=Instance.new("Frame")
+    dot.Size=UDim2.fromOffset(8,8); dot.Position=UDim2.new(1,-52,0,17)
+    dot.BackgroundColor3=K.BASE.dim; dot.BorderSizePixel=0; dot.Parent=topbar; K.corner(dot,4)
+    K.dot=dot
+
+    local closeBtn=Instance.new("TextButton")
+    closeBtn.Size=UDim2.fromOffset(22,22); closeBtn.Position=UDim2.new(1,-32,0,10)
+    closeBtn.BackgroundColor3=K.BASE.panel; closeBtn.BorderSizePixel=0
+    closeBtn.Font=K.FONT; closeBtn.TextSize=14; closeBtn.TextColor3=Color3.fromRGB(230,120,140)
+    closeBtn.Text="×"; closeBtn.AutoButtonColor=false; closeBtn.Parent=topbar
+    K.corner(closeBtn,11); K.thin(closeBtn)
+    K.closeBtn=closeBtn
+    closeBtn.Activated:Connect(function()
+        K.pressFx(closeBtn)
+        pcall(function() K.saveNow() end)
+        task.delay(0.15,function() if gui then K.safeDestroy(gui) end end)
+    end)
+
+    local tabRow=Instance.new("Frame")
+    tabRow.Size=UDim2.new(1,0,0,42); tabRow.Position=UDim2.fromOffset(0,42)
+    tabRow.BackgroundTransparency=1; tabRow.Parent=main; K.tabRow=tabRow
+    local tabLine=Instance.new("Frame")
+    tabLine.Size=UDim2.new(1,0,0,1); tabLine.Position=UDim2.new(0,0,1,-1)
+    tabLine.BackgroundColor3=K.BASE.line; tabLine.BorderSizePixel=0; tabLine.Parent=tabRow
+    K.tabLine=tabLine
+
+    local tabScroll=Instance.new("ScrollingFrame")
+    tabScroll.Size=UDim2.new(1,0,1,0); tabScroll.Position=UDim2.fromOffset(0,0)
+    tabScroll.BackgroundTransparency=1; tabScroll.BorderSizePixel=0
+    tabScroll.ScrollBarThickness=0
+    tabScroll.CanvasSize=UDim2.new(0,0,0,0)
+    tabScroll.AutomaticCanvasSize=Enum.AutomaticSize.X
+    tabScroll.ScrollingDirection=Enum.ScrollingDirection.X
+    tabScroll.ScrollBarImageTransparency=1
+    tabScroll.Parent=tabRow
+    local tLay=Instance.new("UIListLayout",tabScroll)
+    tLay.FillDirection=Enum.FillDirection.Horizontal
+    tLay.SortOrder=Enum.SortOrder.LayoutOrder
+    tLay.Padding=UDim.new(0,4); tLay.VerticalAlignment=Enum.VerticalAlignment.Center
+    local tPad=Instance.new("UIPadding",tabScroll)
+    tPad.PaddingLeft=UDim.new(0,12); tPad.PaddingRight=UDim.new(0,12); tPad.Parent=tabScroll
+
+    local TABS={
+        {id="autofarm",label="AutoFarm",icon="⚔"},
+        {id="helper",label="Helper",icon="🛠"},
+        {id="check",label="Check",icon="🔎"},
+        {id="visuals",label="Visuals",icon="👁"},
+        {id="config",label="Config",icon="⚙"},
+        {id="hotkeys",label="Binds",icon="⌨"},
+        {id="themes",label="Themes",icon="🎨"},
+    }
+    for i,t in ipairs(TABS) do
+        local b=Instance.new("TextButton")
+        b.Size=UDim2.fromOffset(0,26); b.AutomaticSize=Enum.AutomaticSize.X
+        b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+        b.Font=K.FONT; b.TextSize=11
+        b.TextColor3=K.BASE.dim; b.TextXAlignment=Enum.TextXAlignment.Center
+        b.Text="  "..t.icon.."  "..t.label.."  "; b.AutoButtonColor=false
+        b.LayoutOrder=i; b.Parent=tabScroll; K.corner(b,13)
+        pcall(function() b:SetAttribute("KoRi4Tab",true) end)
+        K.thin(b)
+        b.MouseEnter:Connect(function()
+            if K.S.tab==t.id then return end
+            K.TweenService:Create(b,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.35),TextColor3=K.BASE.text}):Play()
+        end)
+        b.MouseLeave:Connect(function()
+            if K.S.tab==t.id then return end
+            K.TweenService:Create(b,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                BackgroundColor3=K.BASE.panel,TextColor3=K.BASE.dim}):Play()
+        end)
+        b.Activated:Connect(function()
+            K.pressFx(b); K.S.tab=t.id
+            local us=b:FindFirstChildOfClass("UIScale")
+            if not us then us=Instance.new("UIScale"); us.Parent=b end
+            K.TweenService:Create(us,TweenInfo.new(0.1,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.15}):Play()
+            task.delay(0.12,function()
+                if us and us.Parent then
+                    K.TweenService:Create(us,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Scale=1}):Play()
+                end
+            end)
+            for tid,tb in pairs(K.tabButtons) do
+                local on=(tid==t.id)
+                K.TweenService:Create(tb.obj,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                    BackgroundColor3=on and K.BASE.accent or K.BASE.panel,
+                    TextColor3=on and Color3.new(1,1,1) or K.BASE.dim}):Play()
+            end
+            K.populate(t.id)
+        end)
+        K.tabButtons[t.id]={obj=b,label=t.label,icon=t.icon}
+    end
+
+    local statusH=26
+    local content=Instance.new("Frame")
+    content.Size=UDim2.new(1,0,1,-42-42-statusH); content.Position=UDim2.fromOffset(0,84)
+    content.BackgroundTransparency=1; content.ClipsDescendants=true; content.Parent=main
+    K.content=content
+
+    local pageGroup=Instance.new("CanvasGroup")
+    pageGroup.Size=UDim2.new(1,0,1,0); pageGroup.BackgroundTransparency=1; pageGroup.Parent=content; K.pageGroup=pageGroup
+    local pageScroll=Instance.new("ScrollingFrame")
+    pageScroll.Size=UDim2.new(1,0,1,0); pageScroll.BackgroundTransparency=1; pageScroll.BorderSizePixel=0
+    pageScroll.ScrollBarThickness=4; pageScroll.ScrollBarImageColor3=K.BASE.line
+    pageScroll.CanvasSize=UDim2.new(0,0,0,0); pageScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    pageScroll.ScrollingDirection=Enum.ScrollingDirection.Y; pageScroll.Parent=pageGroup; K.pageScroll=pageScroll
+    local pageHolder=Instance.new("Frame")
+    pageHolder.Size=UDim2.new(1,0,0,0); pageHolder.AutomaticSize=Enum.AutomaticSize.Y
+    pageHolder.BackgroundTransparency=1; pageHolder.Parent=pageScroll; K.pageHolder=pageHolder
+    local pl=Instance.new("UIListLayout",pageHolder); pl.Padding=UDim.new(0,K.BTN_GAP); pl.SortOrder=Enum.SortOrder.LayoutOrder
+    local pp=Instance.new("UIPadding",pageHolder)
+    pp.PaddingLeft=UDim.new(0,K.BTN_PAD); pp.PaddingRight=UDim.new(0,K.BTN_PAD)
+    pp.PaddingTop=UDim.new(0,K.BTN_PAD); pp.PaddingBottom=UDim.new(0,K.BTN_PAD)
+
+    local statusBar=Instance.new("Frame")
+    statusBar.Size=UDim2.new(1,0,0,statusH); statusBar.Position=UDim2.new(0,0,1,-statusH)
+    statusBar.BackgroundColor3=K.BASE.topbar; statusBar.BorderSizePixel=0; statusBar.Parent=main; K.statusBar=statusBar
+    K.corner(statusBar,K.CORNER+6)
+    local statusLine=Instance.new("Frame")
+    statusLine.Size=UDim2.new(1,0,0,1); statusLine.BackgroundColor3=K.BASE.line
+    statusLine.BorderSizePixel=0; statusLine.Parent=statusBar; K.statusLine=statusLine
+    local statusLbl=Instance.new("TextLabel")
+    statusLbl.Size=UDim2.new(1,-20,1,0); statusLbl.Position=UDim2.fromOffset(12,0)
+    statusLbl.BackgroundTransparency=1; statusLbl.Font=K.FONT; statusLbl.TextSize=10
+    statusLbl.TextColor3=K.BASE.dim; statusLbl.TextXAlignment=Enum.TextXAlignment.Left
+    statusLbl.Text="готов"; statusLbl.Parent=statusBar; K.statusLabel=statusLbl
+
+    local function attachDrag(handle)
+        local dragging=false; local dragStart,startPos,moved
+        handle.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=true; moved=false; dragStart=input.Position; startPos=main.Position
+            end
+        end)
+        K.UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+                local d=input.Position-dragStart
+                if math.abs(d.X)>4 or math.abs(d.Y)>4 then moved=true end
+                if moved then main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y) end
+            end
+        end)
+        K.UIS.InputEnded:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=false
+            end
+        end)
+    end
+    attachDrag(topbar)
+    attachDrag(statusBar)
+
+    do
+        local dragging=false; local dragStart,startPos,moved
+        kLogo.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                dragging=true; moved=false; dragStart=input.Position; startPos=main.Position
+            end
+        end)
+        K.UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+                local d=input.Position-dragStart
+                if math.abs(d.X)>4 or math.abs(d.Y)>4 then moved=true end
+                if moved then main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y) end
+            end
+        end)
+        K.UIS.InputEnded:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+                if dragging and not moved then if K.toggleCollapse then K.toggleCollapse() end end
+                dragging=false
+            end
+        end)
+    end
+
+    task.spawn(function()
+        while K.alive() and statusLbl.Parent do
+            local reason
+            if K.S.recording then reason=("REC · %d act"):format(#K.S.actions)
+            elseif K.S.playing then reason="PLAY"
+            elseif K.S.launching then reason="LAUNCH"
+            elseif K.inLobby() then reason="lobby · "..K.MY_NICK
+            elseif K.inMatch() then reason="match"
+            else reason=K.MY_NICK end
+            local c = K.S.recording and K.BASE.red or K.S.playing and K.BASE.ok or K.S.launching and K.BASE.orange or K.BASE.dim
+            dot.BackgroundColor3=c
+            statusLbl.Text=("● %s   ·   волна %d   ·   $%d   ·   %s"):format(reason,K.S.wave,K.money(),K.S.status or "")
+            task.wait(0.3)
+        end
+    end)
+end
+
+function K.toggleCollapse()
+    if not K.main or not K.kLogo then return end
+    local th=K.currentTheme()
+    if not K.S.collapsed then
+        K.S.collapsed=true
+        for a in pairs(K.accordions) do if type(a)=="table" and a.closeInstantly then pcall(a.closeInstantly) end end
+        if K.pageGroup then
+            K.TweenService:Create(K.pageGroup,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1}):Play()
+        end
+        task.delay(0.15,function()
+            for _,o in ipairs({K.tabRow,K.content,K.statusBar,K.brandTitle,K.brandSub,K.dot,K.closeBtn,K.topLine,K.tabLine,K.statusLine}) do
+                if o then o.Visible=false end
+            end
+        end)
+        K.TweenService:Create(K.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(62,54),BackgroundColor3=th.c1}):Play()
+        if K.topbar then K.TweenService:Create(K.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=th.c1}):Play() end
+        K.TweenService:Create(K.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(6,7),Size=UDim2.fromOffset(50,40),TextSize=24}):Play()
+        if K.kLogoGrad then K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,th.c1),ColorSequenceKeypoint.new(1,th.c2)}) end
+    else
+        K.S.collapsed=false
+        K.TweenService:Create(K.main,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(K.MAIN_W,K.MAIN_H),BackgroundColor3=K.BASE.bg}):Play()
+        if K.topbar then K.TweenService:Create(K.topbar,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundColor3=K.BASE.topbar}):Play() end
+        K.TweenService:Create(K.kLogo,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.fromOffset(14,8),Size=UDim2.fromOffset(26,26),TextSize=15}):Play()
+        if K.kLogoGrad then K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,th.c1),ColorSequenceKeypoint.new(1,th.c2)}) end
+        task.delay(0.12,function()
+            for _,o in ipairs({K.tabRow,K.content,K.statusBar,K.brandTitle,K.brandSub,K.dot,K.closeBtn,K.topLine,K.tabLine,K.statusLine}) do
+                if o then o.Visible=true end
+            end
+            if K.pageGroup then
+                K.pageGroup.GroupTransparency=1
+                K.TweenService:Create(K.pageGroup,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
+            end
+        end)
+    end
+end
+
+function K.toggleFreePlacement()
+    if K.freePlacement.active then
+        for part,s in pairs(K.freePlacement.saved) do
+            if part and not part.Parent then
+                pcall(function() part.Parent=s.parent; part.CFrame=s.cf; part.CanQuery=s.cq; part.CanCollide=s.cc; part.CanTouch=s.ct end)
+            end
+        end
+        K.freePlacement.saved={}; K.freePlacement.active=false
+        K.pushLog("🚧 размещение ВЫКЛ","info"); return false
+    end
+    local g=K.gameFolder(); if not g then K.pushLog("Game нет","err"); return false end
+    local paths=g:FindFirstChild("Paths"); if not paths then K.pushLog("Paths нет","err"); return false end
+    local saved,n={},0
+    for _,part in ipairs(paths:GetDescendants()) do
+        if part:IsA("BasePart") then
+            saved[part]={parent=part.Parent,cf=part.CFrame,cq=part.CanQuery,cc=part.CanCollide,ct=part.CanTouch}
+            pcall(function() part.CanQuery=false; part.CanCollide=false; part.CanTouch=false; part.Parent=nil end)
+            n=n+1
+        end
+    end
+    K.freePlacement.saved=saved; K.freePlacement.active=true
+    K.pushLog(("🚧 удалено путей: %d"):format(n),"ok"); return true
+end
+function K.optSetShadows(on)
+    if on==K.optimize.shadows then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then K.optimize.sShadows[obj]={CastShadow=obj.CastShadow}; pcall(function() obj.CastShadow=false end)
+            elseif obj:IsA("PointLight") or obj:IsA("SpotLight") or obj:IsA("SurfaceLight") then K.optimize.sShadows[obj]={Shadows=obj.Shadows}; pcall(function() obj.Shadows=false end) end
+        end
+        K.optimize.sShadows[K.Lighting]={GlobalShadows=K.Lighting.GlobalShadows}
+        pcall(function() K.Lighting.GlobalShadows=false end); K.optimize.shadows=true
+    else
+        for obj,s in pairs(K.optimize.sShadows) do if obj and (obj.Parent or obj==K.Lighting) then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sShadows={}; K.optimize.shadows=false
+    end
+    return K.optimize.shadows
+end
+function K.optSetGray(on)
+    if on==K.optimize.gray then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                K.optimize.sGray[obj]={Material=obj.Material,Color=obj.Color,Reflectance=obj.Reflectance}
+                pcall(function() obj.Material=Enum.Material.SmoothPlastic; obj.Color=Color3.fromRGB(120,120,120); obj.Reflectance=0 end)
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then K.optimize.sGray[obj]={Transparency=obj.Transparency}; pcall(function() obj.Transparency=1 end) end
+        end
+        K.optimize.gray=true
+    else
+        for obj,s in pairs(K.optimize.sGray) do if obj and obj.Parent then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sGray={}; K.optimize.gray=false
+    end
+    return K.optimize.gray
+end
+function K.optSetFx(on)
+    if on==K.optimize.fx then return on end
+    if on then
+        for _,obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Sparkles") or obj:IsA("Smoke") or obj:IsA("Beam") or obj:IsA("Trail") then
+                K.optimize.sFx[obj]={Enabled=obj.Enabled}; pcall(function() obj.Enabled=false end)
+            elseif obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") then
+                K.optimize.sFx[obj]={Enabled=obj.Enabled}; pcall(function() obj.Enabled=false end)
+            end
+        end
+        for _,eff in ipairs(K.Lighting:GetChildren()) do
+            if eff:IsA("PostEffect") then K.optimize.sFx[eff]={Enabled=eff.Enabled}; pcall(function() eff.Enabled=false end)
+            elseif eff:IsA("Atmosphere") then K.optimize.sFx[eff]={Density=eff.Density,Haze=eff.Haze}; pcall(function() eff.Density=0; eff.Haze=0 end) end
+        end
+        K.optimize.fx=true
+    else
+        for obj,s in pairs(K.optimize.sFx) do if obj and (obj.Parent or obj==K.Lighting) then pcall(function() for k,v in pairs(s) do obj[k]=v end end) end end
+        K.optimize.sFx={}; K.optimize.fx=false
+    end
+    return K.optimize.fx
+end
+function K.optSetGuiAnim(on)
+    K.optimize.guiAnim=on and true or false
+    pcall(function()
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat,not on)
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList,not on)
+        K.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack,not on)
+    end)
+    return K.optimize.guiAnim
+end
+
+function K.makeCheckRow(parent,label,getFn,setFn,order)
+    local b=Instance.new("TextButton")
+    b.Size=UDim2.new(1,0,0,28); b.BackgroundColor3=K.BASE.panel; b.BorderSizePixel=0
+    b.Font=K.FONT; b.TextSize=11; b.TextColor3=K.BASE.text
+    b.TextXAlignment=Enum.TextXAlignment.Left; b.Text=""
+    b.AutoButtonColor=false; b.LayoutOrder=order or 1; b.Parent=parent
+    K.corner(b,K.CORNER); K.thin(b)
+    local chk=Instance.new("Frame")
+    chk.Size=UDim2.fromOffset(14,14); chk.Position=UDim2.fromOffset(10,7)
+    chk.BackgroundColor3=K.BASE.bg; chk.BorderSizePixel=0; chk.Parent=b
+    K.corner(chk,3); K.thin(chk)
+    local mark=Instance.new("Frame")
+    mark.Size=UDim2.new(1,-6,1,-6); mark.Position=UDim2.fromOffset(3,3)
+    mark.BackgroundColor3=K.BASE.accent; mark.BorderSizePixel=0; mark.Parent=chk
+    K.corner(mark,2)
+    mark.Visible=getFn() and true or false
+    local lbl=Instance.new("TextLabel")
+    lbl.Size=UDim2.new(1,-40,1,0); lbl.Position=UDim2.fromOffset(32,0)
+    lbl.BackgroundTransparency=1; lbl.Font=K.FONT; lbl.TextSize=11
+    lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Left; lbl.Parent=b
+    lbl.Text=label
+    b.Activated:Connect(function()
+        K.pressFx(b)
+        local v=not getFn(); setFn(v)
+        mark.Visible=v
+        K.applyOutline(); K.scheduleAutosave()
+    end)
+    return b
+end
+
+function K.fillHelper(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ХЕЛПЕР"; t.Parent=parent
+
+    local sec1=Instance.new("TextLabel")
+    sec1.Size=UDim2.new(1,0,0,16); sec1.BackgroundTransparency=1; sec1.LayoutOrder=2
+    sec1.Font=K.FONT; sec1.TextSize=10; sec1.TextColor3=K.BASE.dim; sec1.TextXAlignment=Enum.TextXAlignment.Left
+    sec1.Text="РАЗМЕЩЕНИЕ"; sec1.Parent=parent
+
+    K.freePlacementBtn=K.makeButton(parent,"🚧   Удалить пути",K.BASE.orange,function()
+        local on=K.toggleFreePlacement()
+        if on then K.freePlacementBtn.obj.Text="↩   Вернуть пути"; K.freePlacementBtn.color=Color3.fromRGB(130,220,160)
+        else K.freePlacementBtn.obj.Text="🚧   Удалить пути"; K.freePlacementBtn.color=K.BASE.orange end
+        if K.freePlacementBtn.on then K.freePlacementBtn.obj.TextColor3=K.freePlacementBtn.color end
+    end,{order=3})
+
+    local sec2=Instance.new("TextLabel")
+    sec2.Size=UDim2.new(1,0,0,16); sec2.BackgroundTransparency=1; sec2.LayoutOrder=4
+    sec2.Font=K.FONT; sec2.TextSize=10; sec2.TextColor3=K.BASE.dim; sec2.TextXAlignment=Enum.TextXAlignment.Left
+    sec2.Text="ОПТИМИЗАЦИЯ"; sec2.Parent=parent
+
+    local optBox=Instance.new("Frame")
+    optBox.Size=UDim2.new(1,0,0,28*4+K.BTN_GAP*3+12); optBox.BackgroundColor3=K.BASE.bg
+    optBox.BorderSizePixel=0; optBox.LayoutOrder=5; optBox.Parent=parent
+    K.corner(optBox,K.CORNER); K.thin(optBox)
+    local obLay=Instance.new("UIListLayout",optBox); obLay.Padding=UDim.new(0,K.BTN_GAP); obLay.SortOrder=Enum.SortOrder.LayoutOrder
+    local obPad=Instance.new("UIPadding",optBox); obPad.PaddingTop=UDim.new(0,6); obPad.PaddingBottom=UDim.new(0,6)
+    obPad.PaddingLeft=UDim.new(0,6); obPad.PaddingRight=UDim.new(0,6); obPad.Parent=optBox
+
+    K.optimizeBtns={}
+    K.optimizeBtns.shadows=K.makeCheckRow(optBox,"тени",function() return K.optimize.shadows end,function(v) return K.optSetShadows(v) end,1)
+    K.optimizeBtns.gray   =K.makeCheckRow(optBox,"серые материалы",function() return K.optimize.gray end,function(v) return K.optSetGray(v) end,2)
+    K.optimizeBtns.fx     =K.makeCheckRow(optBox,"эффекты (партиклы, глоу)",function() return K.optimize.fx end,function(v) return K.optSetFx(v) end,3)
+    K.optimizeBtns.guiAnim=K.makeCheckRow(optBox,"анимации интерфейса",function() return K.optimize.guiAnim end,function(v) return K.optSetGuiAnim(v) end,4)
+
+    local sec3=Instance.new("TextLabel")
+    sec3.Size=UDim2.new(1,0,0,16); sec3.BackgroundTransparency=1; sec3.LayoutOrder=10
+    sec3.Font=K.FONT; sec3.TextSize=10; sec3.TextColor3=K.BASE.dim; sec3.TextXAlignment=Enum.TextXAlignment.Left
+    sec3.Text="SUMMON"; sec3.Parent=parent
+
+    K.summon1Btn=K.makeButton(parent,"🎰   Summon ×1",Color3.fromRGB(120,200,255),function()
+        K.S.summon1=not K.S.summon1; if K.S.summon1 then K.S.summon10=false end
+        K.refreshSummonCache(); K.refreshSummonUI()
+    end,{order=11})
+    K.summon10Btn=K.makeButton(parent,"🎰   Summon ×10",Color3.fromRGB(255,180,120),function()
+        K.S.summon10=not K.S.summon10; if K.S.summon10 then K.S.summon1=false end
+        K.refreshSummonCache(); K.refreshSummonUI()
+    end,{order=12})
+    local sl=K.makeSlider(parent,"задержка, сек",5,600,function() return K.S.summonDelay end,function(v) K.S.summonDelay=v end,true)
+    sl.holder.LayoutOrder=13
+end
+
+K.refreshSummonUI=function()
+    if K.summon1Btn and K.summon1Btn.obj.Parent then
+        K.summon1Btn.obj.Text=(K.S.summon1 and "●   " or "○   ").."Summon ×1"
+        K.summon1Btn.color=K.S.summon1 and Color3.fromRGB(130,230,160) or Color3.fromRGB(120,200,255)
+        if K.summon1Btn.on then K.summon1Btn.obj.TextColor3=K.summon1Btn.color end
+    end
+    if K.summon10Btn and K.summon10Btn.obj.Parent then
+        K.summon10Btn.obj.Text=(K.S.summon10 and "●   " or "○   ").."Summon ×10"
+        K.summon10Btn.color=K.S.summon10 and Color3.fromRGB(130,230,160) or Color3.fromRGB(255,180,120)
+        if K.summon10Btn.on then K.summon10Btn.obj.TextColor3=K.summon10Btn.color end
+    end
+end
+
+function K.scanScreen()
+    K.pushLog("📺 скан экрана...","event")
+    local pg=K.lp:FindFirstChildOfClass("PlayerGui"); if not pg then return end
+    local n=0
+    local function vis(o)
+        local c=o
+        for _=1,15 do if not c then return false end; if c:IsA("PlayerGui") then return true end
+            local ok,v=pcall(function() return c.Visible end); if ok and v==false then return false end; c=c.Parent end
+        return true
+    end
+    local function walk(o)
+        if not vis(o) then return end
+        local isT=false
+        pcall(function() if (o:IsA("TextButton") or o:IsA("TextLabel") or o:IsA("TextBox")) and o.Text~="" then isT=true end end)
+        if isT then n=n+1; print(("[%03d] %s \"%s\""):format(n,o.ClassName,tostring(o.Text))) end
+        for _,c in ipairs(o:GetChildren()) do walk(c) end
+    end
+    walk(pg); K.pushLog(("✅ экран: %d"):format(n),"ok")
+end
+function K.scanGame()
+    K.pushLog("🗂 скан игры...","event")
+    local function L(p,lim,tag)
+        if not p then return end
+        local n=0
+        for _,c in ipairs(p:GetChildren()) do n=n+1; if n>lim then break end; print(("[%s] %s (%s)"):format(tag,c.ClassName,c.Name)) end
+    end
+    L(workspace,80,"ws"); L(K.RS,80,"RS")
+    local ml=K.RS:FindFirstChild("ModuleLoader")
+    if ml then
+        local sh=ml:FindFirstChild("Shared"); local nw=sh and sh:FindFirstChild("Network")
+        if nw then
+            local re=nw:FindFirstChild("RemoteEvent"); local rf=nw:FindFirstChild("RemoteFunction")
+            if re then print(("RE %d"):format(#re:GetChildren())); L(re,300,"RE") end
+            if rf then print(("RF %d"):format(#rf:GetChildren())); L(rf,300,"RF") end
+        end
+    end
+    K.pushLog("✅ игра готов","ok")
+end
+function K.scanCursor()
+    K.pushLog("🖱 3 сек","event")
+    task.spawn(function()
+        local cam=workspace.CurrentCamera; local t0=os.clock(); local last=nil
+        while K.alive() and os.clock()-t0<3 do
+            local mp=K.UIS:GetMouseLocation()
+            local params=RaycastParams.new(); params.FilterType=Enum.RaycastFilterType.Exclude
+            local ex={}; if K.lp.Character then table.insert(ex,K.lp.Character) end; if K.gui then table.insert(ex,K.gui) end
+            params.FilterDescendantsInstances=ex
+            local ray=cam:ViewportPointToRay(mp.X,mp.Y,0)
+            local res=workspace:Raycast(ray.Origin,ray.Direction*500,params)
+            if res and res.Instance and res.Instance~=last then last=res.Instance; print(("🎯 %s | %s"):format(res.Instance.Name,res.Instance:GetFullName())) end
+            task.wait(0.15)
+        end
+        K.pushLog("✅ курсор готов","ok")
+    end)
+end
+
+function K.fillCheck(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ДИАГНОСТИКА"; t.Parent=parent
+    K.makeButton(parent,"📺   Скан экрана",Color3.fromRGB(120,200,255),function() K.scanScreen() end,{order=9})
+    K.makeButton(parent,"🗂   Скан игры",Color3.fromRGB(160,180,255),function() K.scanGame() end,{order=10})
+    K.makeButton(parent,"🖱   Под курсором (3 сек)",Color3.fromRGB(120,230,160),function() K.scanCursor() end,{order=11})
+    K.makeButton(parent,"ℹ   Инфо о матче",Color3.fromRGB(180,180,220),function()
+        K.pushLog(("матч=%s волна=%d"):format(tostring(K.inMatch()),K.curWave()),"event")
+    end,{order=12})
+
+    local t2=Instance.new("TextLabel")
+    t2.Size=UDim2.new(1,0,0,16); t2.BackgroundTransparency=1; t2.LayoutOrder=20
+    t2.Font=K.FONT; t2.TextSize=10; t2.TextColor3=K.BASE.dim; t2.TextXAlignment=Enum.TextXAlignment.Left
+    t2.Text="ЛОГИ"; t2.Parent=parent
+
+    local logsBox=Instance.new("Frame")
+    logsBox.Size=UDim2.new(1,0,0,160); logsBox.BackgroundColor3=K.BASE.bg
+    logsBox.BorderSizePixel=0; logsBox.LayoutOrder=21; logsBox.Parent=parent
+    K.corner(logsBox,K.CORNER); K.thin(logsBox)
+    local logsScroll=Instance.new("ScrollingFrame")
+    logsScroll.Size=UDim2.new(1,-8,1,-8); logsScroll.Position=UDim2.fromOffset(4,4)
+    logsScroll.BackgroundTransparency=1; logsScroll.BorderSizePixel=0
+    logsScroll.ScrollBarThickness=3; logsScroll.ScrollBarImageColor3=K.BASE.line
+    logsScroll.CanvasSize=UDim2.new(); logsScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    logsScroll.ScrollingDirection=Enum.ScrollingDirection.Y; logsScroll.Parent=logsBox
+    local logsInner=Instance.new("Frame")
+    logsInner.Size=UDim2.new(1,0,0,0); logsInner.AutomaticSize=Enum.AutomaticSize.Y
+    logsInner.BackgroundTransparency=1; logsInner.Parent=logsScroll; K.logsInner=logsInner; K.logsScroll=logsScroll
+    local ll=Instance.new("UIListLayout",logsInner); ll.Padding=UDim.new(0,1); ll.SortOrder=Enum.SortOrder.LayoutOrder
+end
+
+K.fxButtons={}
+function K.fillVisuals(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ЭФФЕКТЫ   ·   ЛКМ — вкл/выкл, ПКМ — раскрыть"; t.Parent=parent
+    K.fxButtons={}
+    local fields={
+        orbit={{k="radius",label="радиус",min=1,max=20,int=true},{k="count",label="кол-во",min=1,max=60,int=true},{k="speed",label="скорость",min=0,max=5},{k="size",label="размер",min=0.2,max=2}},
+        lighting={{k="bloomIntensity",label="bloom сила",min=0,max=3},{k="bloomSize",label="bloom размер",min=0,max=56,int=true},{k="bloomThreshold",label="bloom порог",min=0,max=2},{k="contrast",label="контраст",min=-1,max=1},{k="saturation",label="насыщенность",min=-1,max=1}},
+        distort={{k="blur",label="размытие",min=0,max=24,int=true},{k="contrast",label="контраст",min=-1,max=1},{k="bright",label="яркость",min=-0.5,max=0.5}},
+        hue={{k="speed",label="скорость",min=0,max=5},{k="saturation",label="насыщ.",min=0,max=1},{k="brightness",label="яркость",min=-0.5,max=0.5}},
+        trail={{k="lifetime",label="длина",min=0.2,max=3},{k="width",label="ширина",min=0,max=3},{k="bright",label="свечение",min=0,max=2}},
+        pulse={{k="range",label="радиус",min=1,max=40,int=true},{k="bright",label="яркость",min=0,max=10},{k="speed",label="скорость",min=0,max=6}},
+    }
+    local LBL={orbit="Орбита",lighting="Пост-эффекты",distort="Искажение",hue="Перелив",trail="Трейл",pulse="Пульсация"}
+    local function refresh(kind)
+        local w=K.fxButtons[kind]; if not w then return end
+        local on=K.VFX[kind].on
+        w.obj.Text=(on and "●   " or "○   ")..(w.label or kind)
+        w.color=on and Color3.fromRGB(140,240,160) or K.BASE.text
+        w.obj.TextColor3=w.color
+    end
+    local idx=0
+    for _,kind in ipairs({"orbit","lighting","distort","hue","trail","pulse"}) do
+        idx=idx+1
+        local btnH=K.BTN_H
+        local fullH=#fields[kind]*(K.SLIDER_H+K.BTN_GAP) + 4
+        local wrap=Instance.new("Frame")
+        wrap.Size=UDim2.new(1,0,0,btnH+2); wrap.BackgroundTransparency=1
+        wrap.LayoutOrder=10+idx; wrap.ClipsDescendants=true; wrap.Parent=parent
+        local container=Instance.new("Frame")
+        container.Size=UDim2.new(1,0,0,0); container.Position=UDim2.new(0,0,0,btnH+2)
+        container.BackgroundColor3=K.BASE.bg; container.BorderSizePixel=0; container.ClipsDescendants=true
+        container.Visible=false; container.Parent=wrap
+        K.corner(container,K.CORNER); K.thin(container)
+        local inner=Instance.new("Frame")
+        inner.Size=UDim2.new(1,-K.BTN_PAD,0,0); inner.Position=UDim2.fromOffset(K.BTN_PAD/2,K.BTN_PAD/2)
+        inner.AutomaticSize=Enum.AutomaticSize.Y; inner.BackgroundTransparency=1; inner.Parent=container
+        local il=Instance.new("UIListLayout",inner); il.Padding=UDim.new(0,K.BTN_GAP); il.SortOrder=Enum.SortOrder.LayoutOrder
+        local header=Instance.new("TextButton")
+        header.Size=UDim2.new(1,0,0,btnH); header.BackgroundColor3=K.BASE.panel
+        header.BorderSizePixel=0; header.Font=K.FONT
+        header.TextSize=K.TXT_SZ; header.TextColor3=K.BASE.text
+        header.Text="○   "..LBL[kind]; header.TextXAlignment=Enum.TextXAlignment.Left
+        header.AutoButtonColor=false; header.Parent=wrap
+        K.corner(header,K.CORNER); K.thin(header)
+        local pad=Instance.new("UIPadding",header); pad.PaddingLeft=UDim.new(0,12); pad.PaddingRight=UDim.new(0,24); pad.Parent=header
+        local arrow=Instance.new("TextLabel")
+        arrow.Size=UDim2.fromOffset(20,btnH); arrow.Position=UDim2.new(1,-24,0,0)
+        arrow.BackgroundTransparency=1; arrow.Text="▼"; arrow.Font=K.FONT
+        arrow.TextSize=K.TXT_SZ-2; arrow.TextColor3=K.BASE.dim; arrow.Parent=wrap
+        local acc={wrap=wrap,header=header,arrow=arrow,container=container,inner=inner,fullH=fullH,open=false}
+        K.accordions[acc]=true
+        local function toggleOpen()
+            acc.open=not acc.open; if acc.open then container.Visible=true end
+            local targetH=acc.open and fullH or 0; local wrapH=acc.open and (btnH+2+fullH) or (btnH+2)
+            K.TweenService:Create(container,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,targetH)}):Play()
+            K.TweenService:Create(wrap,TweenInfo.new(0.35,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,wrapH)}):Play()
+            arrow.Text=acc.open and "▲" or "▼"
+            arrow.TextColor3=acc.open and K.themeAccent() or K.BASE.dim
+            task.delay(0.4,function() if not acc.open then container.Visible=false end end)
+        end
+        acc.toggle=toggleOpen
+        function acc.closeInstantly()
+            acc.open=false; container.Visible=false; container.Size=UDim2.new(1,0,0,0); wrap.Size=UDim2.new(1,0,0,btnH+2)
+            arrow.Text="▼"; arrow.TextColor3=K.BASE.dim
+        end
+        local function toggleFx()
+            local fx=K.VFX[kind]; fx.on=not fx.on
+            if kind=="orbit" then K.ensureOrbit(); K.applyOrbit() end
+            if kind=="lighting" then K.applyLighting() end
+            if kind=="distort" then K.applyDistort() end
+            if kind=="hue" then K.applyHue() end
+            if kind=="trail" then K.ensureTrail(); K.applyTrail() end
+            if kind=="pulse" then K.ensurePulse(); K.applyPulse() end
+            refresh(kind); K.scheduleAutosave()
+        end
+        header.Activated:Connect(function() K.pressFx(header); toggleFx() end)
+        header.MouseButton2Click:Connect(function() toggleOpen() end)
+        K.track(header.MouseEnter:Connect(function()
+            K.TweenService:Create(header,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel:Lerp(K.BASE.accent,0.12)}):Play() end), header)
+        K.track(header.MouseLeave:Connect(function()
+            K.TweenService:Create(header,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{BackgroundColor3=K.BASE.panel}):Play() end), header)
+        K.fxButtons[kind]={obj=header,color=K.BASE.text,on=true,label=LBL[kind],acc=acc}
+        for i,f in ipairs(fields[kind]) do
+            local sl=K.makeSlider(inner,f.label,f.min,f.max,
+                function() return tonumber(K.VFX[kind].settings[f.k]) or f.min end,
+                function(v)
+                    K.VFX[kind].settings[f.k]=v
+                    if kind=="orbit" then K.applyOrbit() end
+                    if kind=="lighting" then K.applyLighting() end
+                    if kind=="distort" then K.applyDistort() end
+                    if kind=="hue" then K.applyHue() end
+                    if kind=="trail" then K.applyTrail() end
+                    if kind=="pulse" then K.applyPulse() end
+                    K.scheduleAutosave()
+                end,f.int)
+            sl.holder.LayoutOrder=i
+        end
+    end
+    for kind in pairs(K.fxButtons) do refresh(kind) end
+end
+
+function K.applyLoadedHUD(d)
+    if type(d)~="table" then return end
+    if d.themeId~=nil then K.HUD.themeId=d.themeId end
+    if d.outlineId~=nil then K.HUD.outlineId=d.outlineId end
+    if d.outlineThickness~=nil then K.HUD.outlineThickness=d.outlineThickness end
+    if d.outlineTransparency~=nil then K.HUD.outlineTransparency=d.outlineTransparency end
+    if d.olAnimSpeed~=nil then K.HUD.olAnimSpeed=d.olAnimSpeed end
+    if d.olSections~=nil then K.HUD.olSections=d.olSections end
+    if d.olButtons~=nil then K.HUD.olButtons=d.olButtons end
+    if d.olTabs~=nil then K.HUD.olTabs=d.olTabs end
+    if d.rainbowSpeed~=nil then K.HUD.rainbowSpeed=d.rainbowSpeed end
+    if d.hueSpeed~=nil then K.HUD.hueSpeed=d.hueSpeed end
+    if d.blur~=nil then K.HUD.blur=d.blur end
+    if d.glow~=nil then K.HUD.glow=d.glow end
+end
+
+function K.fillConfig(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="КОНФИГИ · "..K.DATA_DIR; t.Parent=parent
+    local cfgNameBox=Instance.new("TextBox")
+    cfgNameBox.Size=UDim2.new(1,0,0,K.BTN_H); cfgNameBox.BackgroundColor3=K.BASE.panel
+    cfgNameBox.BorderSizePixel=0; cfgNameBox.Font=K.FONT; cfgNameBox.TextSize=K.TXT_SZ
+    cfgNameBox.TextColor3=K.BASE.text; cfgNameBox.PlaceholderText="имя конфига"
+    cfgNameBox.PlaceholderColor3=K.BASE.dim; cfgNameBox.Text=""
+    cfgNameBox.TextXAlignment=Enum.TextXAlignment.Left; cfgNameBox.ClearTextOnFocus=false
+    cfgNameBox.LayoutOrder=2; cfgNameBox.Parent=parent; K.corner(cfgNameBox,K.CORNER); K.thin(cfgNameBox)
+    local npad=Instance.new("UIPadding",cfgNameBox); npad.PaddingLeft=UDim.new(0,12); npad.Parent=cfgNameBox
+    local function cfgAll()
+        local ok,raw=pcall(readfile,K.CFG_FILE)
+        if not ok or type(raw)~="string" then return {} end
+        local g,d=pcall(function() return K.HttpService:JSONDecode(raw) end)
+        if g and type(d)=="table" then return d end
+        return {}
+    end
+    K.makeButton(parent,"💾   Сохранить",Color3.fromRGB(130,230,160),function()
+        if cfgNameBox.Text=="" then K.pushLog("впишите имя","warn"); return end
+        local all=cfgAll()
+        all[cfgNameBox.Text]={owner=K.MY_NICK,saved=os.date("%d.%m.%Y %H:%M"),data={vfx=K.snapshotVFX(),hud=K.snapshotHUD()}}
+        K.writeJSON(K.CFG_FILE,all); K.pushLog(("«%s» сохр"):format(cfgNameBox.Text),"ok")
+    end,{order=10})
+    K.makeButton(parent,"📂   Загрузить",K.themeAccent(),function()
+        local all=cfgAll(); local cfg=all[cfgNameBox.Text]
+        if not cfg then K.pushLog("не найден","warn"); return end
+        local d=cfg.data or {}
+        if type(d.vfx)=="table" then
+            for kind,snap in pairs(d.vfx) do
+                local fx=K.VFX[kind]
+                if fx then fx.on=snap.on==true
+                    for k,v in pairs(snap.settings or {}) do
+                        if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+                    end
+                end
+            end
+            K.applyVFXSettings()
+        end
+        if type(d.hud)=="table" then
+            K.applyLoadedHUD(d.hud)
+            K.applyClientFx(); K.applyHud(); K.applyOutline()
+        end
+        K.scheduleAutosave(); K.pushLog(("«%s» загр"):format(cfgNameBox.Text),"ok")
+    end,{order=11})
+    K.makeButton(parent,"🗑   Удалить",Color3.fromRGB(220,130,130),function()
+        local all=cfgAll()
+        if not all[cfgNameBox.Text] then return end
+        all[cfgNameBox.Text]=nil; K.writeJSON(K.CFG_FILE,all)
+        K.pushLog(("«%s» уд"):format(cfgNameBox.Text),"warn")
+    end,{order=12})
+    K.makeButton(parent,"↺   Сброс",K.BASE.orange,function()
+        for kind,fx in pairs(K.VFX) do
+            fx.on=false
+            for k,v in pairs(K.VFX_DEFAULTS[kind]) do
+                if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+            end
+        end
+        K.HUD.themeId="violet"; K.HUD.outlineId="none"
+        K.applyVFXSettings(); K.applyClientFx(); K.applyHud(); K.applyOutline()
+        K.scheduleAutosave(); K.pushLog("сброс","warn")
+    end,{order=13})
+end
+
+function K.fillHotkeys(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="BINDS"; t.Parent=parent
+    local info=Instance.new("TextLabel")
+    info.Size=UDim2.new(1,0,0,120); info.BackgroundTransparency=1; info.LayoutOrder=2
+    info.Font=K.FONT; info.TextSize=11; info.TextColor3=K.BASE.dim
+    info.TextXAlignment=Enum.TextXAlignment.Left; info.TextYAlignment=Enum.TextYAlignment.Top
+    info.TextWrapped=true
+    info.Text="Хоткеи пока не реализованы.\n\nФункции — через вкладки AutoFarm / Helper / Themes."
+    info.Parent=parent
+end
+
+K.themeCards={}
+K.outlineCards={}
+function K.fillThemes(parent)
+    local t=Instance.new("TextLabel")
+    t.Size=UDim2.new(1,0,0,16); t.BackgroundTransparency=1; t.LayoutOrder=1
+    t.Font=K.FONT; t.TextSize=10; t.TextColor3=K.BASE.dim; t.TextXAlignment=Enum.TextXAlignment.Left
+    t.Text="ЦВЕТ"; t.Parent=parent
+
+    local availW=K.MAIN_W-K.BTN_PAD*2-8
+    local gap=6
+    local minW=100
+    local cols=math.max(2,math.floor((availW+gap)/(minW+gap)))
+    local cellW=math.floor((availW-(cols-1)*gap)/cols)
+    local cellH=34
+    local rows=math.max(1,math.ceil(#K.THEMES/cols))
+    local totalH=rows*(cellH+gap)
+
+    local gridHolder=Instance.new("Frame")
+    gridHolder.Size=UDim2.new(1,0,0,totalH); gridHolder.BackgroundTransparency=1
+    gridHolder.LayoutOrder=2; gridHolder.Parent=parent
+    local grid=Instance.new("UIGridLayout")
+    grid.CellSize=UDim2.fromOffset(cellW,cellH); grid.CellPadding=UDim2.fromOffset(gap,gap)
+    grid.FillDirection=Enum.FillDirection.Horizontal; grid.FillDirectionMaxCells=cols
+    grid.SortOrder=Enum.SortOrder.LayoutOrder; grid.Parent=gridHolder
+    K.themeCards={}
+    for i,t2 in ipairs(K.THEMES) do
+        local card=Instance.new("TextButton")
+        card.Size=UDim2.fromOffset(cellW,cellH); card.BackgroundColor3=Color3.new(1,1,1)
+        card.BorderSizePixel=0; card.Text=""; card.AutoButtonColor=false
+        card.LayoutOrder=i; card.Parent=gridHolder; K.corner(card,K.CORNER)
+        local st=K.thin(card)
+        K.setProp(st,"Color",K.BASE.line)
+        K.setProp(st,"Transparency",0.3)
+        pcall(function() st:SetAttribute("KoRi4Card", true) end)
+        local grad=Instance.new("UIGradient")
+        grad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,t2.c1),ColorSequenceKeypoint.new(1,t2.c2)})
+        grad.Rotation=30; grad.Parent=card
+        local nameL=Instance.new("TextLabel")
+        nameL.Size=UDim2.new(1,-8,1,0); nameL.Position=UDim2.fromOffset(6,0)
+        nameL.BackgroundTransparency=1; nameL.Font=K.FONT; nameL.TextSize=11
+        nameL.TextColor3=Color3.new(1,1,1); nameL.TextXAlignment=Enum.TextXAlignment.Left
+        nameL.TextYAlignment=Enum.TextYAlignment.Center; nameL.Text=t2.ru; nameL.Parent=card
+        local sh=Instance.new("UIStroke")
+        K.setProp(sh,"Color",Color3.fromRGB(0,0,0))
+        K.setProp(sh,"Thickness",1)
+        K.setProp(sh,"Transparency",0.4)
+        K.setProp(sh,"ApplyStrokeMode",Enum.ApplyStrokeMode.Contextual)
+        sh.Parent=nameL
+        card.Activated:Connect(function()
+            K.pressFx(card); K.HUD.themeId=t2.id; K.applyHud()
+            for id,ref in pairs(K.themeCards) do
+                K.setProp(ref.stroke,"Color",(id==t2.id) and Color3.new(1,1,1) or K.BASE.line)
+                K.setProp(ref.stroke,"Transparency",(id==t2.id) and 0 or 0.3)
+            end
+            K.scheduleAutosave()
+        end)
+        K.themeCards[t2.id]={obj=card,stroke=st}
+    end
+    for id,ref in pairs(K.themeCards) do
+        local on=(id==K.HUD.themeId)
+        K.setProp(ref.stroke,"Color",on and Color3.new(1,1,1) or K.BASE.line)
+        K.setProp(ref.stroke,"Transparency",on and 0 or 0.3)
+    end
+
+    local t2=Instance.new("TextLabel")
+    t2.Size=UDim2.new(1,0,0,16); t2.BackgroundTransparency=1; t2.LayoutOrder=3
+    t2.Font=K.FONT; t2.TextSize=10; t2.TextColor3=K.BASE.dim; t2.TextXAlignment=Enum.TextXAlignment.Left
+    t2.Text="ОБВОДКА"; t2.Parent=parent
+
+    local oCols=cols; local oCellW=cellW; local oCellH=34
+    local oRows=math.max(1,math.ceil(#K.OUTLINES/oCols)); local oTotalH=oRows*(oCellH+gap)
+    local oGridHolder=Instance.new("Frame")
+    oGridHolder.Size=UDim2.new(1,0,0,oTotalH); oGridHolder.BackgroundTransparency=1
+    oGridHolder.LayoutOrder=4; oGridHolder.Parent=parent
+    local oGrid=Instance.new("UIGridLayout")
+    oGrid.CellSize=UDim2.fromOffset(oCellW,oCellH); oGrid.CellPadding=UDim2.fromOffset(gap,gap)
+    oGrid.FillDirection=Enum.FillDirection.Horizontal; oGrid.FillDirectionMaxCells=oCols
+    oGrid.SortOrder=Enum.SortOrder.LayoutOrder; oGrid.Parent=oGridHolder
+    K.outlineCards={}
+    for _,o in ipairs(K.OUTLINES) do
+        local card=Instance.new("TextButton")
+        card.Size=UDim2.fromOffset(oCellW,oCellH); card.BackgroundColor3=K.BASE.panel
+        card.BorderSizePixel=0; card.Text=""; card.AutoButtonColor=false
+        card.Parent=oGridHolder; K.corner(card,K.CORNER)
+        local st=K.thin(card)
+        K.setProp(st,"Thickness",2)
+        K.setProp(st,"Transparency",0.1)
+        pcall(function() st:SetAttribute("KoRi4Card", true) end)
+        if o.none then K.setProp(st,"Color",K.DISABLED.stroke); K.setProp(st,"Transparency",0.5)
+        elseif o.rainbow then K.setProp(st,"Color",Color3.new(1,1,1)); local g=Instance.new("UIGradient"); g.Color=K.RAINBOW_SEQ; g.Parent=st
+        elseif o.seq then K.setProp(st,"Color",Color3.new(1,1,1)); local g=Instance.new("UIGradient"); g.Color=o.seq; g.Parent=st
+        else K.setProp(st,"Color",o.c) end
+        local lbl=Instance.new("TextLabel")
+        lbl.Size=UDim2.new(1,-8,1,0); lbl.Position=UDim2.fromOffset(4,0)
+        lbl.BackgroundTransparency=1; lbl.Font=K.FONT; lbl.TextSize=10
+        lbl.TextColor3=K.BASE.text; lbl.TextXAlignment=Enum.TextXAlignment.Center
+        lbl.Text=o.ru; lbl.Parent=card
+        card.Activated:Connect(function()
+            K.pressFx(card); K.HUD.outlineId=o.id; K.applyOutline()
+            for id,ref in pairs(K.outlineCards) do ref.obj.BackgroundColor3=(id==o.id) and K.BASE.accent:Lerp(K.BASE.panel,0.6) or K.BASE.panel end
+            K.scheduleAutosave()
+        end)
+        K.outlineCards[o.id]={obj=card,stroke=st}
+    end
+    for id,ref in pairs(K.outlineCards) do ref.obj.BackgroundColor3=(id==K.HUD.outlineId) and K.BASE.accent:Lerp(K.BASE.panel,0.6) or K.BASE.panel end
+
+    local t3=Instance.new("TextLabel")
+    t3.Size=UDim2.new(1,0,0,16); t3.BackgroundTransparency=1; t3.LayoutOrder=5
+    t3.Font=K.FONT; t3.TextSize=10; t3.TextColor3=K.BASE.dim; t3.TextXAlignment=Enum.TextXAlignment.Left
+    t3.Text="НАСТРОЙКА"; t3.Parent=parent
+
+    local sl1=K.makeSlider(parent,"толщина",1,5,function() return K.HUD.outlineThickness end,
+        function(v) K.HUD.outlineThickness=math.floor(v+0.5); K.applyOutline() end,true)
+    sl1.holder.LayoutOrder=6
+    local sl2=K.makeSlider(parent,"прозрачность",0,1,function() return K.HUD.outlineTransparency end,
+        function(v) K.HUD.outlineTransparency=v; K.applyOutline() end,false,2)
+    sl2.holder.LayoutOrder=7
+    local sl3=K.makeSlider(parent,"скорость анимации",0,4,function() return K.HUD.olAnimSpeed end,
+        function(v) K.HUD.olAnimSpeed=v; K.scheduleAutosave() end,false,1)
+    sl3.holder.LayoutOrder=8
+
+    local box=Instance.new("Frame")
+    box.Size=UDim2.new(1,0,0,28*3+K.BTN_GAP*2+12); box.BackgroundColor3=K.BASE.bg
+    box.BorderSizePixel=0; box.LayoutOrder=9; box.Parent=parent
+    K.corner(box,K.CORNER); K.thin(box)
+    local bl=Instance.new("UIListLayout",box); bl.Padding=UDim.new(0,K.BTN_GAP); bl.SortOrder=Enum.SortOrder.LayoutOrder
+    local bp=Instance.new("UIPadding",box); bp.PaddingTop=UDim.new(0,6); bp.PaddingBottom=UDim.new(0,6)
+    bp.PaddingLeft=UDim.new(0,6); bp.PaddingRight=UDim.new(0,6); bp.Parent=box
+    K.makeCheckRow(box,"на разделы",function() return K.HUD.olSections end,function(v) K.HUD.olSections=v end,1)
+    K.makeCheckRow(box,"на кнопки",function() return K.HUD.olButtons end,function(v) K.HUD.olButtons=v end,2)
+    K.makeCheckRow(box,"на табы",function() return K.HUD.olTabs end,function(v) K.HUD.olTabs=v end,3)
+end
+
+function K.applyHud()
+    local t=K.currentTheme()
+    K.BASE.bg=t.c2:Lerp(Color3.fromRGB(20,14,34),0.72)
+    K.BASE.sidebar=t.c1:Lerp(Color3.fromRGB(20,14,34),0.78)
+    K.BASE.panel=t.c1:Lerp(Color3.fromRGB(20,14,34),0.66)
+    K.BASE.line=t.c1:Lerp(Color3.fromRGB(20,14,34),0.42)
+    K.BASE.topbar=t.c1:Lerp(Color3.fromRGB(20,14,34),0.74)
+    K.BASE.accent=t.c1
+    if K.S.collapsed then
+        if K.main then K.main.BackgroundColor3=t.c1 end
+        if K.topbar then K.topbar.BackgroundColor3=t.c1 end
+    else
+        if K.main then K.main.BackgroundColor3=K.BASE.bg end
+        if K.topbar then K.topbar.BackgroundColor3=K.BASE.topbar end
+    end
+    if K.kLogo then K.kLogo.BackgroundColor3=Color3.new(1,1,1) end
+    if K.kLogoGrad then
+        K.kLogoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,t.c1),ColorSequenceKeypoint.new(1,t.c2)})
+    end
+    if K.statusBar and not K.S.collapsed then K.statusBar.BackgroundColor3=K.BASE.topbar end
+    for w in pairs(K.widgets) do
+        if type(w)=="table" and w.obj and w.obj.Parent then
+            w.obj.BackgroundColor3 = w.on and K.BASE.panel or K.DISABLED.bg
+        end
+    end
+    for s in pairs(K.sliders) do
+        if type(s)=="table" and s.holder and s.holder.Parent then
+            if s.fill then s.fill.BackgroundColor3=K.BASE.accent end
+            if s.valLbl then s.valLbl.TextColor3=K.BASE.accent end
+        end
+    end
+    for tid,tb in pairs(K.tabButtons) do
+        local on=(K.S.tab==tid)
+        tb.obj.BackgroundColor3=on and K.BASE.accent or K.BASE.panel
+        tb.obj.TextColor3=on and Color3.new(1,1,1) or K.BASE.dim
+    end
+    K.applyOutline()
+end
+
+function K.refreshButtons()
+    K.refreshSummonUI()
+    if K.recW and K.recW.obj.Parent then
+        local idle=not K.S.recording and not K.S.playing and not K.S.launching
+        local hasPick=K.S.selected~=nil and K.allMacros()[K.S.selected]~=nil
+        K.recW.obj.Text=K.S.recording and ("⏹   Стоп ("..#K.S.actions..")") or "🔴   Запись"
+        K.playW.obj.Text=(K.S.playing or K.S.launching) and "⏹   Стоп" or (K.inLobby() and "▶   Запустить матч" or "▶   Играть")
+        K.setOn(K.recW,(idle or K.S.recording) and K.inMatch())
+        K.setOn(K.playW,(idle and hasPick) or K.S.playing or K.S.launching)
+        K.setOn(K.delW,idle and hasPick)
+    end
+    if K.skipW and K.skipW.obj.Parent then
+        K.setOn(K.skipW,(not K.S.recording) and K.inMatch())
+        local on=K.autoSkipOn()
+        K.skipW.obj.Text=(on and "●   " or "○   ").."Автоскип"
+        K.skipW.color=on and Color3.fromRGB(130,230,160) or K.BASE.dim
+        if K.skipW.on then K.skipW.obj.TextColor3=K.skipW.color end
+    end
+    if K.voteW and K.voteW.obj.Parent then
+        K.voteW.obj.Text="🗳   Голос: "..tostring(K.S.voteMode or "Insane")
+    end
+    if K.autoVoteW and K.autoVoteW.obj.Parent then
+        K.autoVoteW.obj.Text="🤖   Авто-голос: "..(K.S.autoVote and "вкл" or "выкл")
+        K.autoVoteW.color=K.S.autoVote and K.BASE.ok or K.BASE.dim
+        if K.autoVoteW.on then K.autoVoteW.obj.TextColor3=K.autoVoteW.color end
+    end
+    if K.speedW and K.speedW.obj.Parent then K.speedW.obj.Text="⚡   Скорость: x"..tostring(K.currentSpeed()) end
+    if K.farmW and K.farmW.obj.Parent then
+        local farming=K.readName(K.FARM)~=""
+        K.farmW.obj.Text=farming and "⏹   Остановить фарм" or "♻   Бесконечный фарм"
+    end
+    if K.againW and K.againW.obj.Parent then
+        K.againW.obj.Text="🔁   После матча: "..(K.S.playAgain and "снова" or "лобби")
+        K.againW.color=K.S.playAgain and Color3.fromRGB(130,220,170) or K.BASE.dim
+        if K.againW.on then K.againW.obj.TextColor3=K.againW.color end
+    end
+end
+
+function K.startWaveWatcher()
+    task.spawn(function()
+        K.S.wave=K.curWave()
+        while K.alive() do
+            local w=K.curWave()
+            if w~=K.S.wave then K.S.wave,K.S.waveStart=w,os.clock(); K.pushLog(("волна %d"):format(w),"event") end
+            task.wait(0.1)
+        end
+    end)
+end
+function K.startAutoSkipOwn()
+    task.spawn(function()
+        while K.alive() do if K.ownSkip and workspace:GetAttribute("CanSkip") then pcall(K.fire,"WaveSkip") end; task.wait(1) end
+    end)
+end
+function K.startAutoFarmLoop()
+    task.spawn(function()
+        task.wait(3)
+        while K.alive() do
+            local farm=K.readName(K.FARM)
+            local macro=(farm~="" and K.allMacros()[farm]) or nil
+            if farm~="" and macro then
+                if K.inMatch() then
+                    if not K.S.playing and not K.S.recording and not K.S.launching then
+                        task.wait(2)
+                        if K.alive() and K.inMatch() and not K.S.playing then
+                            K.log("автофарм: играю «"..farm.."»")
+                            K.S.selected=farm
+                            pcall(K.play, farm)
+                            K.refreshButtons()
+                        end
+                    end
+                elseif K.inLobby() and not K.S.playing and not K.S.launching then
+                    if os.clock()-(K.S.launchCooldown or 0) > 5 then
+                        K.log("автофарм: еду на «"..K.mapRu(macro.map).."»")
+                        K.S.launching=true; K.refreshButtons()
+                        pcall(K.launchMap, macro.map, farm)
+                        K.S.launching=false; K.S.launchCooldown=os.clock(); K.refreshButtons()
+                    end
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+function K.startSpeedApplier()
+    task.spawn(function()
+        while K.alive() do
+            if K.inMatch() and K.S.speed then
+                local cur=K.currentSpeed()
+                local want=tonumber(K.S.speed) or 1
+                if math.abs(cur-want)>0.01 then K.setGameSpeed(want) end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+function K.startVFXLoops()
+    task.spawn(function()
+        while K.alive() do
+            local dt=K.RunService.RenderStepped:Wait()
+            if K.VFX.orbit.on then
+                local fx=K.ensureOrbit()
+                if fx and fx.attach then
+                    K.orbitAngle=K.orbitAngle+dt*(tonumber(fx.settings.speed) or 1)*2
+                    local r=math.clamp(tonumber(fx.settings.radius) or 6,1,30)
+                    fx.attach.Position=Vector3.new(math.cos(K.orbitAngle)*r,math.sin(K.orbitAngle*2)*0.6,math.sin(K.orbitAngle)*r)
+                    K.applyOrbit()
+                end
+            end
+            if K.VFX.hue.on and K.VFX.hue.cc then
+                K.hueT=(K.hueT+dt*(tonumber(K.VFX.hue.settings.speed) or 1)*(tonumber(K.HUD.hueSpeed) or 1)*0.25)%1
+                K.setProp(K.VFX.hue.cc,"TintColor",Color3.fromHSV(K.hueT,0.8,1))
+            end
+            if K.VFX.pulse.on and K.VFX.pulse.light then
+                K.pulseT=K.pulseT+dt*(tonumber(K.VFX.pulse.settings.speed) or 2)
+                K.setProp(K.VFX.pulse.light,"Brightness",(math.sin(K.pulseT)*0.5+0.5)*(tonumber(K.VFX.pulse.settings.bright) or 2))
+            end
+        end
+    end)
+    K.lp.CharacterAdded:Connect(function()
+        task.wait(1); if not K.alive() then return end
+        if K.VFX.orbit.on then K.ensureOrbit(); K.applyOrbit() end
+        if K.VFX.trail.on then K.ensureTrail(); K.applyTrail() end
+        if K.VFX.pulse.on then K.ensurePulse(); K.applyPulse() end
+    end)
+end
+function K.startOutlineAnim()
+    task.spawn(function()
+        local off=0
+        while K.alive() do
+            local dt=K.RunService.RenderStepped:Wait()
+            local o=K.currentOutline()
+            if (o.rainbow or (o.seq and o.anim)) and not K.optimize.guiAnim then
+                local mul=(tonumber(o.animMul) or 1)*(tonumber(K.HUD.olAnimSpeed) or 1)*(tonumber(K.HUD.rainbowSpeed) or 1)
+                off=(off-dt*0.5*mul)%1
+                for st in pairs(K.outlineStrokes) do
+                    if typeof(st)=="Instance" and st.Parent then
+                        local enabled=K.getProp(st,"Enabled",false)
+                        if enabled then
+                            local g=st:FindFirstChildOfClass("UIGradient")
+                            if g then K.setProp(g,"Offset",Vector2.new(off,0)) end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+function K.startLogsLoop()
+    task.spawn(function()
+        local lastCount=0
+        while K.alive() do
+            if K.logsInner and K.logsInner.Parent and (K.logsUpdated or #K.logsBuf~=lastCount) then
+                K.logsUpdated=false; lastCount=#K.logsBuf
+                for _,ch in ipairs(K.logsInner:GetChildren()) do if ch:IsA("TextLabel") then ch:Destroy() end end
+                for i,entry in ipairs(K.logsBuf) do
+                    local line=Instance.new("TextLabel")
+                    line.Size=UDim2.new(1,-4,0,K.LOG_LINE_H); line.BackgroundTransparency=1
+                    line.Font=Enum.Font.Code; line.TextSize=K.LOG_FONT
+                    line.TextColor3=K.LOG_COLORS[entry.k] or K.LOG_COLORS.info
+                    line.TextXAlignment=Enum.TextXAlignment.Left
+                    line.LayoutOrder=i; line.Text="["..entry.t.."] "..entry.m; line.Parent=K.logsInner
+                end
+                task.defer(function() if K.logsScroll and K.logsScroll.Parent then K.logsScroll.CanvasPosition=Vector2.new(0,K.logsScroll.AbsoluteCanvasSize.Y) end end)
+            end
+            task.wait(0.2)
+        end
+    end)
+end
+
+function K.loadHud()
+    local data=K.readJSON(K.HUD_FILE); if not data then return end
+    if type(data.vfx)=="table" then
+        for kind,snap in pairs(data.vfx) do
+            local fx=K.VFX[kind]
+            if fx then
+                fx.on=snap.on==true
+                for k,v in pairs(snap.settings or {}) do
+                    if type(v)=="table" and v.__color then fx.settings[k]=K.tableToColor(v) else fx.settings[k]=v end
+                end
+            end
+        end
+    end
+    if type(data.hud)=="table" then
+        K.applyLoadedHUD(data.hud)
+    end
+end
+
+K.safeRun=function(name,fn) local ok,err=pcall(fn); if not ok then warn("[KoRi4] "..name..": "..tostring(err)); K.pushLog(name.." err","err") end end
+
+K.safeRun("buildUI",K.buildUI)
+K.safeRun("populate",function() K.populate(K.S.tab or "autofarm") end)
+K.loadHud()
+K.safeRun("applyVFXSettings",K.applyVFXSettings)
+K.safeRun("applyClientFx",K.applyClientFx)
+K.safeRun("applyHud",K.applyHud)
+K.safeRun("applyOutline",K.applyOutline)
+K.safeRun("refreshButtons",K.refreshButtons)
+K.startWaveWatcher()
+K.startAutoSkipOwn()
+K.startVFXLoops()
+K.startOutlineAnim()
+K.startSummonLoop()
+K.startLogsLoop()
+K.startRecordHooks()
+K.startEndMatchWatcher()
+K.startMatchResetWatcher()
+K.startAutoFarmLoop()
+K.startSpeedApplier()
+K.startVoteWatcher()
+
+task.spawn(function() while K.alive() do task.wait(0.5); pcall(K.refreshButtons) end end)
+
+K.autosaveReady=true
+K.pushLog("готов: "..(K.IS_MOBILE and "MOBILE" or "PC"),"ok")
+
+if K.ENV then
+    K.ENV.CTD_MACRO_API={launchMap=K.launchMap,play=K.play,allMacros=K.allMacros,
+        toggleAutoSkip=K.toggleAutoSkip,autoSkipOn=K.autoSkipOn,state=K.S,K=K}
+end
